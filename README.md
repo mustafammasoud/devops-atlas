@@ -59,7 +59,9 @@ npm run check     # TypeScript / Astro diagnostics
 ```text
 ├── content/                  # educational content (Markdown/MDX) — the source of truth
 │   ├── README.md             # authoring guide (excluded from the build)
+│   ├── foundations/          # (empty folders are placeholders — see docs-roadmap.md)
 │   ├── linux/
+│   ├── networking/
 │   ├── git/
 │   ├── docker/
 │   ├── ci-cd/
@@ -67,9 +69,11 @@ npm run check     # TypeScript / Astro diagnostics
 │   │   └── pods/
 │   │       ├── index.mdx
 │   │       └── images/       # images colocated with their document
-│   ├── aws/
+│   ├── cloud/
 │   ├── terraform/
-│   └── observability/
+│   ├── observability/
+│   ├── security/
+│   └── troubleshooting/
 ├── public/
 │   ├── images/               # shared static images
 │   └── pdf/                  # static PDF resources (served as-is)
@@ -87,6 +91,7 @@ npm run check     # TypeScript / Astro diagnostics
 ├── astro.config.mjs
 ├── package.json
 ├── tsconfig.json
+├── docs-roadmap.md           # content blueprint (living document)
 └── README.md
 ```
 
@@ -98,7 +103,7 @@ Create a file under `content/<category>/<topic>.md` (or `.mdx`) and fill in the 
 ---
 title: البودات (Pods)
 description: الوحدة الأساسية في كوبرنيتيس.
-category: kubernetes        # linux | git | docker | ci-cd | kubernetes | aws | terraform | observability
+category: kubernetes        # any folder name; register it in src/data/categories.ts for a display label
 order: 2                    # sort order inside the sidebar category
 level: beginner             # beginner | intermediate | advanced
 tags: [kubernetes, pods]
@@ -121,6 +126,17 @@ Content conventions:
   with snippets.
 - **Direction**: the document `language` sets `dir` on the page and on the article region.
   Code blocks, terminals, YAML/JSON and inline code are always forced LTR.
+
+## Content architecture principles
+
+Content structure must remain flexible.
+
+Adding, removing, or reorganizing topics should not require major code changes.
+
+The platform should adapt to content, not force content into a rigid structure.
+
+The living content blueprint (areas, example topics, evolution rules, current
+limitations) lives in [`docs-roadmap.md`](docs-roadmap.md).
 
 ## Architecture decisions
 

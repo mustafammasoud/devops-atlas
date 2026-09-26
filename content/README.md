@@ -51,8 +51,11 @@ content/<category>/<topic>/index.mdx →  /docs/<category>/<topic>
 content/<category>/<sub>/<topic>.md  →  /docs/<category>/<sub>/<topic>
 ```
 
-الفئات الحالية: `linux`, `git`, `docker`, `ci-cd`, `kubernetes`, `aws`,
-`terraform`, `observability`
+الفئات المسجّلة حالياً (للاسم المعروض والترتيب فقط — أي اسم مجلد جديد يعمل
+بدون تسجيل): `foundations`, `linux`, `networking`, `git`, `docker`, `ci-cd`,
+`kubernetes`, `cloud`, `terraform`, `observability`, `security`,
+`troubleshooting`. القائمة مرحلة وقابلة للتوسع — راجع
+[`docs-roadmap.md`](../docs-roadmap.md) للخطة المرنة.
 
 لفئة جديدة: أنشئ المجلد، ثم سجّلها في `src/data/categories.ts` (وإن لم
 تسجّلها ستعمل كذلك، لكن تظهر أخيراً باسم المجلد الخام).
@@ -78,7 +81,7 @@ description: مختصر للفهرس والبحث     # موصى به
 category: kubernetes                # مطلوب — اسم مجلد الفئة
 order: 1                            # الترتيب داخل الفئة (الافتراضي 0)
 level: beginner                     # beginner | intermediate | advanced
-tags: [kubernetes, pods]
+tags: [kubernetes, pods]   # عضويات متعددة — أساس المسارات التعليمية المستقبلية
 draft: false                        # true = لا تُبنى ولا تُفهرس
 language: ar                        # ar (RTL) | en (LTR)
 ---
@@ -86,6 +89,10 @@ language: ar                        # ar (RTL) | en (LTR)
 
 الحقول الإلزامية: `title` و`category` فقط — الباقي له قيم افتراضية.
 الصفحات المسودة (`draft: true`) مستبعدة من التنقل والبحث وبناء الموقع.
+
+> الصفحة لها **فئة واحدة فقط** (`category` = مكانها في القائمة الجانبية)، لكن
+> أي عدد من **الوسوم** (`tags`) — المقال نفسه ينتمي لمسارات تعليمية متعددة عبر
+> الوسوم دون نقل الملف. الترتيب يُضبط بـ `order:` ولا يرتبط بأسماء المجلدات.
 
 ## المكوّنات في MDX / MDX components
 
