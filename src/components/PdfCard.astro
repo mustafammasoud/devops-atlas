@@ -12,7 +12,7 @@ const fileName = href.split('/').pop() ?? href;
 const name = title ?? fileName;
 ---
 
-<div class="my-6 flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-4">
+<div class="my-6 flex flex-wrap items-center gap-4 rounded-md border border-border bg-surface p-4">
   <svg
     class="h-8 w-8 shrink-0 text-muted"
     viewBox="0 0 24 24"
@@ -29,7 +29,7 @@ const name = title ?? fileName;
   </svg>
 
   <div class="min-w-0 flex-1">
-    <p class="truncate font-semibold" dir="ltr">{name}</p>
+    <p class="truncate font-mono text-[0.9rem] font-medium" dir="ltr">{name}</p>
     {description && <p class="mt-0.5 text-sm text-muted">{description}</p>}
   </div>
 
@@ -38,16 +38,18 @@ const name = title ?? fileName;
       href={href}
       target="_blank"
       rel="noopener"
-      class="rounded-md border border-border bg-bg px-3 py-1.5 font-medium transition-colors hover:border-accent hover:text-accent"
+      class="rounded-md border border-border bg-bg px-3 py-1.5 font-medium transition-colors hover:border-accent/50 hover:text-accent"
+      data-ar="فتح في تبويب جديد"
     >
-      فتح في تبويب جديد
+      Open in new tab
     </a>
     <a
       href={href}
       download
       class="rounded-md bg-accent px-3 py-1.5 font-medium text-accent-contrast transition-opacity hover:opacity-90"
+      data-ar="تحميل"
     >
-      تحميل
+      Download
     </a>
   </div>
 </div>

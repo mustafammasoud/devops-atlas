@@ -1,0 +1,30 @@
+---
+/**
+ * Thin reading-progress indicator that sits directly below the sticky header.
+ * RTL-aware (fills toward the reading direction) and motion-safe.
+ */
+---
+
+<div class="reading-progress" aria-hidden="true">
+  <div class="reading-progress-fill" data-reading-progress></div>
+</div>
+
+<script>
+  const fill = document.querySelector<HTMLElement>('[data-reading-progress]');
+  if (fill) {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const root = document.documentElement;
+      const scrollable = root.scrollHeight - window.innerHeight;
+      const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
+      fill.style.transform = `scaleX(${Math.min(1, Math.max(0, progress))})`;
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    update();
+  }
+</script>

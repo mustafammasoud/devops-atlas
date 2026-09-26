@@ -13,54 +13,56 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Restrained technical color system (light)                          */
+/* Warm editorial color system                                         */
+/* Printed-manual paper (light) / dark coffee graphite (dark), one     */
+/* muted coffee-amber accent. No blue, no gradients, no neon.          */
 /* ------------------------------------------------------------------ */
 :root {
   color-scheme: light;
-  --c-bg: #ffffff;
-  --c-surface: #f8fafc;
-  --c-surface-2: #f1f5f9;
-  --c-border: #e2e8f0;
-  --c-text: #0f172a;
-  --c-muted: #64748b;
-  --c-accent: #2563eb;
-  --c-accent-contrast: #ffffff;
-  --c-note-bg: #eff6ff;
-  --c-note-border: #bfdbfe;
-  --c-note-fg: #1d4ed8;
-  --c-tip-bg: #ecfdf5;
-  --c-tip-border: #a7f3d0;
-  --c-tip-fg: #047857;
-  --c-warning-bg: #fffbeb;
-  --c-warning-border: #fde68a;
-  --c-warning-fg: #b45309;
-  --c-lab-bg: #f5f3ff;
-  --c-lab-border: #ddd6fe;
-  --c-lab-fg: #6d28d9;
+  --c-bg: #f4efe4;
+  --c-surface: #fbf8f1;
+  --c-surface-2: #ece4d2;
+  --c-border: #ddd3bd;
+  --c-text: #2b2418;
+  --c-muted: #6d6353;
+  --c-accent: #8a5a24;
+  --c-accent-contrast: #fffcf5;
+  --c-note-bg: #efe9dc;
+  --c-note-border: #d8cdb6;
+  --c-note-fg: #57503f;
+  --c-tip-bg: #ecefe1;
+  --c-tip-border: #c7cfb0;
+  --c-tip-fg: #56683c;
+  --c-warning-bg: #f6e7dc;
+  --c-warning-border: #dfc1ad;
+  --c-warning-fg: #98492a;
+  --c-lab-bg: #f1e8ed;
+  --c-lab-border: #d8c4cd;
+  --c-lab-fg: #71475c;
 }
 
 .dark {
   color-scheme: dark;
-  --c-bg: #0b1220;
-  --c-surface: #111a2b;
-  --c-surface-2: #16213a;
-  --c-border: #24304a;
-  --c-text: #e5eaf3;
-  --c-muted: #9aa8c2;
-  --c-accent: #60a5fa;
-  --c-accent-contrast: #0b1220;
-  --c-note-bg: #10203a;
-  --c-note-border: #1e3a5f;
-  --c-note-fg: #7db4ff;
-  --c-tip-bg: #0c2a20;
-  --c-tip-border: #14532d;
-  --c-tip-fg: #4ade80;
-  --c-warning-bg: #2a2110;
-  --c-warning-border: #713f12;
-  --c-warning-fg: #fbbf24;
-  --c-lab-bg: #1e1a33;
-  --c-lab-border: #4c3f8f;
-  --c-lab-fg: #a78bfa;
+  --c-bg: #17130f;
+  --c-surface: #201a14;
+  --c-surface-2: #2a231a;
+  --c-border: #3a3226;
+  --c-text: #e8e1d4;
+  --c-muted: #a79c8a;
+  --c-accent: #d0a45c;
+  --c-accent-contrast: #1c1610;
+  --c-note-bg: #211c15;
+  --c-note-border: #3b3427;
+  --c-note-fg: #c5bba9;
+  --c-tip-bg: #1b1f15;
+  --c-tip-border: #374129;
+  --c-tip-fg: #9db77c;
+  --c-warning-bg: #261a14;
+  --c-warning-border: #4d352a;
+  --c-warning-fg: #cf8a63;
+  --c-lab-bg: #231a1f;
+  --c-lab-border: #463340;
+  --c-lab-fg: #c295a6;
 }
 
 @theme inline {
@@ -110,11 +112,34 @@
     outline: 2px solid var(--c-accent);
     outline-offset: 2px;
   }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  summary {
+    text-wrap: pretty;
+  }
+}
+
+/* Small uppercase label used above sections and sidebar groups. */
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
 }
 
 /* ------------------------------------------------------------------ */
 /* Direction utilities                                                  */
-/* Arabic-first pages run RTL, English content can run LTR per region. */
+/* Page direction follows the reader's locale (EN default, AR opt-in); */
+/* content regions keep their own direction.                            */
 /* ------------------------------------------------------------------ */
 .dir-ltr,
 .ltr {
@@ -186,7 +211,7 @@ kbd {
   scroll-margin-top: 5rem;
   margin-block: 2.5rem 1rem;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.4;
   border-block-end: 1px solid var(--c-border);
   padding-block-end: 0.5rem;
@@ -196,7 +221,7 @@ kbd {
   scroll-margin-top: 5rem;
   margin-block: 2rem 0.75rem;
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.5;
 }
 
@@ -204,7 +229,7 @@ kbd {
   scroll-margin-top: 5rem;
   margin-block: 1.5rem 0.5rem;
   font-size: 1.0625rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .prose :where(ul),
@@ -273,7 +298,7 @@ kbd {
 }
 
 .prose :where(strong) {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* Inline code -------------------------------------------------------- */
@@ -413,7 +438,7 @@ pre.astro-code:hover .code-copy,
 }
 
 .lightbox::backdrop {
-  background: rgb(2 6 23 / 0.82);
+  background: rgb(0 0 0 / 0.8);
 }
 
 .lightbox img {
@@ -421,7 +446,7 @@ pre.astro-code:hover .code-copy,
   max-width: 96vw;
   max-height: 90vh;
   border-radius: 0.5rem;
-  background-color: var(--c-bg);
+  background-color: var(--c-surface);
 }
 
 .lightbox-close {
@@ -439,9 +464,18 @@ pre.astro-code:hover .code-copy,
 }
 
 /* Table of contents scroll-spy ------------------------------------------ */
+/* A 2px accent segment marks the section being read; the link's start    */
+/* border is transparent by default so activating it shifts nothing.       */
+.toc-link {
+  margin-inline-start: -13px;
+  border-inline-start: 2px solid transparent;
+  padding-inline-start: 11px;
+}
+
 .toc-link.is-active {
   color: var(--c-accent);
-  font-weight: 600;
+  border-inline-start-color: var(--c-accent);
+  font-weight: 500;
 }
 
 /* Search dialog -------------------------------------------------------- */
@@ -450,16 +484,16 @@ pre.astro-code:hover .code-copy,
   max-height: 80vh;
   margin: auto;
   border: 1px solid var(--c-border);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   background-color: var(--c-bg);
   color: var(--c-text);
   padding: 0;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgb(2 6 23 / 0.25);
+  box-shadow: 0 24px 60px rgb(56 38 16 / 0.20);
 }
 
 .search-dialog::backdrop {
-  background: rgb(2 6 23 / 0.55);
+  background: rgb(0 0 0 / 0.45);
 }
 
 .search-dialog input[type='search']::-webkit-search-cancel-button {
@@ -472,6 +506,63 @@ mark {
   background-color: color-mix(in srgb, var(--c-accent) 25%, transparent);
   color: inherit;
   padding-inline: 0.1em;
+}
+
+/* Reading progress (sits directly below the sticky header) -------------- */
+.reading-progress {
+  position: sticky;
+  top: 3.5rem;
+  z-index: 30;
+  height: 2px;
+  background-color: var(--c-border);
+}
+
+.reading-progress-fill {
+  height: 100%;
+  background-color: var(--c-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.1s linear;
+}
+
+html[dir='rtl'] .reading-progress-fill {
+  transform-origin: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress-fill {
+    transition: none;
+  }
+}
+
+/* Code language badge (injected client-side) --------------------------- */
+pre.astro-code {
+  padding-top: 2.25rem;
+}
+
+.code-lang {
+  position: absolute;
+  top: 0.5rem;
+  inset-inline-start: 1rem;
+  direction: ltr;
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Tables: wrap in a client-side scroll container (DocEnhancements) ------ */
+.table-scroll {
+  overflow-x: auto;
+  margin-block: 1.5rem;
+}
+
+.table-scroll table {
+  margin-block: 0;
 }
 
 /* Respect users who prefer less motion ---------------------------------- */

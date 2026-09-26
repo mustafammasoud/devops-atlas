@@ -7,7 +7,7 @@ import Figure from '../components/Figure.astro';
 import PdfCard from '../components/PdfCard.astro';
 import PdfEmbed from '../components/PdfEmbed.astro';
 import DocEnhancements from '../components/DocEnhancements.astro';
-import sampleDiagram from '../../content/kubernetes/pods/images/pod-lifecycle.svg';
+import sampleDiagram from '../../content/container-orchestration/kubernetes/pods/images/pod-lifecycle.svg';
 ---
 
 <!--
@@ -15,40 +15,40 @@ import sampleDiagram from '../../content/kubernetes/pods/images/pod-lifecycle.sv
   Not linked from the navigation; referenced from README.md / content/README.md.
 -->
 <BaseLayout
-  title="مكونات الواجهة | DevOps Atlas"
-  description="معاينة مكوّنات منصة DevOps Atlas للتوثيق."
+  title="UI Components | DevOps Atlas"
+  description="Preview of the DevOps Atlas documentation components."
 >
   <Header />
 
   <main id="main" class="mx-auto w-full max-w-3xl px-4 py-10">
-    <div class="prose" dir="rtl">
-      <h1>مكونات الواجهة</h1>
+    <div class="prose">
+      <h1>UI Components</h1>
       <p>
-        صفحة فحص للمكوّنات المتاحة في محتوى MDX. النصوص هنا نصوص تجريبية بحتة
-        لغرض العرض فقط.
+        QA page for the components available in MDX content. All strings here are
+        placeholder text for display purposes only.
       </p>
 
       <h2 id="callouts">Callout</h2>
-      <Callout>هذه ملاحظة عادية تُستخدم للتفاصيل المساندة.</Callout>
-      <Callout type="tip" title="تلميح">هذا تلميح مختصر بعنوان مخصص.</Callout>
-      <Callout type="warning">هذا تنبيه لتجنّب خطأ شائع.</Callout>
-      <Callout type="lab">هذا صندوق مختبر لتمرين عملي.</Callout>
+      <Callout>A regular note used for supporting details.</Callout>
+      <Callout type="tip" title="Tip">A short tip with a custom title.</Callout>
+      <Callout type="warning">A warning to avoid a common mistake.</Callout>
+      <Callout type="lab">A lab box for a hands-on exercise.</Callout>
 
       <h2 id="steps">Steps</h2>
       <Steps>
-        <li>الخطوة الأولى — نص تجريبي فقط.</li>
+        <li>The first step — placeholder text only.</li>
         <li>
-          الخطوة الثانية —
+          The second step —
           <code>npm run build</code>
         </li>
-        <li>الخطوة الثالثة — نص تجريبي فقط.</li>
+        <li>The third step — placeholder text only.</li>
       </Steps>
 
       <h2 id="figure">Figure</h2>
       <Figure
         src={sampleDiagram}
-        alt="صورة تجريبية (مخطط دورة حياة البود من صفحة المحتوى النموذجية)"
-        caption="تعليق تجريبي تحت الصورة."
+        alt="Sample image (pod lifecycle diagram from the sample content page)"
+        caption="Sample caption below the figure."
       />
 
       <h2 id="code">Code block + copy button</h2>
@@ -58,9 +58,9 @@ import sampleDiagram from '../../content/kubernetes/pods/images/pod-lifecycle.sv
       <PdfCard
         href="/pdf/linux-cheatsheet.pdf"
         title="linux-cheatsheet.pdf"
-        description="بطاقة ملف: فتح وتحميل."
+        description="File card: open and download."
       />
-      <PdfEmbed src="/pdf/linux-cheatsheet.pdf" title="معاينة تجريبية لملف PDF" height={480} />
+      <PdfEmbed src="/pdf/linux-cheatsheet.pdf" title="Sample PDF preview" height={480} />
     </div>
   </main>
 

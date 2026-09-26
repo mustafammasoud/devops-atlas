@@ -1,0 +1,79 @@
+---
+import CategoryIcon from './CategoryIcon.astro';
+import type { Category } from '../data/categories';
+
+interface Props {
+  category: Category;
+  /** Number of published topics in this category (computed at build time). */
+  count: number;
+}
+
+const { category, count } = Astro.props;
+const planned = count === 0;
+
+/** Topic count: English default (site locale) + Arabic variant for the swap. */
+const countEn = count === 1 ? '1 topic' : `${count} topics`;
+const countAr =
+  count === 1
+    ? 'موضوع واحد'
+    : count === 2
+      ? 'موضوعان'
+      : count >= 3 && count <= 10
+        ? `${count} مواضيع`
+        : `${count} موضوعاً`;
+---
+
+<li class="border-t border-border">
+  <a
+    href={`/docs/${category.id}`}
+    class="group flex items-start gap-4 py-5 transition-colors hover:bg-surface/70"
+  >
+    <CategoryIcon
+      name={category.icon}
+      class="mt-0.5 h-5 w-5 shrink-0 text-muted transition-colors group-hover:text-accent"
+    />
+
+    <span class="min-w-0 flex-1">
+      <span
+        class="block text-[0.975rem] font-semibold tracking-tight"
+        lang="en"
+      >
+        {category.label}
+      </span>
+      <span
+        class="mt-1 block text-sm leading-relaxed text-muted"
+        data-ar={category.descriptionAr}
+      >
+        {category.descriptionEn}
+      </span>
+    </span>
+
+    {
+      planned ? (
+        <span
+          class="mt-0.5 shrink-0 rounded-full bg-surface-2 px-2.5 py-0.5 text-xs text-muted"
+          data-ar="قريباً"
+        >
+          Planned
+        </span>
+      ) : (
+        <span class="mt-0.5 shrink-0 text-xs text-muted tabular-nums" data-ar={countAr}>
+          {countEn}
+        </span>
+      )
+    }
+
+    <svg
+      class="mt-1 h-4 w-4 shrink-0 text-transparent transition-colors group-hover:text-accent"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M7 17 17 7M9 7h8v8"></path>
+    </svg>
+  </a>
+</li>

@@ -15,8 +15,10 @@ const items = headings.filter((heading) => heading.depth >= 2 && heading.depth <
 
 {
   items.length > 0 && (
-    <nav aria-label="في هذه الصفحة" class="text-sm">
-      <p class="mb-2 text-xs font-bold uppercase tracking-wide text-muted">في هذه الصفحة</p>
+    <nav data-toc aria-label="On this page" data-ar-aria="في هذه الصفحة" class="text-sm">
+      <p class="eyebrow mb-2" data-ar="في هذه الصفحة">
+        On this page
+      </p>
       <ul class="space-y-1 border-s border-border ps-3">
         {items.map((heading) => (
           <li class={heading.depth === 3 ? 'ps-3' : ''}>
@@ -36,7 +38,7 @@ const items = headings.filter((heading) => heading.depth >= 2 && heading.depth <
 <script>
   // Scroll-spy: highlights the section currently being read.
   const links = Array.from(
-    document.querySelectorAll<HTMLAnchorElement>('nav[aria-label="في هذه الصفحة"] a.toc-link'),
+    document.querySelectorAll<HTMLAnchorElement>('nav[data-toc] a.toc-link'),
   );
   const ids = links.map((link) => decodeURIComponent(link.hash.slice(1)));
   const targets = ids

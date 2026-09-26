@@ -1,5 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <circle cx="16" cy="16" r="14" fill="none" stroke="#2563eb" stroke-width="2.5"/>
-  <ellipse cx="16" cy="16" rx="6" ry="14" fill="none" stroke="#2563eb" stroke-width="2"/>
-  <path d="M2 16h28" stroke="#2563eb" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="DevOps Atlas">
+  <title>DevOps Atlas</title>
+  <style>
+    .plate { fill: #8a5a24; }
+    .stroke { stroke: #fffcf5; }
+    .node { fill: #fffcf5; }
+    @media (prefers-color-scheme: dark) {
+      .plate { fill: #d0a45c; }
+      .stroke { stroke: #17130f; }
+      .node { fill: #17130f; }
+    }
+  </style>
+  <rect class="plate" width="32" height="32" rx="7.2"/>
+  <path
+    class="stroke"
+    d="M10 22.5V15.5Q10 13.5 12 13.5H18.4"
+    fill="none"
+    stroke-width="2.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle class="node" cx="21.5" cy="13.5" r="3"/>
 </svg>

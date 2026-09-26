@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import LocaleToggle from './LocaleToggle.astro';
 import Search from './Search.astro';
 ---
 
@@ -7,29 +8,41 @@ import Search from './Search.astro';
   class="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75"
 >
   <div class="mx-auto flex h-14 max-w-screen-2xl items-center gap-3 px-4 sm:gap-4">
-    <a href="/" class="flex shrink-0 items-center gap-2 font-bold" dir="ltr">
-      <svg
-        class="h-7 w-7 text-accent"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="9"></circle>
-        <path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"></path>
+    <a href="/" class="flex shrink-0 items-center gap-2.5 font-semibold tracking-tight" dir="ltr">
+      <!-- Atlas Plate mark: monochrome frame + route, accent terminus node. -->
+      <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect
+          x="3.25"
+          y="3.25"
+          width="25.5"
+          height="25.5"
+          rx="6.5"
+          stroke="currentColor"
+          stroke-width="2.5"
+        />
+        <path
+          d="M10 23.5V16Q10 14 12 14H18.75"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="21.5" cy="14" r="3" class="fill-accent" />
       </svg>
       <span class="hidden sm:inline">DevOps Atlas</span>
     </a>
 
-    <nav aria-label="التنقل الرئيسي" class="hidden sm:block">
+    <nav
+      aria-label="Main navigation"
+      data-ar-aria="التنقل الرئيسي"
+      class="hidden sm:block"
+    >
       <a
         href="/docs"
         class="rounded-md px-2.5 py-1.5 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-text"
+        data-ar="الوثائق"
       >
-        الوثائق
+        Docs
       </a>
     </nav>
 
@@ -39,18 +52,7 @@ import Search from './Search.astro';
 
     <div class="flex shrink-0 items-center gap-2">
       <ThemeToggle />
-      <!-- Language switch placeholder (Arabic first, English later). -->
-      <button
-        type="button"
-        disabled
-        aria-disabled="true"
-        title="English — قريباً"
-        lang="en"
-        dir="ltr"
-        class="h-9 rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-muted"
-      >
-        EN
-      </button>
+      <LocaleToggle />
     </div>
   </div>
 </header>

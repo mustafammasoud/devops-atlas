@@ -9,7 +9,15 @@ interface Props {
 
 const { type = 'note', title } = Astro.props;
 
+/** English default titles (site locale), Arabic variants for the swap. */
 const defaultTitles: Record<CalloutType, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  warning: 'Warning',
+  lab: 'Lab',
+};
+
+const defaultTitlesAr: Record<CalloutType, string> = {
   note: 'ملاحظة',
   tip: 'تلميح',
   warning: 'تنبيه',
@@ -26,8 +34,13 @@ const styles: Record<CalloutType, { bg: string; border: string; fg: string }> = 
 const s = styles[type];
 ---
 
-<aside class:list={['my-6 border-s-[3px] rounded-md px-4 py-3', s.bg, s.border]} role="note">
-  <p class:list={['mb-1 text-sm font-bold', s.fg]}>{title ?? defaultTitles[type]}</p>
+<aside class:list={['my-6 border-s-[3px] rounded-sm px-4 py-3', s.bg, s.border]} role="note">
+  <p
+    class:list={['mb-1 text-sm font-semibold', s.fg]}
+    data-ar={title ? undefined : defaultTitlesAr[type]}
+  >
+    {title ?? defaultTitles[type]}
+  </p>
   <div class="text-[0.9375rem] leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
     <slot />
   </div>

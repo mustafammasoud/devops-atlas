@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { categoryLabel, toolLabel } from '../data/categories';
+import { docPath, docTool, sortedDocs } from '../utils/docs';
+
+interface Props {
+  /** The document currently being read — related items share at least one tag. */
+  entry: CollectionEntry<'docs'>;
+}
+
+const { entry } = Astro.props;
+const tags = new Set(entry.data.tags);
+const related = sortedDocs(await getCollection('docs', ({ data }) => !data.draft))
+  .filter((doc) => doc.id !== entry.id && doc.data.tags.some((tag) => tags.has(tag)))
+  .slice(0, 3);
+---
+
+{
+  related.length > 0 && (
+    <section class="mt-10 max-w-3xl" aria-labelledby="related-heading">
+      <h2 id="related-heading" class="mb-4 text-lg font-semibold" data-ar="مواضيع ذات صلة">
+        Related topics
+      </h2>
+      <div class="grid gap-3 sm:grid-cols-3">
+        {related.map((doc) => {
+          const tool = docTool(doc);
+          return (
+            <a
+              href={docPath(doc.id)}
+              class="rounded-md border border-border bg-surface p-4 transition-colors hover:border-accent/50"
+            >
+              <span class="block text-xs text-muted" lang="en">
+                {categoryLabel(doc.data.category)}
+                {tool ? ` · ${toolLabel(tool)}` : ''}
+              </span>
+              <span class="mt-1 block text-sm font-medium leading-snug">{doc.data.title}</span>
+              {doc.data.description && (
+                <p class="mt-1 text-xs leading-relaxed text-muted line-clamp-2">
+                  {doc.data.description}
+                </p>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  )
+}

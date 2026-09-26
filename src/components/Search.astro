@@ -9,7 +9,7 @@
 <button
   type="button"
   id="search-trigger"
-  class="flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm text-muted transition-colors hover:text-text"
+  class="flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-border bg-bg px-3 text-sm text-muted transition-colors hover:border-accent/50 hover:text-text"
   aria-haspopup="dialog"
   aria-controls="search-dialog"
 >
@@ -25,17 +25,22 @@
     <circle cx="11" cy="11" r="7"></circle>
     <path d="m21 21-4.3-4.3"></path>
   </svg>
-  <span class="flex-1 text-start">ابحث في الوثائق…</span>
+  <span class="flex-1 text-start" data-ar="ابحث في الوثائق…">Search the documentation…</span>
   <kbd
     id="search-trigger-kbd"
     dir="ltr"
-    class="hidden rounded border border-border bg-bg px-1.5 py-0.5 text-[0.65rem] font-medium md:inline"
+    class="hidden rounded border border-border bg-surface px-1.5 py-0.5 text-[0.65rem] font-medium tabular-nums md:inline"
   >
     Ctrl K
   </kbd>
 </button>
 
-<dialog id="search-dialog" class="search-dialog" aria-label="البحث في الوثائق">
+<dialog
+  id="search-dialog"
+  class="search-dialog"
+  aria-label="Search the documentation"
+  data-ar-aria="البحث في الوثائق"
+>
   <div class="flex max-h-[80vh] flex-col p-3">
     <div class="flex items-center gap-2 rounded-md border border-border bg-surface px-3">
       <svg
@@ -54,9 +59,11 @@
         id="search-input"
         type="search"
         class="h-11 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
-        placeholder="ابحث في الوثائق…"
+        placeholder="Search the documentation…"
+        data-ar-placeholder="ابحث في الوثائق…"
         autocomplete="off"
-        aria-label="ابحث في الوثائق"
+        aria-label="Search the documentation"
+        data-ar-aria="ابحث في الوثائق"
         role="combobox"
         aria-expanded="false"
         aria-controls="search-results"
@@ -71,27 +78,29 @@
       </button>
     </div>
 
-    <p id="search-status" class="hidden px-1 pt-3 text-sm text-muted">
-      جارٍ تحميل فهرس البحث…
+    <p id="search-status" class="hidden px-1 pt-3 text-sm text-muted" data-ar="جارٍ تحميل فهرس البحث…">
+      Loading search index…
     </p>
     <ul
       id="search-results"
       role="listbox"
-      aria-label="نتائج البحث"
+      aria-label="Search results"
+      data-ar-aria="نتائج البحث"
       class="max-h-[50vh] overflow-y-auto p-1"
     >
     </ul>
-    <p id="search-empty" class="hidden px-1 py-5 text-center text-sm text-muted">
-      لا توجد نتائج مطابقة.
+    <p
+      id="search-empty"
+      class="hidden px-1 py-5 text-center text-sm text-muted"
+      data-ar="لا توجد نتائج مطابقة."
+    >
+      No matching results.
     </p>
 
-    <div
-      class="mt-2 flex flex-wrap gap-4 border-t border-border px-1 pt-2 text-xs text-muted"
-      dir="rtl"
-    >
-      <span>↑ ↓ للتنقل</span>
-      <span>Enter للفتح</span>
-      <span>Esc للإغلاق</span>
+    <div class="mt-2 flex flex-wrap gap-4 border-t border-border px-1 pt-2 text-xs text-muted">
+      <span data-ar="↑ ↓ للتنقل">↑ ↓ to navigate</span>
+      <span data-ar="Enter للفتح">Enter to open</span>
+      <span data-ar="Esc للإغلاق">Esc to close</span>
     </div>
   </div>
 </dialog>

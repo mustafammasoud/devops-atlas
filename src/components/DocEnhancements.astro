@@ -6,15 +6,16 @@
  */
 ---
 
-<dialog id="image-viewer" class="lightbox" aria-label="عرض الصورة">
+<dialog id="image-viewer" class="lightbox" aria-label="View image" data-ar-aria="عرض الصورة">
   <img id="image-viewer-img" alt="" />
-  <button type="button" class="lightbox-close" aria-label="إغلاق">
+  <button type="button" class="lightbox-close" aria-label="Close" data-ar-aria="إغلاق">
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       stroke-width="2"
       stroke-linecap="round"
+      stroke-linejoin="round"
       aria-hidden="true"
       class="h-5 w-5"
     >
@@ -24,6 +25,18 @@
 </dialog>
 
 <script>
+  // Strings for elements created at runtime follow the current page locale.
+  const ar = document.documentElement.lang.startsWith('ar');
+  const strings = {
+    permalink: ar ? 'رابط دائم لهذا القسم' : 'Permanent link to this section',
+    copy: ar ? 'نسخ' : 'Copy',
+    copyCode: ar ? 'نسخ الكود' : 'Copy code',
+    copied: ar ? 'تم النسخ' : 'Copied',
+    copyFailed: ar ? 'تعذّر النسخ' : 'Copy failed',
+    zoom: (alt: string) =>
+      ar ? `تكبير الصورة: ${alt || 'بدون وصف'}` : `Zoom image: ${alt || 'no description'}`,
+  };
+
   // Heading anchors ----------------------------------------------------
   for (const heading of document.querySelectorAll<HTMLElement>('.prose :is(h2, h3, h4)[id]')) {
     if (heading.querySelector('.heading-anchor')) continue;
@@ -31,32 +44,50 @@
     anchor.className = 'heading-anchor';
     anchor.href = `#${heading.id}`;
     anchor.textContent = '#';
-    anchor.setAttribute('aria-label', 'رابط دائم لهذا القسم');
+    anchor.setAttribute('aria-label', strings.permalink);
     heading.append(anchor);
   }
 
-  // Code copy buttons --------------------------------------------------
+  // Code copy buttons + language badge ---------------------------------
   for (const pre of document.querySelectorAll<HTMLElement>('pre.astro-code')) {
-    if (pre.dataset.language === 'mermaid') continue;
+    const language = pre.dataset.language;
+
+    if (language && language !== 'mermaid' && !pre.querySelector('.code-lang')) {
+      const badge = document.createElement('span');
+      badge.className = 'code-lang';
+      badge.textContent = language;
+      pre.append(badge);
+    }
+
+    if (language === 'mermaid') continue;
     if (pre.querySelector('.code-copy')) continue;
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'code-copy';
-    button.textContent = 'نسخ';
-    button.setAttribute('aria-label', 'نسخ الكود');
+    button.textContent = strings.copy;
+    button.setAttribute('aria-label', strings.copyCode);
     button.addEventListener('click', async () => {
       const code = pre.querySelector('code')?.textContent ?? '';
       try {
         await navigator.clipboard.writeText(code);
-        button.textContent = 'تم النسخ';
+        button.textContent = strings.copied;
       } catch {
-        button.textContent = 'تعذّر النسخ';
+        button.textContent = strings.copyFailed;
       }
       window.setTimeout(() => {
-        button.textContent = 'نسخ';
+        button.textContent = strings.copy;
       }, 2000);
     });
     pre.append(button);
+  }
+
+  // Responsive tables: wrap in a horizontal scroll container ------------
+  for (const table of document.querySelectorAll<HTMLElement>('.prose table')) {
+    if (table.parentElement?.classList.contains('table-scroll')) continue;
+    const scroll = document.createElement('div');
+    scroll.className = 'table-scroll';
+    table.replaceWith(scroll);
+    scroll.append(table);
   }
 
   // Image lightbox -----------------------------------------------------
@@ -69,7 +100,7 @@
       image.classList.add('zoomable');
       image.tabIndex = 0;
       image.setAttribute('role', 'button');
-      image.setAttribute('aria-label', `تكبير الصورة: ${image.alt || 'بدون وصف'}`);
+      image.setAttribute('aria-label', strings.zoom(image.alt));
       const open = () => {
         viewerImage.src = image.currentSrc || image.src;
         viewerImage.alt = image.alt;

@@ -1,0 +1,43 @@
+---
+/**
+ * Language switch: toggles between the English default and Arabic.
+ * The label always shows the *target* language ("العربية" in EN mode,
+ * "EN" in AR mode). Strings are swapped by the BaseLayout locale runtime.
+ */
+---
+
+<button
+  type="button"
+  id="locale-toggle"
+  lang="ar"
+  data-ar="EN"
+  data-ar-lang="en"
+  aria-label="Switch to Arabic"
+  data-ar-aria="التبديل إلى اللغة الإنجليزية"
+  title="Switch to Arabic"
+  data-ar-title="التبديل إلى اللغة الإنجليزية"
+  class="inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-muted transition-colors hover:border-accent/50 hover:text-text"
+>
+  العربية
+</button>
+
+<script>
+  declare global {
+    interface Window {
+      __atlasReadLocale?: () => string;
+      __atlasApplyLocale?: (locale: string) => void;
+    }
+  }
+
+  const button = document.getElementById('locale-toggle');
+  button?.addEventListener('click', () => {
+    const current = document.documentElement.lang.startsWith('ar') ? 'ar' : 'en';
+    const next = current === 'ar' ? 'en' : 'ar';
+    try {
+      localStorage.setItem('atlas-locale', next);
+    } catch {
+      /* storage unavailable — apply for this page only */
+    }
+    window.__atlasApplyLocale?.(next);
+  });
+</script>
