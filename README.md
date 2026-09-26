@@ -1,9 +1,10 @@
 # DevOps Atlas
 
-**DevOps Atlas** is an open-source, Arabic-first DevOps knowledge base and learning platform.
+**DevOps Atlas** is an open-source DevOps knowledge base and learning platform.
 It is not a blog: it is structured documentation, practical labs, diagrams, screenshots,
-code examples, troubleshooting notes and cheatsheets — with bilingual Arabic/English
-content planned for later.
+code examples, troubleshooting notes and cheatsheets. The UI defaults to English with a
+working Arabic switch (persisted per browser); educational content is authored
+per-document in Arabic or English.
 
 All educational content lives as **Markdown/MDX files in this repository** (source of truth).
 The site is fully static and ready for Cloudflare Pages.
@@ -76,14 +77,18 @@ npm run check     # TypeScript / Astro diagnostics
 │   └── troubleshooting/
 ├── public/
 │   ├── images/               # shared static images
-│   └── pdf/                  # static PDF resources (served as-is)
+│   ├── logo/                 # brand marks (mark + wordmark, light/dark SVG)
+│   ├── pdf/                  # static PDF resources (served as-is)
+│   └── favicon.svg            # compact theme-aware mark
 ├── src/
 │   ├── components/           # Header, Search, Sidebar, TableOfContents, ThemeToggle,
-│   │                         # Callout, Steps, Figure, PdfCard, PdfEmbed,
-│   │                         # DocEnhancements, MermaidRuntime
+│   │                         # LocaleToggle, Callout, Steps, Figure, PdfCard, PdfEmbed,
+│   │                         # CategoryCard, CategoryIcon, ReadingProgress,
+│   │                         # RelatedTopics, DocEnhancements, MermaidRuntime
 │   ├── layouts/              # BaseLayout, DocLayout (docs shell)
-│   ├── pages/                # routes: /, /docs, /docs/[...slug],
-│   │                         # /search-index.json, /components-preview, 404
+│   ├── pages/                # routes: /, /docs, /docs/[category],
+│   │                         # /docs/[...slug], /search-index.json,
+│   │                         # /components-preview, 404
 │   ├── data/                 # category metadata
 │   ├── utils/                # shared helpers (doc URL mapping, canonical order)
 │   ├── styles/global.css     # design tokens, prose, RTL/LTR, themes, search dialog
@@ -108,7 +113,7 @@ order: 2                    # sort order inside the sidebar category
 level: beginner             # beginner | intermediate | advanced
 tags: [kubernetes, pods]
 draft: false                # drafts are excluded from the build
-language: ar                # ar (RTL) — en (LTR) later
+language: ar                # content language: ar (RTL article region) | en (LTR)
 ---
 ```
 
@@ -124,8 +129,9 @@ Content conventions:
 - **Callouts / steps / figures / PDF embeds**: MDX components available **without any
   import** — see [`content/README.md`](content/README.md) for the full authoring guide
   with snippets.
-- **Direction**: the document `language` sets `dir` on the page and on the article region.
-  Code blocks, terminals, YAML/JSON and inline code are always forced LTR.
+- **Direction**: the document `language` sets `lang`/`dir` on the **article region** only;
+  page chrome follows the reader's UI locale (English default, Arabic via the header
+  switch). Code blocks, terminals, YAML/JSON and inline code are always forced LTR.
 
 ## Content architecture principles
 
@@ -144,22 +150,27 @@ limitations) lives in [`docs-roadmap.md`](docs-roadmap.md).
    folder, loaded by the `glob` loader in `src/content.config.ts`. Content stays clearly
    separated from application code; images colocated with documents are still optimized by
    Astro (verified in the production build).
-2. **RTL as a per-region property, not a global flip** — pages set `lang`/`dir` per document
-   (`ar` → RTL, `en` → LTR), the prose region declares its own `dir`, and everything
-   technical (code blocks, inline code, tags, URLs) is isolated LTR via CSS. Layout uses
-   CSS logical properties (`ms-*`, `ps-*`, `border-inline-start`) so the same markup works
-   in both directions. This keeps a future Arabic/English switch to a per-page property.
+2. **Locale-driven UI, content-driven direction** — static HTML ships in English
+   (site default); a head script re-applies the stored `atlas-locale` before first paint
+   and swaps `[data-ar*]` nodes client-side, so the header switch works without a rebuild.
+   The prose region keeps its own `dir`/`lang` from content frontmatter, everything
+   technical (code blocks, inline code, tags, URLs, tool names) is isolated LTR via CSS,
+   and layout uses CSS logical properties (`ms-*`, `ps-*`, `border-inline-start`) so the
+   same markup works in both directions.
 3. **Static output, no adapter** — `output: 'static'` so the `dist/` folder can be pushed
    straight to Cloudflare Pages later (`git → GitHub → Cloudflare Pages`).
-4. **Shiki dual themes** — `github-light-default` / `github-dark-default` with
-   `defaultColor: false`, so dark mode is a CSS-only switch with no re-highlighting.
+4. **Shiki dual themes** — `gruvbox-light-medium` / `gruvbox-dark-medium` (warm
+   earth tones that match the paper/dark-coffee UI) with `defaultColor: false`,
+   so dark mode is a CSS-only switch with no re-highlighting.
 5. **Mermaid is lazy** — loaded via dynamic `import('mermaid')` only when a page actually
    contains a diagram; it never blocks pages without diagrams.
 6. **Schema is single-sourced** — all frontmatter fields are declared once in
    `src/content.config.ts`; adding future fields (reading time, prerequisites,
    labs…) does not require restructuring.
-7. **Placeholders stay honest** — the language switch renders as a visibly
-   disabled control until the real feature is built.
+7. **UI language ≠ content language** — the language switch toggles the chrome
+   (nav, labels, metadata, descriptions) between English and Arabic and persists the
+   choice in `localStorage`; technical names (Linux, Docker, Kubernetes, CI/CD …) and
+   authored content never change with it.
 8. **Search is a static index, not a service** — `/search-index.json` is
    generated at build time from the collection and fetched lazily by the search
    dialog. Matching runs in the browser with Arabic normalization (diacritics
@@ -175,6 +186,39 @@ limitations) lives in [`docs-roadmap.md`](docs-roadmap.md).
    MDX page via the `components` prop on `<Content />`, so authors use
    `<Callout>` with **no import line**; only asset values (image/PDF imports)
    remain explicit.
+
+## Logo & brand
+
+**Concept — “Atlas Plate”.** The mark is a rounded map plate (the atlas page /
+manual) carrying a single plotted route: an orthogonal elbow like a transit map
+or engineering diagram, ending in a terminus node. It reads as navigation,
+infrastructure layers, and a structured knowledge journey in one geometric
+form — no robots, clouds, whales, or gradients. The frame and route are
+monochrome; exactly one element (the terminus node) carries the accent color.
+
+Assets (SVG):
+
+| File                                       | Use                                       |
+| ------------------------------------------ | ----------------------------------------- |
+| `public/logo/mark-light.svg` / `mark-dark.svg` | mark only (light / dark)              |
+| `public/logo/logo-light.svg` / `logo-dark.svg` | mark + “DevOps Atlas” wordmark (light / dark) |
+| `public/favicon.svg`                        | compact filled mark; switches with `prefers-color-scheme` |
+
+The wordmark uses the site’s system sans stack — “DevOps” at medium weight,
+“Atlas” at bold with slightly tightened tracking — so it always matches the
+interface without shipping a font file. The header renders the mark inline
+(`currentColor` frame/route + `fill-accent` node) so both themes follow the
+color tokens automatically.
+
+Usage rules:
+
+- **Monochrome-first** — one mark, one accent node; never add gradients,
+  shadows, or extra colors.
+- Use light assets on light backgrounds and dark assets on dark backgrounds.
+- Keep clear space around the mark of at least ¼ of its height.
+- Minimum size: 24 px for the mark; the favicon stays legible at 16 px.
+- Don’t stretch, rotate, recolor outside the palette (coffee `#8a5a24` /
+  gold `#d0a45c`), or swap the route for other symbols.
 
 ## Deployment (later)
 
