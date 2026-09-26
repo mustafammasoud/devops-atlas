@@ -1,0 +1,66 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const items = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+---
+
+{
+  items.length > 0 && (
+    <nav aria-label="في هذه الصفحة" class="text-sm">
+      <p class="mb-2 text-xs font-bold uppercase tracking-wide text-muted">في هذه الصفحة</p>
+      <ul class="space-y-1 border-s border-border ps-3">
+        {items.map((heading) => (
+          <li class={heading.depth === 3 ? 'ps-3' : ''}>
+            <a
+              href={`#${heading.slug}`}
+              class="toc-link block py-1 text-muted transition-colors hover:text-accent"
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  // Scroll-spy: highlights the section currently being read.
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('nav[aria-label="في هذه الصفحة"] a.toc-link'),
+  );
+  const ids = links.map((link) => decodeURIComponent(link.hash.slice(1)));
+  const targets = ids
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => el !== null);
+
+  if (targets.length > 0) {
+    const visible = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target.id);
+          else visible.delete(entry.target.id);
+        }
+        const activeId = ids.find((id) => visible.has(id));
+        links.forEach((link, index) => {
+          const active = ids[index] === activeId;
+          link.classList.toggle('is-active', active);
+          if (active) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      },
+      { rootMargin: '-96px 0px -60% 0px', threshold: 0 },
+    );
+    targets.forEach((target) => observer.observe(target));
+  }
+</script>

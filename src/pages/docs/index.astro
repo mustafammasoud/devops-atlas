@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import { categories, categoryLabel } from '../../data/categories';
+import { docPath, sortedDocs } from '../../utils/docs';
+
+const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
+
+const knownIds = new Set(categories.map((category) => category.id));
+const orderedIds = [
+  ...categories.map((category) => category.id),
+  ...new Set(docs.map((doc) => doc.data.category).filter((id) => !knownIds.has(id))),
+];
+
+const groups = orderedIds
+  .map((id) => ({
+    id,
+    label: categoryLabel(id),
+    entries: docs.filter((doc) => doc.data.category === id),
+  }))
+  .filter((group) => group.entries.length > 0);
+---
+
+<BaseLayout title="كل الوثائق | DevOps Atlas" description="فهرس جميع وثائق DevOps Atlas.">
+  <Header />
+
+  <main id="main" class="mx-auto w-full max-w-screen-2xl px-4 py-10">
+    <h1 class="text-2xl font-bold">كل الوثائق</h1>
+
+    <div class="mt-8 space-y-10">
+      {
+        groups.map((group) => (
+          <section aria-labelledby={`cat-${group.id}`}>
+            <h2 id={`cat-${group.id}`} class="mb-3 text-lg font-bold">
+              {group.label}
+            </h2>
+            <ul class="divide-y divide-border rounded-md border border-border">
+              {group.entries.map((entry) => (
+                <li>
+                  <a
+                    href={docPath(entry.id)}
+                    class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-surface"
+                  >
+                    <span class="font-medium">{entry.data.title}</span>
+                    <span class="shrink-0 text-sm text-muted">{entry.data.description}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </main>
+</BaseLayout>

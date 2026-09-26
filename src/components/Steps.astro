@@ -1,0 +1,42 @@
+---
+/**
+ * Ordered procedure steps for MDX content.
+ * Each direct child becomes a numbered step.
+ */
+---
+
+<ol class="steps"><slot /></ol>
+
+<style>
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    margin-block: 1.75rem;
+    padding-inline-start: 0;
+  }
+
+  .steps :global(> li) {
+    counter-increment: step;
+    position: relative;
+    margin-block: 1.25rem;
+    padding-inline-start: 2.75rem;
+  }
+
+  .steps :global(> li::before) {
+    content: counter(step);
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0.2em;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid var(--c-border);
+    border-radius: 9999px;
+    background-color: var(--c-surface-2);
+    color: var(--c-accent);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+</style>

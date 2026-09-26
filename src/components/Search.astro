@@ -1,0 +1,393 @@
+---
+/**
+ * Client-side search: a dialog backed by the build-time `/search-index.json`.
+ * Arabic-aware normalization (diacritics, alef/hamza/ta-marbuta forms) runs
+ * in the browser — no backend, no extra dependency.
+ */
+---
+
+<button
+  type="button"
+  id="search-trigger"
+  class="flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm text-muted transition-colors hover:text-text"
+  aria-haspopup="dialog"
+  aria-controls="search-dialog"
+>
+  <svg
+    class="h-4 w-4 shrink-0"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    aria-hidden="true"
+  >
+    <circle cx="11" cy="11" r="7"></circle>
+    <path d="m21 21-4.3-4.3"></path>
+  </svg>
+  <span class="flex-1 text-start">ابحث في الوثائق…</span>
+  <kbd
+    id="search-trigger-kbd"
+    dir="ltr"
+    class="hidden rounded border border-border bg-bg px-1.5 py-0.5 text-[0.65rem] font-medium md:inline"
+  >
+    Ctrl K
+  </kbd>
+</button>
+
+<dialog id="search-dialog" class="search-dialog" aria-label="البحث في الوثائق">
+  <div class="flex max-h-[80vh] flex-col p-3">
+    <div class="flex items-center gap-2 rounded-md border border-border bg-surface px-3">
+      <svg
+        class="h-4 w-4 shrink-0 text-muted"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <input
+        id="search-input"
+        type="search"
+        class="h-11 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
+        placeholder="ابحث في الوثائق…"
+        autocomplete="off"
+        aria-label="ابحث في الوثائق"
+        role="combobox"
+        aria-expanded="false"
+        aria-controls="search-results"
+        aria-autocomplete="list"
+      />
+      <button
+        type="button"
+        id="search-close"
+        class="rounded border border-border px-1.5 py-0.5 text-[0.65rem] text-muted transition-colors hover:text-text"
+      >
+        Esc
+      </button>
+    </div>
+
+    <p id="search-status" class="hidden px-1 pt-3 text-sm text-muted">
+      جارٍ تحميل فهرس البحث…
+    </p>
+    <ul
+      id="search-results"
+      role="listbox"
+      aria-label="نتائج البحث"
+      class="max-h-[50vh] overflow-y-auto p-1"
+    >
+    </ul>
+    <p id="search-empty" class="hidden px-1 py-5 text-center text-sm text-muted">
+      لا توجد نتائج مطابقة.
+    </p>
+
+    <div
+      class="mt-2 flex flex-wrap gap-4 border-t border-border px-1 pt-2 text-xs text-muted"
+      dir="rtl"
+    >
+      <span>↑ ↓ للتنقل</span>
+      <span>Enter للفتح</span>
+      <span>Esc للإغلاق</span>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  type SearchDoc = {
+    /** url */ u: string;
+    /** title */ t: string;
+    /** description */ d: string;
+    /** category label */ cl: string;
+    /** headings */ h: string[];
+    /** body text */ b: string;
+  };
+
+  const trigger = document.getElementById('search-trigger');
+  const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
+  const input = document.getElementById('search-input') as HTMLInputElement | null;
+  const resultsEl = document.getElementById('search-results');
+  const emptyEl = document.getElementById('search-empty');
+  const statusEl = document.getElementById('search-status');
+  const closeButton = document.getElementById('search-close');
+  const kbd = document.getElementById('search-trigger-kbd');
+
+  if (kbd) kbd.textContent = navigator.userAgent.includes('Mac') ? '⌘ K' : 'Ctrl K';
+
+  if (trigger && dialog && input && resultsEl && emptyEl && statusEl) {
+    let index: SearchDoc[] | null = null;
+    let current: SearchDoc[] = [];
+    let active = -1;
+    let debounceTimer: number | undefined;
+
+    /** Arabic-aware normalization. All replacements are 1:1. */
+    function normalize(value: string): string {
+      return value
+        .toLowerCase()
+        .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+        .replace(/[\u0623\u0625\u0622\u0671]/g, '\u0627')
+        .replace(/\u0649/g, '\u064A')
+        .replace(/\u0624/g, '\u0648')
+        .replace(/\u0626/g, '\u064A')
+        .replace(/\u0629/g, '\u0647');
+    }
+
+    function occurrences(haystack: string, needle: string): number {
+      if (!needle) return 0;
+      let count = 0;
+      let from = 0;
+      while (from < haystack.length) {
+        const at = haystack.indexOf(needle, from);
+        if (at === -1) break;
+        count += 1;
+        from = at + needle.length;
+      }
+      return count;
+    }
+
+    function score(rawTokens: string[], docs: SearchDoc[]): SearchDoc[] {
+      const tokens = rawTokens.map(normalize).filter(Boolean);
+      if (tokens.length === 0) return [];
+
+      const scored: { doc: SearchDoc; score: number }[] = [];
+      for (const doc of docs) {
+        const fields = {
+          t: normalize(doc.t),
+          d: normalize(doc.d),
+          h: normalize(doc.h.join(' ')),
+          b: normalize(doc.b),
+        };
+        let total = 0;
+        let hits = 0;
+        for (const token of tokens) {
+          let s = 0;
+          if (fields.t.includes(token)) s += 8;
+          if (fields.h.includes(token)) s += 4;
+          if (fields.d.includes(token)) s += 3;
+          if (fields.b.includes(token)) s += 1 + Math.min(occurrences(fields.b, token) - 1, 3);
+          if (s > 0) {
+            hits += 1;
+            total += s;
+          }
+        }
+        if (hits === tokens.length) scored.push({ doc, score: total });
+      }
+
+      return scored
+        .sort((a, b) => b.score - a.score || a.doc.t.localeCompare(b.doc.t, 'ar'))
+        .slice(0, 12)
+        .map((entry) => entry.doc);
+    }
+
+    function snippet(doc: SearchDoc, rawTokens: string[]): string {
+      const source = doc.d || doc.b;
+      if (!source) return '';
+      const lower = source.toLowerCase();
+      let at = -1;
+      for (const raw of rawTokens) {
+        const found = lower.indexOf(raw.toLowerCase());
+        if (found !== -1) {
+          at = found;
+          break;
+        }
+      }
+      if (at <= 0) return source.slice(0, 140);
+      const start = Math.max(0, at - 50);
+      return `${start > 0 ? '…' : ''}${source.slice(start, start + 150)}`;
+    }
+
+    /** Best-effort raw-text highlighting (no length-shifting normalization). */
+    function appendHighlighted(parent: HTMLElement, text: string, rawTokens: string[]): void {
+      const lower = text.toLowerCase();
+      const ranges: [number, number][] = [];
+      for (const raw of rawTokens) {
+        const needle = raw.toLowerCase();
+        if (!needle) continue;
+        let from = 0;
+        while (from < lower.length) {
+          const at = lower.indexOf(needle, from);
+          if (at === -1) break;
+          ranges.push([at, at + needle.length]);
+          from = at + needle.length;
+        }
+      }
+
+      if (ranges.length === 0) {
+        parent.textContent = text;
+        return;
+      }
+
+      ranges.sort((a, b) => a[0] - b[0]);
+      const merged: [number, number][] = [];
+      for (const range of ranges) {
+        const last = merged[merged.length - 1];
+        if (last && range[0] <= last[1]) last[1] = Math.max(last[1], range[1]);
+        else merged.push([range[0], range[1]]);
+      }
+
+      let cursor = 0;
+      for (const [start, end] of merged) {
+        if (start > cursor) parent.append(document.createTextNode(text.slice(cursor, start)));
+        const mark = document.createElement('mark');
+        mark.textContent = text.slice(start, end);
+        parent.append(mark);
+        cursor = end;
+      }
+      if (cursor < text.length) parent.append(document.createTextNode(text.slice(cursor)));
+    }
+
+    function renderResults(items: SearchDoc[], rawTokens: string[]): void {
+      resultsEl!.replaceChildren();
+      active = -1;
+      input!.removeAttribute('aria-activedescendant');
+
+      items.forEach((doc, i) => {
+        const li = document.createElement('li');
+        li.id = `search-result-${i}`;
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', 'false');
+
+        const link = document.createElement('a');
+        link.href = doc.u;
+        link.className =
+          'block rounded-md px-3 py-2.5 transition-colors hover:bg-surface focus-visible:bg-surface';
+
+        const top = document.createElement('span');
+        top.className = 'flex items-center justify-between gap-2';
+
+        const title = document.createElement('span');
+        title.className = 'font-semibold';
+        appendHighlighted(title, doc.t, rawTokens);
+
+        const category = document.createElement('span');
+        category.className = 'shrink-0 text-xs text-muted';
+        category.textContent = doc.cl;
+
+        top.append(title, category);
+        link.append(top);
+
+        const text = snippet(doc, rawTokens);
+        if (text) {
+          const detail = document.createElement('span');
+          detail.className = 'mt-0.5 block truncate text-sm text-muted';
+          appendHighlighted(detail, text, rawTokens);
+          link.append(detail);
+        }
+
+        li.append(link);
+        resultsEl!.append(li);
+      });
+
+      emptyEl!.classList.toggle('hidden', items.length > 0);
+    }
+
+    function runSearch(query: string): void {
+      const rawTokens = query.trim().split(/\s+/).filter(Boolean);
+      if (rawTokens.length === 0 || !index) {
+        resultsEl!.replaceChildren();
+        emptyEl!.classList.add('hidden');
+        return;
+      }
+      current = score(rawTokens, index);
+      renderResults(current, rawTokens);
+    }
+
+    async function ensureIndex(): Promise<void> {
+      if (index) return;
+      statusEl!.classList.remove('hidden');
+      emptyEl!.classList.add('hidden');
+      try {
+        const response = await fetch('/search-index.json');
+        index = (await response.json()) as SearchDoc[];
+      } catch {
+        index = [];
+      }
+      statusEl!.classList.add('hidden');
+    }
+
+    function setActive(next: number): void {
+      const options = Array.from(resultsEl!.querySelectorAll<HTMLElement>('[role="option"]'));
+      if (options.length === 0) return;
+      active = ((next % options.length) + options.length) % options.length;
+      options.forEach((option, i) => {
+        const on = i === active;
+        option.setAttribute('aria-selected', String(on));
+        option.querySelector('a')?.classList.toggle('bg-surface', on);
+        if (on) {
+          input!.setAttribute('aria-activedescendant', option.id);
+          option.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
+
+    function openDialog(): void {
+      if (dialog!.open) return;
+      dialog!.showModal();
+      input!.focus();
+      input!.select();
+      void ensureIndex().then(() => {
+        if (input!.value.trim()) runSearch(input!.value);
+      });
+    }
+
+    trigger!.addEventListener('click', openDialog);
+    closeButton?.addEventListener('click', () => dialog!.close());
+    dialog!.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog!.close();
+    });
+
+    input!.addEventListener('input', () => {
+      window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(() => {
+        void ensureIndex().then(() => runSearch(input!.value));
+      }, 120);
+    });
+
+    input!.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setActive(active + 1);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setActive(active - 1);
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const target = active >= 0 ? current[active] : current[0];
+        if (target) window.location.href = target.u;
+      } else if (event.key === 'Escape') {
+        // Chrome swallows Escape on <input type="search"> (it clears the field),
+        // which would otherwise block the dialog's native cancel behavior.
+        event.preventDefault();
+        dialog!.close();
+      }
+    });
+
+    function isTyping(target: EventTarget | null): boolean {
+      const element = target as HTMLElement | null;
+      if (!element) return false;
+      return (
+        element.tagName === 'INPUT' ||
+        element.tagName === 'TEXTAREA' ||
+        element.tagName === 'SELECT' ||
+        element.isContentEditable
+      );
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (dialog!.open) dialog!.close();
+        else openDialog();
+      } else if (event.key === 'Escape' && dialog!.open) {
+        event.preventDefault();
+        dialog!.close();
+      } else if (event.key === '/' && !isTyping(event.target) && !dialog!.open) {
+        event.preventDefault();
+        openDialog();
+      }
+    });
+  }
+</script>

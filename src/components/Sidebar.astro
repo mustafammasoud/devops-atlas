@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import { categories, categoryLabel } from '../data/categories';
+import { docPath, sortedDocs } from '../utils/docs';
+
+interface Props {
+  /** Id of the currently active document, used for `aria-current`. */
+  currentId?: string;
+}
+
+const { currentId } = Astro.props;
+
+const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
+
+const byCategory = new Map<string, typeof docs>();
+for (const doc of docs) {
+  const group = byCategory.get(doc.data.category) ?? [];
+  group.push(doc);
+  byCategory.set(doc.data.category, group);
+}
+
+// Known categories first (in canonical order), then any unknown ones.
+const orderedIds = [
+  ...categories.map((category) => category.id),
+  ...[...byCategory.keys()].filter((id) => !categories.some((c) => c.id === id)),
+];
+
+const groups = orderedIds
+  .filter((id) => byCategory.has(id))
+  .map((id) => ({
+    id,
+    label: categoryLabel(id),
+    entries: byCategory.get(id)!,
+  }));
+---
+
+<nav aria-label="التنقل في الوثائق" class="text-sm">
+  <ul class="space-y-6">
+    {
+      groups.map((group) => (
+        <li>
+          <h2 class="mb-2 text-xs font-bold uppercase tracking-wide text-muted">
+            {group.label}
+          </h2>
+          <ul class="space-y-1 border-s border-border ps-3">
+            {group.entries.map((entry) => {
+              const active = entry.id === currentId;
+              return (
+                <li>
+                  <a
+                    href={docPath(entry.id)}
+                    aria-current={active ? 'page' : undefined}
+                    class={
+                      active
+                        ? 'block rounded-md bg-surface-2 px-2 py-1.5 font-semibold text-accent'
+                        : 'block rounded-md px-2 py-1.5 text-text/80 transition-colors hover:bg-surface hover:text-text'
+                    }
+                  >
+                    {entry.data.title}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

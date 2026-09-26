@@ -1,0 +1,27 @@
+---
+interface Props {
+  /** Path under `public/`, e.g. `/pdf/linux-cheatsheet.pdf`. */
+  src: string;
+  /** Accessible name for the embedded viewer. */
+  title: string;
+  /** Viewer height in px. */
+  height?: number;
+}
+
+const { src, title, height = 640 } = Astro.props;
+---
+
+<div class="my-6">
+  <iframe
+    src={src}
+    title={title}
+    loading="lazy"
+    style={`height: ${height}px`}
+    class="w-full rounded-lg border border-border bg-surface"></iframe>
+  <div class="mt-2 flex flex-wrap gap-4 text-sm">
+    <a href={src} target="_blank" rel="noopener" class="text-accent hover:underline">
+      فتح في تبويب جديد
+    </a>
+    <a href={src} download class="text-accent hover:underline"> تحميل الملف </a>
+  </div>
+</div>

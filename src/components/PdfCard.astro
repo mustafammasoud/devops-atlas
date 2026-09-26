@@ -1,0 +1,53 @@
+---
+interface Props {
+  /** Path under `public/`, e.g. `/pdf/linux-cheatsheet.pdf`. */
+  href: string;
+  /** Display name. Defaults to the file name. */
+  title?: string;
+  description?: string;
+}
+
+const { href, title, description } = Astro.props;
+const fileName = href.split('/').pop() ?? href;
+const name = title ?? fileName;
+---
+
+<div class="my-6 flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-4">
+  <svg
+    class="h-8 w-8 shrink-0 text-muted"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <path d="M14 2v6h6"></path>
+    <path d="M9 13h6M9 17h4"></path>
+  </svg>
+
+  <div class="min-w-0 flex-1">
+    <p class="truncate font-semibold" dir="ltr">{name}</p>
+    {description && <p class="mt-0.5 text-sm text-muted">{description}</p>}
+  </div>
+
+  <div class="flex shrink-0 gap-2 text-sm">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener"
+      class="rounded-md border border-border bg-bg px-3 py-1.5 font-medium transition-colors hover:border-accent hover:text-accent"
+    >
+      فتح في تبويب جديد
+    </a>
+    <a
+      href={href}
+      download
+      class="rounded-md bg-accent px-3 py-1.5 font-medium text-accent-contrast transition-opacity hover:opacity-90"
+    >
+      تحميل
+    </a>
+  </div>
+</div>

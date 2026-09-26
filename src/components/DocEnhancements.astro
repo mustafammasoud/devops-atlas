@@ -1,0 +1,92 @@
+---
+/**
+ * Client-side reading enhancements for documentation content:
+ * heading anchor links, code copy buttons and an image lightbox.
+ * Included by DocLayout and the components preview page.
+ */
+---
+
+<dialog id="image-viewer" class="lightbox" aria-label="عرض الصورة">
+  <img id="image-viewer-img" alt="" />
+  <button type="button" class="lightbox-close" aria-label="إغلاق">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      aria-hidden="true"
+      class="h-5 w-5"
+    >
+      <path d="M18 6 6 18M6 6l12 12"></path>
+    </svg>
+  </button>
+</dialog>
+
+<script>
+  // Heading anchors ----------------------------------------------------
+  for (const heading of document.querySelectorAll<HTMLElement>('.prose :is(h2, h3, h4)[id]')) {
+    if (heading.querySelector('.heading-anchor')) continue;
+    const anchor = document.createElement('a');
+    anchor.className = 'heading-anchor';
+    anchor.href = `#${heading.id}`;
+    anchor.textContent = '#';
+    anchor.setAttribute('aria-label', 'رابط دائم لهذا القسم');
+    heading.append(anchor);
+  }
+
+  // Code copy buttons --------------------------------------------------
+  for (const pre of document.querySelectorAll<HTMLElement>('pre.astro-code')) {
+    if (pre.dataset.language === 'mermaid') continue;
+    if (pre.querySelector('.code-copy')) continue;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'code-copy';
+    button.textContent = 'نسخ';
+    button.setAttribute('aria-label', 'نسخ الكود');
+    button.addEventListener('click', async () => {
+      const code = pre.querySelector('code')?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(code);
+        button.textContent = 'تم النسخ';
+      } catch {
+        button.textContent = 'تعذّر النسخ';
+      }
+      window.setTimeout(() => {
+        button.textContent = 'نسخ';
+      }, 2000);
+    });
+    pre.append(button);
+  }
+
+  // Image lightbox -----------------------------------------------------
+  const viewer = document.getElementById('image-viewer') as HTMLDialogElement | null;
+  const viewerImage = document.getElementById('image-viewer-img') as HTMLImageElement | null;
+  const closeButton = viewer?.querySelector('.lightbox-close');
+
+  if (viewer && viewerImage && closeButton) {
+    for (const image of document.querySelectorAll<HTMLImageElement>('.prose img')) {
+      image.classList.add('zoomable');
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-label', `تكبير الصورة: ${image.alt || 'بدون وصف'}`);
+      const open = () => {
+        viewerImage.src = image.currentSrc || image.src;
+        viewerImage.alt = image.alt;
+        viewer.showModal();
+      };
+      image.addEventListener('click', open);
+      image.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          open();
+        }
+      });
+    }
+
+    closeButton.addEventListener('click', () => viewer.close());
+    viewer.addEventListener('click', (event) => {
+      if (event.target === viewer) viewer.close();
+    });
+  }
+</script>

@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import { categories, categoryLabel } from '../data/categories';
+import { docPath } from '../utils/docs';
+
+const docs = await getCollection('docs', ({ data }) => !data.draft);
+
+const sections = categories
+  .map((category) => {
+    const entries = docs
+      .filter((doc) => doc.data.category === category.id)
+      .sort((a, b) => a.data.order - b.data.order);
+    return { category, entries };
+  })
+  .filter((section) => section.entries.length > 0);
+---
+
+<BaseLayout title="DevOps Atlas" description="DevOps Atlas — قاعدة معرفية عربية لمهندسات ومهندسي DevOps.">
+  <Header />
+
+  <main id="main" class="mx-auto w-full max-w-screen-2xl px-4 py-12">
+    <section class="max-w-3xl">
+      <h1 class="text-3xl font-bold leading-snug sm:text-4xl">DevOps Atlas</h1>
+      <p class="mt-4 text-lg leading-relaxed text-muted">
+        قاعدة معرفية عربية مفتوحة لمهندسات ومهندسي DevOps: توثيق منظم، ومختبرات عملية،
+        ومخططات، وأمثلة أوامر — كلها مخزنة كملفات Markdown داخل المستودع.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        {
+          sections[0] && (
+            <a
+              href={docPath(sections[0].entries[0].id)}
+              class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast"
+            >
+              ابدأ القراءة
+            </a>
+          )
+        }
+        <a
+          href="/docs"
+          class="rounded-md border border-border bg-surface px-4 py-2 text-sm font-semibold"
+        >
+          كل الوثائق
+        </a>
+      </div>
+    </section>
+
+    <section class="mt-12" aria-label="الأقسام">
+      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          sections.map(({ category, entries }) => (
+            <li class="rounded-lg border border-border bg-surface p-4">
+              <h2 class="font-bold">
+                <a href={docPath(entries[0].id)} class="hover:text-accent">
+                  {categoryLabel(category.id)}
+                </a>
+              </h2>
+              <p class="mt-1 text-xs text-muted" lang="en" dir="ltr">
+                {category.labelEn}
+              </p>
+              <p class="mt-2 text-sm text-muted">{entries.length} صفحة</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+</BaseLayout>

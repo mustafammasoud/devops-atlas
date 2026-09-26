@@ -1,0 +1,31 @@
+{
+  "name": "devops-atlas",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DevOps Atlas — Arabic-first DevOps knowledge base and learning platform",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mustafammasoud/devops-atlas.git"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.0.2",
+    "astro": "^7.3.5",
+    "mermaid": "^11.17.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "lodash-es": "^4.18.1"
+  }
+}

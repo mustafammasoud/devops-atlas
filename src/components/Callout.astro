@@ -1,0 +1,34 @@
+---
+type CalloutType = 'note' | 'tip' | 'warning' | 'lab';
+
+interface Props {
+  type?: CalloutType;
+  /** Optional custom heading. Defaults to a localized label per type. */
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const defaultTitles: Record<CalloutType, string> = {
+  note: 'ملاحظة',
+  tip: 'تلميح',
+  warning: 'تنبيه',
+  lab: 'مختبر',
+};
+
+const styles: Record<CalloutType, { bg: string; border: string; fg: string }> = {
+  note: { bg: 'bg-note-bg', border: 'border-note-border', fg: 'text-note-fg' },
+  tip: { bg: 'bg-tip-bg', border: 'border-tip-border', fg: 'text-tip-fg' },
+  warning: { bg: 'bg-warning-bg', border: 'border-warning-border', fg: 'text-warning-fg' },
+  lab: { bg: 'bg-lab-bg', border: 'border-lab-border', fg: 'text-lab-fg' },
+};
+
+const s = styles[type];
+---
+
+<aside class:list={['my-6 border-s-[3px] rounded-md px-4 py-3', s.bg, s.border]} role="note">
+  <p class:list={['mb-1 text-sm font-bold', s.fg]}>{title ?? defaultTitles[type]}</p>
+  <div class="text-[0.9375rem] leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+    <slot />
+  </div>
+</aside>

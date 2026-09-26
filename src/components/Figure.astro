@@ -1,0 +1,53 @@
+---
+import { Image } from 'astro:assets';
+import type { SvgComponent } from 'astro/types';
+
+interface Props {
+  /**
+   * Accepted sources:
+   * - imported local raster image (`ImageMetadata`) → optimized by Astro
+   * - imported `.svg` (returns an Astro component) → rendered inline
+   * - public/remote URL string → plain `<img>`
+   */
+  src: string | ImageMetadata | SvgComponent;
+  alt: string;
+  caption?: string;
+  /** Optional intrinsic size for string sources (avoids layout shift). */
+  width?: number;
+  height?: number;
+}
+
+const { src, alt, caption, width, height } = Astro.props;
+const isSvg = typeof src === 'function';
+const isLocal = !isSvg && typeof src === 'object' && src !== null;
+const InlineSvg = isSvg ? (src as SvgComponent) : null;
+---
+
+<figure class="my-6">
+  {
+    InlineSvg ? (
+      <InlineSvg
+        role="img"
+        aria-label={alt}
+        class="mx-auto block h-auto max-w-full rounded-lg border border-border"
+      />
+    ) : isLocal ? (
+      <Image src={src as ImageMetadata} alt={alt} class="mx-auto block max-w-full rounded-lg border border-border" />
+    ) : (
+      <img
+        src={src as string}
+        alt={alt}
+        width={width}
+        height={height}
+        loading="lazy"
+        decoding="async"
+        class="mx-auto block max-w-full rounded-lg border border-border"
+      />
+    )
+  }
+  {
+    caption && (
+      <figcaption class="mt-2 text-center text-sm text-muted">{caption}</figcaption>
+    )
+  }
+</figure>

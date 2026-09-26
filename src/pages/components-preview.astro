@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Callout from '../components/Callout.astro';
+import Steps from '../components/Steps.astro';
+import Figure from '../components/Figure.astro';
+import PdfCard from '../components/PdfCard.astro';
+import PdfEmbed from '../components/PdfEmbed.astro';
+import DocEnhancements from '../components/DocEnhancements.astro';
+import sampleDiagram from '../../content/kubernetes/pods/images/pod-lifecycle.svg';
+---
+
+<!--
+  Platform QA page: renders every documentation component in one place.
+  Not linked from the navigation; referenced from README.md / content/README.md.
+-->
+<BaseLayout
+  title="مكونات الواجهة | DevOps Atlas"
+  description="معاينة مكوّنات منصة DevOps Atlas للتوثيق."
+>
+  <Header />
+
+  <main id="main" class="mx-auto w-full max-w-3xl px-4 py-10">
+    <div class="prose" dir="rtl">
+      <h1>مكونات الواجهة</h1>
+      <p>
+        صفحة فحص للمكوّنات المتاحة في محتوى MDX. النصوص هنا نصوص تجريبية بحتة
+        لغرض العرض فقط.
+      </p>
+
+      <h2 id="callouts">Callout</h2>
+      <Callout>هذه ملاحظة عادية تُستخدم للتفاصيل المساندة.</Callout>
+      <Callout type="tip" title="تلميح">هذا تلميح مختصر بعنوان مخصص.</Callout>
+      <Callout type="warning">هذا تنبيه لتجنّب خطأ شائع.</Callout>
+      <Callout type="lab">هذا صندوق مختبر لتمرين عملي.</Callout>
+
+      <h2 id="steps">Steps</h2>
+      <Steps>
+        <li>الخطوة الأولى — نص تجريبي فقط.</li>
+        <li>
+          الخطوة الثانية —
+          <code>npm run build</code>
+        </li>
+        <li>الخطوة الثالثة — نص تجريبي فقط.</li>
+      </Steps>
+
+      <h2 id="figure">Figure</h2>
+      <Figure
+        src={sampleDiagram}
+        alt="صورة تجريبية (مخطط دورة حياة البود من صفحة المحتوى النموذجية)"
+        caption="تعليق تجريبي تحت الصورة."
+      />
+
+      <h2 id="code">Code block + copy button</h2>
+      <pre class="astro-code" data-language="bash"><code>echo "copy button is added client-side"</code></pre>
+
+      <h2 id="pdf">PDF</h2>
+      <PdfCard
+        href="/pdf/linux-cheatsheet.pdf"
+        title="linux-cheatsheet.pdf"
+        description="بطاقة ملف: فتح وتحميل."
+      />
+      <PdfEmbed src="/pdf/linux-cheatsheet.pdf" title="معاينة تجريبية لملف PDF" height={480} />
+    </div>
+  </main>
+
+  <DocEnhancements />
+</BaseLayout>

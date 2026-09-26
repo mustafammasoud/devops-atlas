@@ -1,0 +1,56 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import Search from './Search.astro';
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75"
+>
+  <div class="mx-auto flex h-14 max-w-screen-2xl items-center gap-3 px-4 sm:gap-4">
+    <a href="/" class="flex shrink-0 items-center gap-2 font-bold" dir="ltr">
+      <svg
+        class="h-7 w-7 text-accent"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"></path>
+      </svg>
+      <span class="hidden sm:inline">DevOps Atlas</span>
+    </a>
+
+    <nav aria-label="التنقل الرئيسي" class="hidden sm:block">
+      <a
+        href="/docs"
+        class="rounded-md px-2.5 py-1.5 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-text"
+      >
+        الوثائق
+      </a>
+    </nav>
+
+    <div class="min-w-0 flex-1">
+      <Search />
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <ThemeToggle />
+      <!-- Language switch placeholder (Arabic first, English later). -->
+      <button
+        type="button"
+        disabled
+        aria-disabled="true"
+        title="English — قريباً"
+        lang="en"
+        dir="ltr"
+        class="h-9 rounded-md border border-border bg-surface px-2.5 text-xs font-semibold text-muted"
+      >
+        EN
+      </button>
+    </div>
+  </div>
+</header>

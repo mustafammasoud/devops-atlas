@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Content language. Arabic is the default (Arabic-first project). */
+  lang?: 'ar' | 'en';
+  /** Text direction for this document. Derived from `lang` unless set explicitly. */
+  dir?: 'rtl' | 'ltr';
+}
+
+const {
+  title,
+  description = 'DevOps Atlas — قاعدة معرفية عربية لمهندسات ومهندسي DevOps.',
+  lang = 'ar',
+  dir = lang === 'ar' ? 'rtl' : 'ltr',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Applies the stored theme before first paint to avoid a flash. -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var dark = stored
+            ? stored === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {
+          /* storage unavailable — keep the light default */
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen">
+    <a class="skip-link" href="#main">تخطي إلى المحتوى</a>
+    <slot />
+  </body>
+</html>
