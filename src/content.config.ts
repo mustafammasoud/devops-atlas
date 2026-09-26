@@ -19,6 +19,8 @@ const docs = defineCollection({
     title: z.string(),
     description: z.string().default(''),
     category: z.string(),
+    /** Optional explicit tool or technology (e.g. docker, kubernetes, linux). */
+    tool: z.string().optional(),
     order: z.number().default(0),
     level: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
     tags: z.array(z.string()).default([]),

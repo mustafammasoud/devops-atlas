@@ -1,7 +1,7 @@
 ---
 title: نظرة عامة على كوبرنيتيس
 description: معمارية كوبرنيتيس الرئيسية والعناصر التي تدير التطبيقات.
-category: kubernetes
+category: container-orchestration
 order: 1
 level: beginner
 tags: [kubernetes, architecture]

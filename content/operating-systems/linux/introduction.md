@@ -1,7 +1,7 @@
 ---
 title: مقدمة إلى لينكس
 description: أساسيات نظام لينكس والموجه الأوامر (Terminal) للمهندسين المبتدئين.
-category: linux
+category: operating-systems
 order: 1
 level: beginner
 tags: [linux, shell]

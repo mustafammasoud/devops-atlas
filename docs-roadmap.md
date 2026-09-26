@@ -32,8 +32,9 @@ places to put files — nothing in the platform depends on a folder existing.
 - **Add a topic**: create a file (or folder) anywhere under `content/`. It
   appears in navigation and search after the next build — no code changes.
 - **Add an area**: create `content/<area>/`. It works immediately; optionally
-  register it in `src/data/categories.ts` *only* to give it an Arabic display
-  name and a visual position among the known areas.
+  register it in `src/data/categories.ts` *only* to give it a display name
+  (English/technical), bilingual descriptions, and a visual position among
+  the known areas.
 - **Reorder learning material**: change frontmatter `order:` — never rename
   folders with numeric prefixes (`01-linux`). Folder names stay stable;
   ordering lives in metadata.
@@ -68,9 +69,9 @@ tags:
 - **One-level navigation**: the sidebar is a flat list of categories → pages.
   Deeper folder nesting affects URLs, not visual grouping. Sub-grouping inside
   a category is a future presentation concern.
-- **No category descriptions or icons yet**: `src/data/categories.ts` is the
-  single place to add them when the UI needs them; content will not need to
-  change.
+- **Category presentation lives in one file**: Arabic descriptions and icons
+  are defined in `src/data/categories.ts` alongside labels and order — adding
+  or changing them never requires touching content.
 - **Learning paths are implicit**: tags carry cross-cutting membership today;
   a first-class path view does not exist yet and should be built from tags
   when needed.

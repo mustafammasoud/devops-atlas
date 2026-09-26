@@ -1,7 +1,7 @@
 ---
 title: مقدمة إلى دوكر
 description: فهم الحاويات والصور (Images) ودورة العمل الأساسية مع Docker.
-category: docker
+category: containers
 order: 1
 level: beginner
 tags: [docker, containers]

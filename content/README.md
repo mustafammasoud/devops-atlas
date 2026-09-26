@@ -12,14 +12,14 @@ and asset optimization automatically.
 أنشئ ملفاً واحداً — هذا كل ما هو مطلوب:
 
 ```text
-content/linux/monitoring.md
+content/operating-systems/linux/monitoring.md
 ```
 
 ```yaml
 ---
 title: المراقبة
 description: مختصر يظهر في الفهرس والبحث.
-category: linux
+category: operating-systems
 order: 3
 ---
 ```
@@ -34,7 +34,7 @@ order: 3
 لموضوع فيه صور أو ملفات، استخدم مجلداً بملف `index.mdx`:
 
 ```text
-content/linux/monitoring/
+content/operating-systems/linux/monitoring/
 ├── index.mdx
 ├── images/
 └── resources/
@@ -43,22 +43,32 @@ content/linux/monitoring/
 مثال حقيقي قابل للنسخ: `content/containers/docker/images/` (صفحة اختبار بنيوية
 تستخدم كل الميزات أدناه).
 
-## الملفات والمسار / Files & routes
+## معمارية التوثيق والمسار / Documentation architecture & routes
+
+الموقع منظّم وفق نموذج ثلاثي المستويات:
+**مجالات التوثيق (Documentation Areas) ← التقنيات / الأدوات (Technologies / Tools) ← المقالات (Articles)**
 
 ```text
-content/<category>/<topic>.md        →  /docs/<category>/<topic>
-content/<category>/<topic>/index.mdx →  /docs/<category>/<topic>
-content/<category>/<sub>/<topic>.md  →  /docs/<category>/<sub>/<topic>
+content/<area>/<tool>/<article>.md        →  /docs/<area>/<tool>/<article>
+content/<area>/<tool>/<article>/index.mdx →  /docs/<area>/<tool>/<article>
+content/<area>/<concept>.md               →  /docs/<area>/<concept>
 ```
 
-الفئات المسجّلة حالياً (للاسم المعروض والترتيب فقط — أي اسم مجلد جديد يعمل
-بدون تسجيل): `foundations`, `linux`, `networking`, `git`, `docker`, `ci-cd`,
-`kubernetes`, `cloud`, `terraform`, `observability`, `security`,
-`troubleshooting`. القائمة مرحلة وقابلة للتوسع — راجع
-[`docs-roadmap.md`](../docs-roadmap.md) للخطة المرنة.
-
-لفئة جديدة: أنشئ المجلد، ثم سجّلها في `src/data/categories.ts` (وإن لم
-تسجّلها ستعمل كذلك، لكن تظهر أخيراً باسم المجلد الخام).
+مجالات التوثيق الـ 14 المعتمدة:
+1. `devops-fundamentals` (DevOps Fundamentals)
+2. `operating-systems` (Operating Systems — Linux)
+3. `networking` (Networking)
+4. `version-control` (Version Control — Git, GitHub, GitLab)
+5. `programming-scripting` (Programming & Scripting — Bash, Python, Go)
+6. `containers` (Containers — Docker, Podman, containerd)
+7. `ci-cd-automation` (CI/CD & Automation — GitHub Actions, GitLab CI, Jenkins)
+8. `container-orchestration` (Container Orchestration — Kubernetes, Helm)
+9. `cloud-platforms` (Cloud Platforms — AWS, Azure, Google Cloud)
+10. `infrastructure-as-code` (Infrastructure as Code — Terraform, OpenTofu)
+11. `configuration-management` (Configuration Management — Ansible, Puppet, Chef)
+12. `observability` (Observability — Prometheus, Grafana, Loki, OpenTelemetry)
+13. `security-devsecops` (Security / DevSecOps — Vault, Trivy, Snyk)
+14. `troubleshooting-production` (Troubleshooting & Production)
 
 ## اتفاقات التسمية / Naming conventions
 
@@ -83,7 +93,7 @@ order: 1                            # الترتيب داخل الفئة (الا
 level: beginner                     # beginner | intermediate | advanced
 tags: [kubernetes, pods]   # عضويات متعددة — أساس المسارات التعليمية المستقبلية
 draft: false                        # true = لا تُبنى ولا تُفهرس
-language: ar                        # ar (RTL) | en (LTR)
+language: ar                        # لغة المحتوى: ar (منطقة RTL) | en (LTR)
 ---
 ```
 
@@ -204,7 +214,8 @@ graph LR
 
 ## الاتجاه / Direction
 
-- `language: ar` → الصفحة RTL، `language: en` → LTR.
+- `language: ar` → منطقة المقال RTL، `language: en` → LTR. واجهة الصفحة نفسها
+  تتبع لغة الواجهة المختارة (الإنجليزية افتراضياً) وليس لغة المحتوى.
 - لا تضبط `dir` يدوياً في المحتوى العادي؛ النص العربي يعمل تلقائياً.
 - استخدم الصنف `ltr` على العناصر المزدوجة نادراً (المعرفات التقنية).
 
