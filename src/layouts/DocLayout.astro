@@ -6,8 +6,16 @@ import Sidebar from '../components/Sidebar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import DocEnhancements from '../components/DocEnhancements.astro';
 import MermaidRuntime from '../components/MermaidRuntime.astro';
-import { categoryLabel, levelLabel } from '../data/categories';
-import { docPath, sortedDocs } from '../utils/docs';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import RelatedTopics from '../components/RelatedTopics.astro';
+import {
+  categoryLabel,
+  canonicalCategoryId,
+  toolLabel,
+  levelLabel,
+  levelLabelAr,
+} from '../data/categories';
+import { docPath, docTool, sortedDocs } from '../utils/docs';
 import type { CollectionEntry } from 'astro:content';
 
 interface Heading {
@@ -22,7 +30,9 @@ interface Props {
 }
 
 const { entry, headings } = Astro.props;
-const { title, description, category, level, tags, language } = entry.data;
+const { title, description, category: rawCategory, level, tags, language } = entry.data;
+const category = canonicalCategoryId(rawCategory);
+const tool = docTool(entry);
 const dir = language === 'ar' ? 'rtl' : 'ltr';
 
 // Prev/next across the whole documentation in canonical order.
@@ -34,8 +44,9 @@ const next = position >= 0 && position < ordered.length - 1 ? ordered[position +
 const pageTitle = title === 'DevOps Atlas' ? 'DevOps Atlas' : `${title} | DevOps Atlas`;
 ---
 
-<BaseLayout title={pageTitle} description={description} lang={language} dir={dir}>
+<BaseLayout title={pageTitle} description={description}>
   <Header />
+  <ReadingProgress />
 
   <div class="mx-auto flex w-full max-w-screen-2xl gap-6 px-4">
     <!-- Sidebar (desktop) -->
@@ -48,24 +59,47 @@ const pageTitle = title === 'DevOps Atlas' ? 'DevOps Atlas' : `${title} | DevOps
     <main id="main" class="min-w-0 flex-1 py-6 lg:py-10">
       <!-- Sidebar (mobile) -->
       <details class="mb-6 rounded-md border border-border bg-surface lg:hidden">
-        <summary class="cursor-pointer px-4 py-2.5 text-sm font-semibold">المحتويات</summary>
+        <summary
+          class="cursor-pointer px-4 py-2.5 text-sm font-medium"
+          data-ar="المحتويات"
+        >
+          Contents
+        </summary>
         <div class="border-t border-border p-4">
           <Sidebar currentId={entry.id} />
         </div>
       </details>
 
       <!-- Breadcrumbs -->
-      <nav aria-label="مسار التنقل" class="mb-4 text-sm text-muted">
+      <nav
+        aria-label="Breadcrumb"
+        data-ar-aria="مسار التنقل"
+        class="mb-4 text-sm text-muted"
+      >
         <ol class="flex flex-wrap items-center gap-1.5">
-          <li><a href="/" class="hover:text-accent">الرئيسية</a></li>
-          <li aria-hidden="true">/</li>
-          <li><a href="/docs" class="hover:text-accent">الوثائق</a></li>
+          <li>
+            <a href="/" class="hover:text-accent" data-ar="الرئيسية">Home</a>
+          </li>
           <li aria-hidden="true">/</li>
           <li>
-            <a href={`/docs#cat-${category}`} class="hover:text-accent">
+            <a href="/docs" class="hover:text-accent" data-ar="الوثائق">Docs</a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href={`/docs/${category}`} class="hover:text-accent">
               {categoryLabel(category)}
             </a>
           </li>
+          {
+            tool && (
+              <>
+                <li aria-hidden="true">/</li>
+                <li class="text-muted" lang="en">
+                  {toolLabel(tool)}
+                </li>
+              </>
+            )
+          }
           <li aria-hidden="true">/</li>
           <li aria-current="page" class="font-medium text-text">{title}</li>
         </ol>
@@ -73,11 +107,14 @@ const pageTitle = title === 'DevOps Atlas' ? 'DevOps Atlas' : `${title} | DevOps
 
       <header class="mb-8 border-b border-border pb-6">
         <p class="mb-2 text-sm text-muted">
-          <span>{categoryLabel(category)}</span>
+          <span lang="en">
+            {categoryLabel(category)}
+            {tool ? ` · ${toolLabel(tool)}` : ''}
+          </span>
           <span aria-hidden="true"> · </span>
-          <span>{levelLabel(level)}</span>
+          <span data-ar={levelLabelAr(level)}>{levelLabel(level)}</span>
         </p>
-        <h1 class="text-2xl font-bold leading-snug sm:text-3xl">{title}</h1>
+        <h1 class="text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">{title}</h1>
         {
           description && (
             <p class="mt-3 max-w-3xl text-muted leading-relaxed">{description}</p>
@@ -99,24 +136,25 @@ const pageTitle = title === 'DevOps Atlas' ? 'DevOps Atlas' : `${title} | DevOps
         }
       </header>
 
-      <!-- The document region owns its text direction. -->
-      <article class="prose max-w-3xl" dir={dir}>
+      <!-- The document region owns its language and text direction. -->
+      <article class="prose max-w-3xl" dir={dir} lang={language}>
         <slot />
       </article>
 
       <!-- Prev / next -->
       <nav
         class="mt-12 grid max-w-3xl gap-4 border-t border-border pt-6 sm:grid-cols-2"
-        aria-label="التنقل بين الصفحات"
+        aria-label="Page navigation"
+        data-ar-aria="التنقل بين الصفحات"
       >
         {
           previous ? (
             <a
               href={docPath(previous.id)}
-              class="rounded-lg border border-border p-4 transition-colors hover:border-accent"
+              class="rounded-md border border-border p-4 transition-colors hover:border-accent/50 hover:bg-surface"
             >
-              <span class="text-xs text-muted">الصفحة السابقة</span>
-              <span class="mt-1 block font-semibold">{previous.data.title}</span>
+              <span class="text-xs text-muted" data-ar="الصفحة السابقة">Previous</span>
+              <span class="mt-1 block font-medium">{previous.data.title}</span>
             </a>
           ) : (
             <span />
@@ -126,14 +164,16 @@ const pageTitle = title === 'DevOps Atlas' ? 'DevOps Atlas' : `${title} | DevOps
           next && (
             <a
               href={docPath(next.id)}
-              class="rounded-lg border border-border p-4 text-end transition-colors hover:border-accent sm:col-start-2"
+              class="rounded-md border border-border p-4 text-end transition-colors hover:border-accent/50 hover:bg-surface sm:col-start-2"
             >
-              <span class="text-xs text-muted">الصفحة التالية</span>
-              <span class="mt-1 block font-semibold">{next.data.title}</span>
+              <span class="text-xs text-muted" data-ar="الصفحة التالية">Next</span>
+              <span class="mt-1 block font-medium">{next.data.title}</span>
             </a>
           )
         }
       </nav>
+
+      <RelatedTopics entry={entry} />
     </main>
 
     <!-- Table of contents (desktop) -->

@@ -1,7 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
-import { categories, categoryLabel } from '../data/categories';
-import { docPath, sortedDocs } from '../utils/docs';
+import {
+  categories,
+  categoryLabel,
+  canonicalCategoryId,
+  toolLabel,
+} from '../data/categories';
+import { docPath, docTool, sortedDocs } from '../utils/docs';
 
 interface Props {
   /** Id of the currently active document, used for `aria-current`. */
@@ -12,11 +17,13 @@ const { currentId } = Astro.props;
 
 const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
 
+// Group docs by canonical category
 const byCategory = new Map<string, typeof docs>();
 for (const doc of docs) {
-  const group = byCategory.get(doc.data.category) ?? [];
+  const cat = canonicalCategoryId(doc.data.category);
+  const group = byCategory.get(cat) ?? [];
   group.push(doc);
-  byCategory.set(doc.data.category, group);
+  byCategory.set(cat, group);
 }
 
 // Known categories first (in canonical order), then any unknown ones.
@@ -27,41 +34,106 @@ const orderedIds = [
 
 const groups = orderedIds
   .filter((id) => byCategory.has(id))
-  .map((id) => ({
-    id,
-    label: categoryLabel(id),
-    entries: byCategory.get(id)!,
-  }));
+  .map((id) => {
+    const catDocs = byCategory.get(id)!;
+    const directEntries: typeof docs = [];
+    const byTool = new Map<string, typeof docs>();
+
+    for (const doc of catDocs) {
+      const tool = docTool(doc);
+      if (tool) {
+        const toolDocs = byTool.get(tool) ?? [];
+        toolDocs.push(doc);
+        byTool.set(tool, toolDocs);
+      } else {
+        directEntries.push(doc);
+      }
+    }
+
+    const toolGroups = [...byTool.entries()].map(([toolId, entries]) => ({
+      id: toolId,
+      label: toolLabel(toolId),
+      entries,
+    }));
+
+    return {
+      id,
+      label: categoryLabel(id),
+      directEntries,
+      toolGroups,
+    };
+  });
 ---
 
-<nav aria-label="التنقل في الوثائق" class="text-sm">
+<nav
+  aria-label="Documentation navigation"
+  data-ar-aria="التنقل في الوثائق"
+  class="text-sm"
+>
   <ul class="space-y-6">
     {
       groups.map((group) => (
         <li>
-          <h2 class="mb-2 text-xs font-bold uppercase tracking-wide text-muted">
-            {group.label}
+          <h2 class="eyebrow mb-2" lang="en">
+            <a href={`/docs/${group.id}`} class="transition-colors hover:text-accent">
+              {group.label}
+            </a>
           </h2>
-          <ul class="space-y-1 border-s border-border ps-3">
-            {group.entries.map((entry) => {
-              const active = entry.id === currentId;
-              return (
-                <li>
-                  <a
-                    href={docPath(entry.id)}
-                    aria-current={active ? 'page' : undefined}
-                    class={
-                      active
-                        ? 'block rounded-md bg-surface-2 px-2 py-1.5 font-semibold text-accent'
-                        : 'block rounded-md px-2 py-1.5 text-text/80 transition-colors hover:bg-surface hover:text-text'
-                    }
-                  >
-                    {entry.data.title}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+          <div class="space-y-3 border-s border-border ps-3">
+            {group.directEntries.length > 0 && (
+              <ul class="space-y-0.5">
+                {group.directEntries.map((entry) => {
+                  const active = entry.id === currentId;
+                  return (
+                    <li>
+                      <a
+                        href={docPath(entry.id)}
+                        aria-current={active ? 'page' : undefined}
+                        class={
+                          active
+                            ? 'block rounded-md bg-accent/10 px-2 py-1.5 font-medium text-accent'
+                            : 'block rounded-md px-2 py-1.5 text-text/80 transition-colors hover:bg-surface hover:text-text'
+                        }
+                      >
+                        {entry.data.title}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {group.toolGroups.map((toolGroup) => (
+              <div class="space-y-1">
+                <span
+                  class="block px-2 text-xs font-medium text-muted"
+                  lang="en"
+                >
+                  {toolGroup.label}
+                </span>
+                <ul class="space-y-0.5 border-s border-border/60 ps-2 ms-1">
+                  {toolGroup.entries.map((entry) => {
+                    const active = entry.id === currentId;
+                    return (
+                      <li>
+                        <a
+                          href={docPath(entry.id)}
+                          aria-current={active ? 'page' : undefined}
+                          class={
+                            active
+                              ? 'block rounded-md bg-accent/10 px-2 py-1.5 font-medium text-accent'
+                              : 'block rounded-md px-2 py-1.5 text-text/80 transition-colors hover:bg-surface hover:text-text'
+                          }
+                        >
+                          {entry.data.title}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
         </li>
       ))
     }

@@ -1,7 +1,11 @@
 import type { APIRoute } from 'astro';
 import { getCollection, render } from 'astro:content';
-import { categoryLabel } from '../data/categories';
-import { docPath, sortedDocs } from '../utils/docs';
+import {
+  categoryLabel,
+  canonicalCategoryId,
+  toolLabel,
+} from '../data/categories';
+import { docPath, docTool, sortedDocs } from '../utils/docs';
 
 /**
  * Strips Markdown/MDX syntax down to searchable plain text.
@@ -28,7 +32,7 @@ function plainText(raw: string): string {
  * only when the search dialog is first opened.
  *
  * Short keys keep the payload small. Fields:
- * u=url, t=title, d=description, cl=category label, h=headings, b=body text
+ * u=url, t=title, d=description, cl=category/tool label, h=headings, b=body text
  */
 export const GET: APIRoute = async () => {
   const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
@@ -36,11 +40,17 @@ export const GET: APIRoute = async () => {
   const items = await Promise.all(
     docs.map(async (entry) => {
       const { headings } = await render(entry);
+      const cat = canonicalCategoryId(entry.data.category);
+      const tool = docTool(entry);
+      const cl = tool
+        ? `${categoryLabel(cat)} · ${toolLabel(tool)}`
+        : categoryLabel(cat);
+
       return {
         u: docPath(entry.id),
         t: entry.data.title,
         d: entry.data.description,
-        cl: categoryLabel(entry.data.category),
+        cl,
         h: headings
           .filter((heading) => heading.depth >= 2 && heading.depth <= 3)
           .map((heading) => heading.text),
