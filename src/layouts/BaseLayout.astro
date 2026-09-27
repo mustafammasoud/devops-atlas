@@ -35,7 +35,19 @@ const {
     <meta name="generator" content={Astro.generator} />
     <title data-ar={titleAr}>{title}</title>
     <meta name="description" content={description} data-ar-content={descriptionAr} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Theme-aware favicon: the exact header logo mark, light/dark variants. -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/logo/mark-light.svg"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/logo/mark-dark.svg"
+      media="(prefers-color-scheme: dark)"
+    />
     <!-- Applies the stored theme before first paint to avoid a flash. -->
     <script is:inline>
       (function () {

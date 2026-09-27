@@ -92,9 +92,8 @@ npm run check     # TypeScript / Astro diagnostics
 │   └── troubleshooting-production/
 ├── public/
 │   ├── images/               # shared static images
-│   ├── logo/                 # brand marks (mark + wordmark, light/dark SVG)
-│   ├── pdf/                  # static PDF resources (served as-is)
-│   └── favicon.svg            # compact theme-aware mark
+│   ├── logo/                 # brand marks (mark + wordmark, light/dark SVG; favicon)
+│   └── pdf/                  # static PDF resources (served as-is)
 ├── src/
 │   ├── components/           # Header, Search, Sidebar, TableOfContents, ThemeToggle,
 │   │                         # LocaleToggle, Callout, Steps, Figure, PdfCard, PdfEmbed,
@@ -223,9 +222,8 @@ Assets (SVG):
 
 | File                                       | Use                                       |
 | ------------------------------------------ | ----------------------------------------- |
-| `public/logo/mark-light.svg` / `mark-dark.svg` | mark only (light / dark)              |
+| `public/logo/mark-light.svg` / `mark-dark.svg` | mark only (light / dark); also the theme-aware favicon |
 | `public/logo/logo-light.svg` / `logo-dark.svg` | mark + “Ops Handbook” wordmark (light / dark) |
-| `public/favicon.svg`                        | compact filled mark; switches with `prefers-color-scheme` |
 
 The wordmark uses the site’s system sans stack — “Ops” at medium weight,
 “Handbook” at bold with slightly tightened tracking — so it always matches the
