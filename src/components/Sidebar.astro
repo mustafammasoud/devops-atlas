@@ -3,10 +3,9 @@ import { getCollection } from 'astro:content';
 import {
   categories,
   categoryLabel,
-  canonicalCategoryId,
   toolLabel,
 } from '../data/categories';
-import { docPath, docTool, sortedDocs } from '../utils/docs';
+import { docCategory, docPath, docTool, sortedDocs } from '../utils/docs';
 
 interface Props {
   /** Id of the currently active document, used for `aria-current`. */
@@ -20,7 +19,7 @@ const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
 // Group docs by canonical category
 const byCategory = new Map<string, typeof docs>();
 for (const doc of docs) {
-  const cat = canonicalCategoryId(doc.data.category);
+  const cat = docCategory(doc);
   const group = byCategory.get(cat) ?? [];
   group.push(doc);
   byCategory.set(cat, group);

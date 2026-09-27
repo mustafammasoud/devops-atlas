@@ -10,12 +10,11 @@ import ReadingProgress from '../components/ReadingProgress.astro';
 import RelatedTopics from '../components/RelatedTopics.astro';
 import {
   categoryLabel,
-  canonicalCategoryId,
   toolLabel,
   levelLabel,
   levelLabelAr,
 } from '../data/categories';
-import { docPath, docTool, sortedDocs } from '../utils/docs';
+import { docCategory, docPath, docTool, sortedDocs } from '../utils/docs';
 import type { CollectionEntry } from 'astro:content';
 
 interface Heading {
@@ -30,8 +29,8 @@ interface Props {
 }
 
 const { entry, headings } = Astro.props;
-const { title, description, category: rawCategory, level, tags, language } = entry.data;
-const category = canonicalCategoryId(rawCategory);
+const { title, description, level, tags, language } = entry.data;
+const category = docCategory(entry);
 const tool = docTool(entry);
 const dir = language === 'ar' ? 'rtl' : 'ltr';
 

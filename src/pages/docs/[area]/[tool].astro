@@ -8,7 +8,7 @@ import {
   canonicalCategoryId,
   toolLabel,
 } from '../../../data/categories';
-import { docTool, sortedDocs, topicCount } from '../../../utils/docs';
+import { docCategory, docTool, sortedDocs, topicCount } from '../../../utils/docs';
 
 /**
  * Tool landing page: `/docs/<area>/<tool>` — one per (area, tool) pair that
@@ -22,7 +22,7 @@ export async function getStaticPaths() {
   for (const doc of docs) {
     const tool = docTool(doc);
     if (!tool) continue;
-    const area = canonicalCategoryId(doc.data.category);
+    const area = docCategory(doc);
     const key = `${area}\u0000${tool}`;
     const group = groups.get(key) ?? { area, tool, docs: [] };
     group.docs.push(doc);

@@ -13,7 +13,7 @@ import {
   levelLabel,
   levelLabelAr,
 } from '../../data/categories';
-import { docTool, sortedDocs, topicCount } from '../../utils/docs';
+import { docCategory, docTool, sortedDocs, topicCount } from '../../utils/docs';
 
 export async function getStaticPaths() {
   // Every registered category gets a page (even while empty/planned),
@@ -21,7 +21,7 @@ export async function getStaticPaths() {
   const docs = await getCollection('docs', ({ data }) => !data.draft);
   const ids = new Set<string>([
     ...categories.map((category) => category.id),
-    ...docs.map((doc) => canonicalCategoryId(doc.data.category)),
+    ...docs.map((doc) => docCategory(doc)),
   ]);
   return [...ids].map((category) => ({ params: { category } }));
 }
@@ -31,7 +31,7 @@ const categoryId = canonicalCategoryId(rawCategoryId!);
 
 const docs = sortedDocs(
   (await getCollection('docs', ({ data }) => !data.draft)).filter(
-    (doc) => canonicalCategoryId(doc.data.category) === categoryId,
+    (doc) => docCategory(doc) === categoryId,
   ),
 );
 

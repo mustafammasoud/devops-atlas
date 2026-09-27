@@ -3,14 +3,14 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import CategoryCard from '../../components/CategoryCard.astro';
-import { categories, canonicalCategoryId } from '../../data/categories';
-import { sortedDocs } from '../../utils/docs';
+import { categories } from '../../data/categories';
+import { docCategory, sortedDocs } from '../../utils/docs';
 
 const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
 
 const counts = new Map<string, number>();
 for (const doc of docs) {
-  const cat = canonicalCategoryId(doc.data.category);
+  const cat = docCategory(doc);
   counts.set(cat, (counts.get(cat) ?? 0) + 1);
 }
 ---

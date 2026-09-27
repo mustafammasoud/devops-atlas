@@ -10,16 +10,27 @@ import { z } from 'astro/zod';
  * no routing or layout restructuring.
  */
 const docs = defineCollection({
-  // `content/README.md` is the authoring guide, not a documentation page.
+  // `content/README.md` is the authoring guide, `content/_template/` holds the
+  // copy-me article template — neither is documentation content.
   loader: glob({
-    pattern: ['**/*.md', '**/*.mdx', '!README.md', '!**/README.md'],
+    pattern: [
+      '**/*.md',
+      '**/*.mdx',
+      '!README.md',
+      '!**/README.md',
+      '!_template/**',
+    ],
     base: './content',
   }),
   schema: z.object({
     title: z.string(),
     description: z.string().default(''),
-    category: z.string(),
-    /** Optional explicit tool or technology (e.g. docker, kubernetes, linux). */
+    /**
+     * Documentation area — normally OMITTED: derived from the first folder
+     * segment (`content/<area>/...`). Explicit only to override/alias.
+     */
+    category: z.string().optional(),
+    /** Tool — normally OMITTED: derived from the second folder segment. */
     tool: z.string().optional(),
     order: z.number().default(0),
     level: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),

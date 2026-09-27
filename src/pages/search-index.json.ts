@@ -2,10 +2,9 @@ import type { APIRoute } from 'astro';
 import { getCollection, render } from 'astro:content';
 import {
   categoryLabel,
-  canonicalCategoryId,
   toolLabel,
 } from '../data/categories';
-import { docPath, docTool, sortedDocs } from '../utils/docs';
+import { docCategory, docPath, docTool, sortedDocs } from '../utils/docs';
 
 /**
  * Strips Markdown/MDX syntax down to searchable plain text.
@@ -40,7 +39,7 @@ export const GET: APIRoute = async () => {
   const items = await Promise.all(
     docs.map(async (entry) => {
       const { headings } = await render(entry);
-      const cat = canonicalCategoryId(entry.data.category);
+      const cat = docCategory(entry);
       const tool = docTool(entry);
       const cl = tool
         ? `${categoryLabel(cat)} · ${toolLabel(tool)}`

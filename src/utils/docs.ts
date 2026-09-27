@@ -4,6 +4,18 @@ import { categoryOrder, canonicalCategoryId } from '../data/categories';
 type Doc = CollectionEntry<'docs'>;
 
 /**
+ * Documentation area for a doc entry.
+ * Priority:
+ * 1. Explicit `category` in frontmatter (legacy aliases resolved).
+ * 2. First segment of the path: `content/<area>/...`
+ *
+ * Authors normally never need `category:` — it is derived from the folder.
+ */
+export function docCategory(doc: Doc): string {
+  return canonicalCategoryId(doc.data.category ?? doc.id.split('/')[0]);
+}
+
+/**
  * Extracts the technology / tool from a doc entry.
  * Priority:
  * 1. Explicit `tool` in frontmatter.
@@ -28,8 +40,8 @@ export function docTool(entry: Doc): string | undefined {
  * Used by the sidebar, prev/next navigation, and search index.
  */
 export function compareDocs(a: Doc, b: Doc): number {
-  const catA = canonicalCategoryId(a.data.category);
-  const catB = canonicalCategoryId(b.data.category);
+  const catA = docCategory(a);
+  const catB = docCategory(b);
   const toolA = docTool(a) ?? '';
   const toolB = docTool(b) ?? '';
 
