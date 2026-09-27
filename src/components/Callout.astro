@@ -3,25 +3,18 @@ type CalloutType = 'note' | 'tip' | 'warning' | 'lab';
 
 interface Props {
   type?: CalloutType;
-  /** Optional custom heading. Defaults to a localized label per type. */
+  /** Optional custom heading. Defaults to a fixed English label per type. */
   title?: string;
 }
 
 const { type = 'note', title } = Astro.props;
 
-/** English default titles (site locale), Arabic variants for the swap. */
+/** Default titles per callout type. */
 const defaultTitles: Record<CalloutType, string> = {
   note: 'Note',
   tip: 'Tip',
   warning: 'Warning',
   lab: 'Lab',
-};
-
-const defaultTitlesAr: Record<CalloutType, string> = {
-  note: 'ملاحظة',
-  tip: 'تلميح',
-  warning: 'تنبيه',
-  lab: 'مختبر',
 };
 
 const styles: Record<CalloutType, { bg: string; border: string; fg: string }> = {
@@ -37,7 +30,6 @@ const s = styles[type];
 <aside class:list={['my-6 border-s-[3px] rounded-sm px-4 py-3', s.bg, s.border]} role="note">
   <p
     class:list={['mb-1 text-sm font-semibold', s.fg]}
-    data-ar={title ? undefined : defaultTitlesAr[type]}
   >
     {title ?? defaultTitles[type]}
   </p>

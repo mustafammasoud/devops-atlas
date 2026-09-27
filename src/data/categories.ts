@@ -30,8 +30,6 @@ export interface Category {
   label: string;
   /** Short English description shown on the homepage and category pages. */
   descriptionEn: string;
-  /** Short Arabic description for the same slot (locale-driven swap). */
-  descriptionAr: string;
   /** Icon key rendered by `CategoryIcon`. */
   icon: CategoryIconName;
   /** Visual ordering only. */
@@ -47,7 +45,6 @@ export const categories: Category[] = [
     id: 'devops-fundamentals',
     label: 'DevOps Fundamentals',
     descriptionEn: 'Core principles, software delivery lifecycle, infrastructure, automation, and CI/CD concepts.',
-    descriptionAr: 'المفاهيم الأساسية، ودورة حياة تسليم البرمجيات، والأتمتة، ومبادئ الـ CI/CD.',
     icon: 'layers',
     order: 1,
   },
@@ -55,7 +52,6 @@ export const categories: Category[] = [
     id: 'operating-systems',
     label: 'Operating Systems',
     descriptionEn: 'Linux fundamentals, filesystem, permissions, processes, services, systemd, and bash.',
-    descriptionAr: 'أساسيات لينكس، ونظام الملفات، والمستخدمين، والصلاحيات، والعمليات، والخدمات، وsystemd.',
     icon: 'terminal',
     order: 2,
   },
@@ -63,7 +59,6 @@ export const categories: Category[] = [
     id: 'networking',
     label: 'Networking',
     descriptionEn: 'OSI model, TCP/IP, DNS, HTTP/HTTPS, SSH, firewalls, and load balancing.',
-    descriptionAr: 'نموذج OSI، وTCP/IP، وDNS، وHTTP/HTTPS، وSSH، والجدران النارية، وموازنة الأحمال.',
     icon: 'network',
     order: 3,
   },
@@ -71,7 +66,6 @@ export const categories: Category[] = [
     id: 'version-control',
     label: 'Version Control',
     descriptionEn: 'Git internals, branching workflows, and collaboration on GitHub, GitLab, and Bitbucket.',
-    descriptionAr: 'إدارة المصدر بـ Git وسير العمل والتعاون عبر منصات GitHub وGitLab وBitbucket.',
     icon: 'branch',
     order: 4,
   },
@@ -79,7 +73,6 @@ export const categories: Category[] = [
     id: 'programming-scripting',
     label: 'Programming & Scripting',
     descriptionEn: 'Scripting languages (Bash, Python, Go) and core concepts (APIs, JSON, YAML, regex).',
-    descriptionAr: 'لغات السكربتات (Bash, Python, Go) والمفاهيم المحورية (APIs, JSON, YAML, regex).',
     icon: 'code',
     order: 5,
   },
@@ -87,7 +80,6 @@ export const categories: Category[] = [
     id: 'containers',
     label: 'Containers',
     descriptionEn: 'Container images, Dockerfile, Compose, networking, volumes, registries, and runtimes.',
-    descriptionAr: 'بناء الحاويات وصور Docker وملفات Compose والشبكات والتخزين وبيئات التشغيل (containerd, Podman).',
     icon: 'cube',
     order: 6,
   },
@@ -95,7 +87,6 @@ export const categories: Category[] = [
     id: 'ci-cd-automation',
     label: 'CI/CD & Automation',
     descriptionEn: 'Pipelines, automated testing, builds, deployment strategies, GitHub Actions, and Jenkins.',
-    descriptionAr: 'خطوط الأنابيب، والبناء، والاختبار المؤتمت، واستراتيجيات النشر مع GitHub Actions وJenkins.',
     icon: 'cycle',
     order: 7,
   },
@@ -103,7 +94,6 @@ export const categories: Category[] = [
     id: 'container-orchestration',
     label: 'Container Orchestration',
     descriptionEn: 'Kubernetes architecture, pods, deployments, services, ingress, storage, and Helm.',
-    descriptionAr: 'معمارية كوبرنيتيس، والبودات (Pods)، وعمليات النشر، والخدمات، والشبكات، ومخططات Helm.',
     icon: 'wheel',
     order: 8,
   },
@@ -111,7 +101,6 @@ export const categories: Category[] = [
     id: 'cloud-platforms',
     label: 'Cloud Platforms',
     descriptionEn: 'Cloud compute, storage, networking, IAM, and architectures on AWS, Azure, and Google Cloud.',
-    descriptionAr: 'الحوسبة السحابية، والتخزين، والشبكات، والهوية (IAM) عبر AWS وAzure وGoogle Cloud.',
     icon: 'cloud',
     order: 9,
   },
@@ -119,7 +108,6 @@ export const categories: Category[] = [
     id: 'infrastructure-as-code',
     label: 'Infrastructure as Code',
     descriptionEn: 'Declarative infrastructure with Terraform and OpenTofu: providers, resources, state, and modules.',
-    descriptionAr: 'البنية التحتية كشيفرة عبر Terraform وOpenTofu: المزودون، والموارد، وإدارة الحالة، والموديولات.',
     icon: 'modules',
     order: 10,
   },
@@ -127,7 +115,6 @@ export const categories: Category[] = [
     id: 'configuration-management',
     label: 'Configuration Management',
     descriptionEn: 'Automated configuration, state enforcement, and server orchestration with Ansible and Puppet.',
-    descriptionAr: 'أتمتة إدارة التهيئة وإعداد الخوادم وتطبيق السياسات عبر Ansible وPuppet وChef.',
     icon: 'sliders',
     order: 11,
   },
@@ -135,7 +122,6 @@ export const categories: Category[] = [
     id: 'observability',
     label: 'Observability',
     descriptionEn: 'Production telemetry: metrics (Prometheus, Grafana), logging (Loki, ELK), and tracing.',
-    descriptionAr: 'رؤية تشغيلية شاملة: القياسات (Prometheus, Grafana)، والسجلات (Loki, ELK)، والتتبع.',
     icon: 'pulse',
     order: 12,
   },
@@ -143,7 +129,6 @@ export const categories: Category[] = [
     id: 'security-devsecops',
     label: 'Security / DevSecOps',
     descriptionEn: 'Security fundamentals, IAM, secrets management, container security, and vulnerability scanning.',
-    descriptionAr: 'أساسيات الأمان، وإدارة الأسرار (Vault)، وأمن الحاويات، وفحص الثغرات (Trivy, Snyk).',
     icon: 'shield',
     order: 13,
   },
@@ -151,7 +136,6 @@ export const categories: Category[] = [
     id: 'troubleshooting-production',
     label: 'Troubleshooting & Production',
     descriptionEn: 'Production debugging, log analysis, performance issues, network diagnostics, and incident postmortems.',
-    descriptionAr: 'تشخيص الأعطال، وتحليل السجلات، ومشاكل الأداء، واستكشاف أخطاء الشبكة، وإدارة الحوادث.',
     icon: 'wrench',
     order: 14,
   },
@@ -254,18 +238,7 @@ const LEVEL_LABELS: Record<string, string> = {
   advanced: 'Advanced',
 };
 
-const LEVEL_LABELS_AR: Record<string, string> = {
-  beginner: 'مبتدئ',
-  intermediate: 'متوسط',
-  advanced: 'متقدم',
-};
-
 /** Level label (English, locale default). */
 export function levelLabel(level: string): string {
   return LEVEL_LABELS[level] ?? level;
-}
-
-/** Level label (Arabic variant for the locale swap). */
-export function levelLabelAr(level: string): string {
-  return LEVEL_LABELS_AR[level] ?? level;
 }

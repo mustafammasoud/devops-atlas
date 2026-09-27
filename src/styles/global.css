@@ -565,6 +565,167 @@ pre.astro-code {
   margin-block: 0;
 }
 
+/* ------------------------------------------------------------------ */
+/* Documentation sidebar: collapsible + resizable (desktop)           */
+/* Width lives in --docs-sidebar-w (px), restored from localStorage   */
+/* before paint; collapsed state toggles html.sb-collapsed.           */
+/* ------------------------------------------------------------------ */
+.docs-sidebar-wrap {
+  display: none;
+  position: sticky;
+  top: 3.5rem; /* below the fixed header */
+  flex-shrink: 0;
+  height: calc(100vh - 3.5rem);
+}
+
+@media (min-width: 1024px) {
+  .docs-sidebar-wrap {
+    display: block;
+  }
+}
+
+/* Smooth easing shared by every sidebar motion. */
+:root {
+  --docs-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --docs-duration: 240ms;
+}
+
+/* Clip container — the width animates, the inner panel slides/fades inside. */
+.docs-sidebar {
+  width: var(--docs-sidebar-w, 16rem);
+  height: 100%;
+  overflow: hidden;
+  transition: width var(--docs-duration) var(--docs-ease);
+}
+
+body.is-resizing .docs-sidebar {
+  transition: none; /* dragging stays 1:1 with the pointer */
+}
+
+.docs-sidebar-inner {
+  height: 100%;
+  padding-block: 1.5rem; /* py-6 — matches the previous sidebar spacing */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  transition:
+    opacity 160ms ease,
+    transform var(--docs-duration) var(--docs-ease),
+    visibility 0s;
+}
+
+html.sb-collapsed .docs-sidebar-inner {
+  opacity: 0;
+  transform: translateX(-0.75rem);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 140ms ease,
+    transform var(--docs-duration) var(--docs-ease),
+    visibility 0s linear var(--docs-duration); /* hide from focus/AT after the slide */
+}
+
+/* Round control sitting on the sidebar's inline-end edge. */
+.docs-sidebar-toggle {
+  position: absolute;
+  top: 1.5rem;
+  inset-inline-end: -1rem;
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--c-border);
+  border-radius: 9999px;
+  background-color: var(--c-surface);
+  color: var(--c-muted);
+  transition:
+    inset-inline-end var(--docs-duration) var(--docs-ease),
+    color 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+@media (min-width: 1024px) {
+  .docs-sidebar-toggle {
+    display: flex;
+  }
+}
+
+.docs-sidebar-toggle:hover {
+  border-color: var(--c-accent);
+  background-color: var(--c-surface-2);
+  color: var(--c-accent);
+}
+
+/* One chevron that rotates instead of two icons swapping. */
+.docs-sidebar-icon {
+  transition: transform var(--docs-duration) var(--docs-ease);
+}
+
+html.sb-collapsed .docs-sidebar-icon {
+  transform: rotate(180deg);
+}
+
+/* Full-height resize grip in the gap between sidebar and content. */
+.docs-sidebar-resize {
+  position: absolute;
+  top: 0;
+  inset-inline-end: -4px;
+  z-index: 9;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+  border-radius: 4px;
+  background-color: transparent;
+  transition:
+    opacity 180ms ease,
+    background-color 120ms ease,
+    visibility 0s;
+}
+
+.docs-sidebar-resize:hover,
+.docs-sidebar-resize:focus-visible {
+  background-color: color-mix(in srgb, var(--c-accent) 35%, transparent);
+}
+
+/* Collapsed: narrow rail keeps only the expand control. */
+html.sb-collapsed .docs-sidebar {
+  width: 2.5rem;
+}
+
+html.sb-collapsed .docs-sidebar-resize {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 140ms ease,
+    visibility 0s linear var(--docs-duration);
+}
+
+html.sb-collapsed .docs-sidebar-toggle {
+  inset-inline-end: 0.25rem;
+}
+
+/* Collapsed: the article grows to the full available width, animated. */
+#main .max-w-3xl,
+#main .prose {
+  transition: max-width var(--docs-duration) var(--docs-ease);
+}
+
+html.sb-collapsed #main .max-w-3xl,
+html.sb-collapsed #main .prose {
+  max-width: 100%;
+}
+
+/* While dragging the grip: stable cursor, no text selection. */
+body.is-resizing,
+body.is-resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
 /* Respect users who prefer less motion ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html {

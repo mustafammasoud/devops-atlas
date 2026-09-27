@@ -50,7 +50,7 @@ export function compareDocs(a: Doc, b: Doc): number {
     catA.localeCompare(catB) ||
     toolA.localeCompare(toolB) ||
     a.data.order - b.data.order ||
-    a.data.title.localeCompare(b.data.title, 'ar')
+    a.data.title.localeCompare(b.data.title)
   );
 }
 
@@ -76,19 +76,7 @@ export function docSlug(id: string): string {
 
 /**
  * Topic-count copy for a number of documents.
- * English default (site locale) + Arabic variant for the locale swap.
  */
-export function topicCount(count: number): { en: string; ar: string } {
-  const en = count === 1 ? '1 topic' : `${count} topics`;
-  const ar =
-    count === 0
-      ? 'لا مواضيع بعد'
-      : count === 1
-        ? 'موضوع واحد'
-        : count === 2
-          ? 'موضوعان'
-          : count <= 10
-            ? `${count} مواضيع`
-            : `${count} موضوعاً`;
-  return { en, ar };
+export function topicCount(count: number): string {
+  return count === 1 ? '1 topic' : `${count} topics`;
 }

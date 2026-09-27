@@ -19,7 +19,7 @@ const related = sortedDocs(await getCollection('docs', ({ data }) => !data.draft
 {
   related.length > 0 && (
     <section class="mt-10 max-w-3xl" aria-labelledby="related-heading">
-      <h2 id="related-heading" class="mb-4 text-lg font-semibold" data-ar="مواضيع ذات صلة">
+      <h2 id="related-heading" class="mb-4 text-lg font-semibold">
         Related topics
       </h2>
       <div class="grid gap-3 sm:grid-cols-3">

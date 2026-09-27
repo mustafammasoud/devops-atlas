@@ -6,9 +6,9 @@
  */
 ---
 
-<dialog id="image-viewer" class="lightbox" aria-label="View image" data-ar-aria="عرض الصورة">
+<dialog id="image-viewer" class="lightbox" aria-label="View image">
   <img id="image-viewer-img" alt="" />
-  <button type="button" class="lightbox-close" aria-label="Close" data-ar-aria="إغلاق">
+  <button type="button" class="lightbox-close" aria-label="Close">
     <svg
       viewBox="0 0 24 24"
       fill="none"
@@ -25,16 +25,14 @@
 </dialog>
 
 <script>
-  // Strings for elements created at runtime follow the current page locale.
-  const ar = document.documentElement.lang.startsWith('ar');
+  // Strings for elements created at runtime (English UI).
   const strings = {
-    permalink: ar ? 'رابط دائم لهذا القسم' : 'Permanent link to this section',
-    copy: ar ? 'نسخ' : 'Copy',
-    copyCode: ar ? 'نسخ الكود' : 'Copy code',
-    copied: ar ? 'تم النسخ' : 'Copied',
-    copyFailed: ar ? 'تعذّر النسخ' : 'Copy failed',
-    zoom: (alt: string) =>
-      ar ? `تكبير الصورة: ${alt || 'بدون وصف'}` : `Zoom image: ${alt || 'no description'}`,
+    permalink: 'Permanent link to this section',
+    copy: 'Copy',
+    copyCode: 'Copy code',
+    copied: 'Copied',
+    copyFailed: 'Copy failed',
+    zoom: (alt: string) => `Zoom image: ${alt || 'no description'}`,
   };
 
   // Heading anchors ----------------------------------------------------

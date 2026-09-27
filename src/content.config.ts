@@ -36,8 +36,11 @@ const docs = defineCollection({
     level: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
-    /** Content language. Arabic (RTL) is the default; English (LTR) later. */
-    language: z.enum(['ar', 'en']).default('ar'),
+    /**
+     * Content language for the article region. English (LTR) is the default;
+     * set `language: ar` to render that article's content region as RTL.
+     */
+    language: z.enum(['en', 'ar']).default('en'),
   }),
 });
 

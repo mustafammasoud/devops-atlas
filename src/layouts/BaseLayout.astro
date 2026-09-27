@@ -3,38 +3,23 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
-  /** Optional Arabic variant of the page title (chrome, swapped client-side). */
-  titleAr?: string;
   description?: string;
-  /** Optional Arabic variant of the meta description. */
-  descriptionAr?: string;
-  /**
-   * UI locale baked into the static HTML. The site defaults to English;
-   * the head script re-applies a stored preference before first paint.
-   * Content direction is owned by the content region (see DocLayout).
-   */
-  lang?: 'ar' | 'en';
-  dir?: 'rtl' | 'ltr';
 }
 
 const {
   title,
-  titleAr,
   description = 'Ops Handbook — a structured DevOps knowledge base: documentation, labs, diagrams, and command references.',
-  descriptionAr,
-  lang = 'en',
-  dir = lang === 'ar' ? 'rtl' : 'ltr',
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={lang} dir={dir}>
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <title data-ar={titleAr}>{title}</title>
-    <meta name="description" content={description} data-ar-content={descriptionAr} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
     <!-- Theme-aware favicon: the exact header logo mark, light/dark variants. -->
     <link
       rel="icon"
@@ -62,101 +47,9 @@ const {
         }
       })();
     </script>
-    <!--
-      Locale runtime. Head pass sets <html lang/dir> before first paint (English
-      default); the body-end pass walks [data-ar*] nodes and swaps text/attributes.
-      Components author English strings server-side and attach data-ar variants.
-    -->
-    <script is:inline>
-      (function () {
-        var KEY = 'atlas-locale';
-
-        function readLocale() {
-          try {
-            return localStorage.getItem(KEY) === 'ar' ? 'ar' : 'en';
-          } catch (e) {
-            return 'en';
-          }
-        }
-
-        function applyLocale(locale) {
-          var ar = locale === 'ar';
-          var root = document.documentElement;
-          root.lang = locale;
-          root.dir = ar ? 'rtl' : 'ltr';
-          if (!document.body) return;
-
-          var nodes = document.querySelectorAll(
-            '[data-ar],[data-ar-aria],[data-ar-placeholder],[data-ar-content],[data-ar-title],[data-ar-lang]',
-          );
-          nodes.forEach(function (el) {
-            if (el.hasAttribute('data-ar')) {
-              if (ar) {
-                if (el.dataset.en == null) el.dataset.en = el.textContent;
-                el.textContent = el.dataset.ar;
-              } else if (el.dataset.en != null) {
-                el.textContent = el.dataset.en;
-              }
-            }
-            if (el.hasAttribute('data-ar-aria')) {
-              if (ar) {
-                if (el.dataset.enAria == null)
-                  el.dataset.enAria = el.getAttribute('aria-label') || '';
-                el.setAttribute('aria-label', el.dataset.arAria);
-              } else if (el.dataset.enAria != null) {
-                el.setAttribute('aria-label', el.dataset.enAria);
-              }
-            }
-            if (el.hasAttribute('data-ar-placeholder')) {
-              if (ar) {
-                if (el.dataset.enPlaceholder == null)
-                  el.dataset.enPlaceholder = el.getAttribute('placeholder') || '';
-                el.setAttribute('placeholder', el.dataset.arPlaceholder);
-              } else if (el.dataset.enPlaceholder != null) {
-                el.setAttribute('placeholder', el.dataset.enPlaceholder);
-              }
-            }
-            if (el.hasAttribute('data-ar-content')) {
-              if (ar) {
-                if (el.dataset.enContent == null)
-                  el.dataset.enContent = el.getAttribute('content') || '';
-                el.setAttribute('content', el.dataset.arContent);
-              } else if (el.dataset.enContent != null) {
-                el.setAttribute('content', el.dataset.enContent);
-              }
-            }
-            if (el.hasAttribute('data-ar-title')) {
-              if (ar) {
-                if (el.dataset.enTitle == null)
-                  el.dataset.enTitle = el.getAttribute('title') || '';
-                el.setAttribute('title', el.dataset.arTitle);
-              } else if (el.dataset.enTitle != null) {
-                el.setAttribute('title', el.dataset.enTitle);
-              }
-            }
-            if (el.hasAttribute('data-ar-lang')) {
-              if (ar) {
-                if (el.dataset.enLang == null) el.dataset.enLang = el.lang;
-                el.lang = el.dataset.arLang;
-              } else if (el.dataset.enLang != null) {
-                el.lang = el.dataset.enLang;
-              }
-            }
-          });
-        }
-
-        window.__atlasReadLocale = readLocale;
-        window.__atlasApplyLocale = applyLocale;
-        applyLocale(readLocale());
-      })();
-    </script>
   </head>
   <body class="min-h-screen">
-    <a class="skip-link" href="#main" data-ar="تخطٍ إلى المحتوى">Skip to content</a>
+    <a class="skip-link" href="#main">Skip to content</a>
     <slot />
-    <!-- Second pass once the body exists: swaps every [data-ar*] node. -->
-    <script is:inline>
-      window.__atlasApplyLocale(window.__atlasReadLocale());
-    </script>
   </body>
 </html>

@@ -44,16 +44,13 @@ const toolName = toolLabel(tool!);
 const count = topicCount(docs.length);
 
 const descriptionEn = `Documentation for ${toolName}.`;
-const descriptionAr = `التوثيق الخاص بـ ${toolName}.`;
 
 const pageTitle = `${toolName} | Ops Handbook`;
 ---
 
 <BaseLayout
   title={pageTitle}
-  titleAr={`${toolName} | Ops Handbook`}
   description={descriptionEn}
-  descriptionAr={descriptionAr}
 >
   <Header />
 
@@ -61,16 +58,15 @@ const pageTitle = `${toolName} | Ops Handbook`;
     <!-- Breadcrumbs: Home / Docs / Area / Tool -->
     <nav
       aria-label="Breadcrumb"
-      data-ar-aria="مسار التنقل"
       class="mb-6 text-sm text-muted"
     >
       <ol class="flex flex-wrap items-center gap-1.5">
         <li>
-          <a href="/" class="hover:text-accent" data-ar="الرئيسية">Home</a>
+          <a href="/" class="hover:text-accent">Home</a>
         </li>
         <li aria-hidden="true">/</li>
         <li>
-          <a href="/docs" class="hover:text-accent" data-ar="الوثائق">Docs</a>
+          <a href="/docs" class="hover:text-accent">Docs</a>
         </li>
         <li aria-hidden="true">/</li>
         <li>
@@ -91,12 +87,12 @@ const pageTitle = `${toolName} | Ops Handbook`;
         {toolName}
       </h1>
 
-      <p class="mt-4 max-w-3xl leading-relaxed text-muted" data-ar={descriptionAr}>
+      <p class="mt-4 max-w-3xl leading-relaxed text-muted">
         {descriptionEn}
       </p>
 
       <p class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
-        <span class="tabular-nums" data-ar={count.ar}>{count.en}</span>
+        <span class="tabular-nums">{count}</span>
         <span aria-hidden="true">·</span>
         <span lang="en">{areaName}</span>
       </p>
@@ -106,7 +102,6 @@ const pageTitle = `${toolName} | Ops Handbook`;
       <h2
         id="topics-heading"
         class="mb-4 text-lg font-semibold"
-        data-ar="المواضيع"
       >
         Topics
       </h2>

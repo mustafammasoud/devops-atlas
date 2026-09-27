@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { docPath, docTool } from '../utils/docs';
-import { toolLabel, levelLabel, levelLabelAr } from '../data/categories';
+import { toolLabel, levelLabel } from '../data/categories';
 
 type Doc = CollectionEntry<'docs'>;
 
@@ -49,7 +49,6 @@ const { docs, showOrder = true, showTool = false } = Astro.props;
             )}
             <span
               class="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted"
-              data-ar={levelLabelAr(doc.data.level)}
             >
               {levelLabel(doc.data.level)}
             </span>

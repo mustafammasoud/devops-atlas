@@ -1,6 +1,5 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
-import LocaleToggle from './LocaleToggle.astro';
 import Search from './Search.astro';
 ---
 
@@ -34,13 +33,11 @@ import Search from './Search.astro';
 
     <nav
       aria-label="Main navigation"
-      data-ar-aria="التنقل الرئيسي"
       class="hidden sm:block"
     >
       <a
         href="/docs"
         class="rounded-md px-2.5 py-1.5 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-text"
-        data-ar="الوثائق"
       >
         Docs
       </a>
@@ -52,7 +49,6 @@ import Search from './Search.astro';
 
     <div class="flex shrink-0 items-center gap-2">
       <ThemeToggle />
-      <LocaleToggle />
     </div>
   </div>
 </header>

@@ -8,12 +8,7 @@ import DocEnhancements from '../components/DocEnhancements.astro';
 import MermaidRuntime from '../components/MermaidRuntime.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import RelatedTopics from '../components/RelatedTopics.astro';
-import {
-  categoryLabel,
-  toolLabel,
-  levelLabel,
-  levelLabelAr,
-} from '../data/categories';
+import { categoryLabel, toolLabel, levelLabel } from '../data/categories';
 import { docCategory, docPath, docTool, sortedDocs } from '../utils/docs';
 import type { CollectionEntry } from 'astro:content';
 
@@ -47,20 +42,68 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
   <Header />
   <ReadingProgress />
 
+  <!-- Restore sidebar state before first paint (no flicker). -->
+  <script is:inline>
+    (function () {
+      try {
+        var w = localStorage.getItem('atlas-sidebar-w');
+        if (w) document.documentElement.style.setProperty('--docs-sidebar-w', w);
+        if (localStorage.getItem('atlas-sidebar-collapsed') === '1')
+          document.documentElement.classList.add('sb-collapsed');
+      } catch (e) {
+        /* storage unavailable — defaults apply */
+      }
+    })();
+  </script>
+
   <div class="mx-auto flex w-full max-w-screen-2xl gap-6 px-4">
-    <!-- Sidebar (desktop) -->
-    <aside
-      class="sticky top-14 hidden max-h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto py-6 lg:block"
-    >
-      <Sidebar currentId={entry.id} />
-    </aside>
+    <!-- Sidebar (desktop): collapsible + resizable -->
+    <div class="docs-sidebar-wrap" data-sidebar-wrap>
+      <aside class="docs-sidebar" id="docs-sidebar">
+        <div class="docs-sidebar-inner">
+          <Sidebar currentId={entry.id} />
+        </div>
+      </aside>
+
+      <button
+        type="button"
+        class="docs-sidebar-toggle"
+        data-sidebar-toggle
+        aria-expanded="true"
+        aria-controls="docs-sidebar"
+        aria-label="Collapse sidebar"
+        title="Collapse sidebar"
+      >
+        <svg
+          class="docs-sidebar-icon h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M15 6l-6 6 6 6"></path>
+        </svg>
+      </button>
+
+      <div
+        class="docs-sidebar-resize"
+        data-sidebar-resize
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize sidebar"
+        tabindex="0"
+        title="Drag to resize — double-click to reset"
+      ></div>
+    </div>
 
     <main id="main" class="min-w-0 flex-1 py-6 lg:py-10">
       <!-- Sidebar (mobile) -->
       <details class="mb-6 rounded-md border border-border bg-surface lg:hidden">
         <summary
           class="cursor-pointer px-4 py-2.5 text-sm font-medium"
-          data-ar="المحتويات"
         >
           Contents
         </summary>
@@ -72,16 +115,15 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
       <!-- Breadcrumbs -->
       <nav
         aria-label="Breadcrumb"
-        data-ar-aria="مسار التنقل"
         class="mb-4 text-sm text-muted"
       >
         <ol class="flex flex-wrap items-center gap-1.5">
           <li>
-            <a href="/" class="hover:text-accent" data-ar="الرئيسية">Home</a>
+            <a href="/" class="hover:text-accent">Home</a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <a href="/docs" class="hover:text-accent" data-ar="الوثائق">Docs</a>
+            <a href="/docs" class="hover:text-accent">Docs</a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
@@ -111,7 +153,7 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
             {tool ? ` · ${toolLabel(tool)}` : ''}
           </span>
           <span aria-hidden="true"> · </span>
-          <span data-ar={levelLabelAr(level)}>{levelLabel(level)}</span>
+          <span>{levelLabel(level)}</span>
         </p>
         <h1 class="text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">{title}</h1>
         {
@@ -144,7 +186,6 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
       <nav
         class="mt-12 grid max-w-3xl gap-4 border-t border-border pt-6 sm:grid-cols-2"
         aria-label="Page navigation"
-        data-ar-aria="التنقل بين الصفحات"
       >
         {
           previous ? (
@@ -152,7 +193,7 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
               href={docPath(previous.id)}
               class="rounded-md border border-border p-4 transition-colors hover:border-accent/50 hover:bg-surface"
             >
-              <span class="text-xs text-muted" data-ar="الصفحة السابقة">Previous</span>
+              <span class="text-xs text-muted">Previous</span>
               <span class="mt-1 block font-medium">{previous.data.title}</span>
             </a>
           ) : (
@@ -165,7 +206,7 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
               href={docPath(next.id)}
               class="rounded-md border border-border p-4 text-end transition-colors hover:border-accent/50 hover:bg-surface sm:col-start-2"
             >
-              <span class="text-xs text-muted" data-ar="الصفحة التالية">Next</span>
+              <span class="text-xs text-muted">Next</span>
               <span class="mt-1 block font-medium">{next.data.title}</span>
             </a>
           )
@@ -185,4 +226,114 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
 
   <DocEnhancements />
   <MermaidRuntime />
+
+  <!-- Sidebar collapse + resize controls (desktop). -->
+  <script>
+    const root = document.documentElement;
+    const STORE_W = 'atlas-sidebar-w';
+    const STORE_C = 'atlas-sidebar-collapsed';
+    const DEFAULT_W = 256;
+    const MIN_W = 200;
+    const MAX_W = 440;
+
+    const writeStore = (key: string, value: string) => {
+      try {
+        localStorage.setItem(key, value);
+      } catch {
+        /* storage unavailable */
+      }
+    };
+
+    const toggle = document.querySelector<HTMLButtonElement>('[data-sidebar-toggle]');
+    const grip = document.querySelector<HTMLElement>('[data-sidebar-resize]');
+
+    const clamp = (px: number) => Math.min(MAX_W, Math.max(MIN_W, Math.round(px)));
+
+    const currentWidth = (): number => {
+      const raw = getComputedStyle(root).getPropertyValue('--docs-sidebar-w');
+      const px = parseInt(raw, 10);
+      return Number.isFinite(px) ? px : DEFAULT_W;
+    };
+
+    const setWidth = (px: number) => root.style.setProperty('--docs-sidebar-w', `${px}px`);
+
+    // --- Collapse / expand -------------------------------------------------
+    const applyToggleState = (collapsed: boolean, persist = true) => {
+      root.classList.toggle('sb-collapsed', collapsed);
+      const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+      toggle?.setAttribute('aria-expanded', String(!collapsed));
+      toggle?.setAttribute('aria-label', label);
+      toggle?.setAttribute('title', label);
+      if (persist) writeStore(STORE_C, collapsed ? '1' : '0');
+    };
+
+    // Sync button state with whatever the inline script restored.
+    applyToggleState(root.classList.contains('sb-collapsed'), false);
+
+    toggle?.addEventListener('click', () => {
+      applyToggleState(!root.classList.contains('sb-collapsed'));
+    });
+
+    // --- Resize by dragging the edge grip ---------------------------------
+    if (grip) {
+      let dragging = false;
+      let startX = 0;
+      let startW = DEFAULT_W;
+
+      grip.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        dragging = true;
+        startX = event.clientX;
+        startW = currentWidth();
+        grip.setPointerCapture(event.pointerId);
+        document.body.classList.add('is-resizing');
+        event.preventDefault();
+      });
+
+      grip.addEventListener('pointermove', (event) => {
+        if (!dragging) return;
+        const sign = root.dir === 'rtl' ? -1 : 1;
+        setWidth(clamp(startW + (event.clientX - startX) * sign));
+      });
+
+      const endDrag = (event: PointerEvent) => {
+        if (!dragging) return;
+        dragging = false;
+        document.body.classList.remove('is-resizing');
+        try {
+          grip.releasePointerCapture(event.pointerId);
+        } catch {
+          /* pointer already released */
+        }
+        writeStore(STORE_W, `${currentWidth()}px`);
+      };
+      grip.addEventListener('pointerup', endDrag);
+      grip.addEventListener('pointercancel', endDrag);
+
+      // Double-click resets to the default width.
+      grip.addEventListener('dblclick', () => {
+        root.style.removeProperty('--docs-sidebar-w');
+        try {
+          localStorage.removeItem(STORE_W);
+        } catch {
+          /* storage unavailable */
+        }
+      });
+
+      // Keyboard resizing when the grip is focused.
+      grip.addEventListener('keydown', (event) => {
+        const step = event.shiftKey ? 32 : 16;
+        let next: number | null = null;
+        if (event.key === 'ArrowLeft') next = currentWidth() - step;
+        else if (event.key === 'ArrowRight') next = currentWidth() + step;
+        else if (event.key === 'Home') next = MIN_W;
+        else if (event.key === 'End') next = MAX_W;
+        if (next === null) return;
+        event.preventDefault();
+        const width = clamp(next);
+        setWidth(width);
+        writeStore(STORE_W, `${width}px`);
+      });
+    }
+  </script>
 </BaseLayout>

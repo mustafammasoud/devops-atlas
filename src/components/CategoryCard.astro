@@ -12,9 +12,8 @@ interface Props {
 const { category, count } = Astro.props;
 const planned = count === 0;
 
-/** Topic count: English default (site locale) + Arabic variant for the swap. */
-const countEn = topicCount(count).en;
-const countAr = topicCount(count).ar;
+/** Topic-count copy shown on the card. */
+const countText = topicCount(count);
 ---
 
 <li class="border-t border-border">
@@ -36,7 +35,6 @@ const countAr = topicCount(count).ar;
       </span>
       <span
         class="mt-1 block text-sm leading-relaxed text-muted"
-        data-ar={category.descriptionAr}
       >
         {category.descriptionEn}
       </span>
@@ -46,13 +44,12 @@ const countAr = topicCount(count).ar;
       planned ? (
         <span
           class="mt-0.5 shrink-0 rounded-full bg-surface-2 px-2.5 py-0.5 text-xs text-muted"
-          data-ar="قريباً"
         >
           Planned
         </span>
       ) : (
-        <span class="mt-0.5 shrink-0 text-xs text-muted tabular-nums" data-ar={countAr}>
-          {countEn}
+        <span class="mt-0.5 shrink-0 text-xs text-muted tabular-nums">
+          {countText}
         </span>
       )
     }

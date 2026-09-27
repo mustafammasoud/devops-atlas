@@ -11,7 +11,6 @@ import {
   canonicalCategoryId,
   toolLabel,
   levelLabel,
-  levelLabelAr,
 } from '../../data/categories';
 import { docCategory, docTool, sortedDocs, topicCount } from '../../utils/docs';
 
@@ -38,12 +37,10 @@ const docs = sortedDocs(
 const category = getCategory(categoryId!);
 const label = categoryLabel(categoryId!);
 const descriptionEn = category?.descriptionEn ?? `The ${label} section of the documentation.`;
-const descriptionAr = category?.descriptionAr ?? `قسم ${label} في الوثائق.`;
 const count = docs.length;
 
-// Topic count copy: English default + Arabic variant.
-const countEn = topicCount(count).en;
-const countAr = topicCount(count).ar;
+// Topic count copy.
+const countText = topicCount(count);
 
 // Difficulty range from the levels actually present (metadata only).
 const LEVELS = ['beginner', 'intermediate', 'advanced'] as const;
@@ -56,12 +53,6 @@ const levelRangeEn =
     : presentLevels.length === 1
       ? `Level: ${levelLabel(firstLevel)}`
       : `Level: ${levelLabel(firstLevel)} → ${levelLabel(lastLevel)}`;
-const levelRangeAr =
-  presentLevels.length === 0
-    ? null
-    : presentLevels.length === 1
-      ? `المستوى: ${levelLabelAr(firstLevel)}`
-      : `المستوى: ${levelLabelAr(firstLevel)} ← ${levelLabelAr(lastLevel)}`;
 
 // Documentation is grouped by technology / tool (Area → Tool → Articles).
 // Articles written directly under the area (no tool segment) are listed first.
@@ -88,7 +79,6 @@ const pageTitle = `${label} | Ops Handbook`;
 <BaseLayout
   title={pageTitle}
   description={descriptionEn}
-  descriptionAr={descriptionAr}
 >
   <Header />
 
@@ -96,16 +86,15 @@ const pageTitle = `${label} | Ops Handbook`;
     <!-- Breadcrumbs -->
     <nav
       aria-label="Breadcrumb"
-      data-ar-aria="مسار التنقل"
       class="mb-6 text-sm text-muted"
     >
       <ol class="flex flex-wrap items-center gap-1.5">
         <li>
-          <a href="/" class="hover:text-accent" data-ar="الرئيسية">Home</a>
+          <a href="/" class="hover:text-accent">Home</a>
         </li>
         <li aria-hidden="true">/</li>
         <li>
-          <a href="/docs" class="hover:text-accent" data-ar="الوثائق">Docs</a>
+          <a href="/docs" class="hover:text-accent">Docs</a>
         </li>
         <li aria-hidden="true">/</li>
         <li aria-current="page" class="font-medium text-text" lang="en">{label}</li>
@@ -136,17 +125,17 @@ const pageTitle = `${label} | Ops Handbook`;
         </div>
       </div>
 
-      <p class="mt-4 max-w-3xl leading-relaxed text-muted" data-ar={descriptionAr}>
+      <p class="mt-4 max-w-3xl leading-relaxed text-muted">
         {descriptionEn}
       </p>
 
       <p class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
         {
           count === 0 ? (
-            <span data-ar={countAr}>No topics yet</span>
+            <span>No topics yet</span>
           ) : (
-            <span class="tabular-nums" data-ar={countAr}>
-              {countEn}
+            <span class="tabular-nums">
+              {countText}
             </span>
           )
         }
@@ -154,7 +143,7 @@ const pageTitle = `${label} | Ops Handbook`;
           levelRangeEn && (
             <>
               <span aria-hidden="true">·</span>
-              <span data-ar={levelRangeAr}>{levelRangeEn}</span>
+              <span>{levelRangeEn}</span>
             </>
           )
         }
@@ -164,17 +153,16 @@ const pageTitle = `${label} | Ops Handbook`;
     {
       count === 0 ? (
         <section class="mt-10 max-w-2xl rounded-md border border-border bg-surface p-8 text-center">
-          <p class="font-medium" data-ar="لا توجد مواضيع بعد">
+          <p class="font-medium">
             No topics yet
           </p>
-          <p class="mt-2 text-sm leading-relaxed text-muted" data-ar="هذا القسم مخطط له ضمن خارطة المحتوى وسيُملأ تدريجياً.">
+          <p class="mt-2 text-sm leading-relaxed text-muted">
             This section is planned in the content roadmap and will be filled in gradually.
           </p>
           <div class="mt-5 flex flex-wrap justify-center gap-3 text-sm">
             <a
               href="/docs"
               class="rounded-md border border-border bg-bg px-3.5 py-2 font-medium transition-colors hover:border-accent/50 hover:text-accent"
-              data-ar="تصفّح الوثائق المتاحة"
             >
               Browse available documentation
             </a>
@@ -183,7 +171,6 @@ const pageTitle = `${label} | Ops Handbook`;
               target="_blank"
               rel="noopener"
               class="rounded-md px-3.5 py-2 font-medium text-muted transition-colors hover:text-accent"
-              data-ar="خارطة المحتوى ↗"
             >
               Content roadmap ↗
             </a>
@@ -197,7 +184,6 @@ const pageTitle = `${label} | Ops Handbook`;
                 <h2
                   id="tools-heading"
                   class="mb-4 text-lg font-semibold"
-                  data-ar="التقنيات والأدوات"
                 >
                   Technologies &amp; Tools
                 </h2>
@@ -228,7 +214,6 @@ const pageTitle = `${label} | Ops Handbook`;
             <h2
               id="documentation-heading"
               class="mb-4 text-lg font-semibold"
-              data-ar="التوثيق"
             >
               Documentation
             </h2>
