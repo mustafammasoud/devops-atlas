@@ -1,74 +1,10 @@
 ---
 title: Docker Images
-description: صفحة اختبار بنيوية للتأكد من سير عمل إضافة المحتوى — لا تحتوي محتوى تعليمي.
+description: Content coming soon.
 order: 2
 level: beginner
-tags: [test]
+tags: [docker]
 draft: false
 ---
 
-import Figure from '../../../../src/components/Figure.astro';
-import placeholder from './images/placeholder.svg';
-import resourcePdf from './resources/cheatsheet.pdf';
-
-هذه صفحة اختبار لإثبات أن إنشاء ملف واحد داخل `content/` يكفي للحصول على صفحة
-مبنية بالكامل: تظهر في القائمة الجانبية، ومسار التنقل، والبحث، ويُبنى رابطها
-تلقائياً. لا يوجد في هذه الصفحة أي محتوى تعليمي.
-
-<Callout type="note">
-  المكوّنات مثل `Callout` و`Steps` و`Figure` و`PdfCard` متاحة **بدون استيراد** —
-  استورد فقط الأصول (الصور وملفات PDF).
-</Callout>
-
-## مكوّنات MDX
-
-<Steps>
-  <li>أنشئ ملف `index.mdx` داخل مجلد الموضوع.</li>
-  <li>اكتب `title:` فقط — مجال التوثيق والأداة مشتقان من المجلدات تلقائياً.</li>
-  <li>شغّل `npm run build` — الصفحة تظهر في التنقل والبحث تلقائياً.</li>
-</Steps>
-
-<Callout type="tip" title="تلميح">هذا عنوان مخصص لمكوّن Callout.</Callout>
-
-<Callout type="warning">تنبيه تجريبي للتحقق من ألوان الأنواع.</Callout>
-
-## الصور والموارد
-
-<Figure src={placeholder} alt="مخطط تجريبي بسيط" caption="صورة موضوعة داخل مجلد images/ بجانب الصفحة." />
-
-أو مباشرة بصيغة Markdown دون أي استيراد:
-
-![وصف بديل للصورة](./images/placeholder.svg)
-
-ملف PDF داخل `resources/` بجانب الصفحة:
-
-<PdfCard href={resourcePdf} title="ملف PDF تجريبي" />
-
-<PdfEmbed src={resourcePdf} title="معاينة PDF تجريبية مضمّنة" />
-
-## مخطط Mermaid
-
-```mermaid
-graph LR
-    A[Page] --> B[Sidebar]
-    A --> C[Search]
-    A --> D[TOC]
-```
-
-## شيفرة وجدول
-
-```bash
-npm run build
-```
-
-| الحقل        | مطلوب | الافتراضي  |
-| ------------ | ----- | ---------- |
-| title        | نعم   | —          |
-| description  | لا    | `''`       |
-| category     | لا    | مشتق من المجلد |
-| tool         | لا    | مشتق من المجلد |
-| order        | لا    | `0`        |
-| level        | لا    | `beginner` |
-| tags         | لا    | `[]`       |
-| draft        | لا    | `false`    |
-| language     | لا    | `ar`       |
+Content coming soon.

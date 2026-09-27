@@ -1,52 +1,10 @@
 ---
-title: مقدمة إلى لينكس
-description: أساسيات نظام لينكس والموجه الأوامر (Terminal) للمهندسين المبتدئين.
+title: Introduction
+description: Content coming soon.
 category: operating-systems
 order: 1
 level: beginner
-tags: [linux, shell]
-language: ar
+tags: [linux]
 ---
 
-## ما هو لينكس؟
-
-لينكس (Linux) نظام تشغيل مفتوح المصدر يُشغَّل أغلب الخوادم في العالم. معظم أدوات
-DevOps تُكتب لتعمل فوق POSIX shell، لذلك إتقان الطرفية (Terminal) هو أول خطوة
-عملية قبل الدخول في الحاويات أو التحسين الآلي (Infrastructure as Code).
-
-## الطرفية والأوامر
-
-لعرض معلومات النظام:
-
-```bash
-uname -a
-cat /etc/os-release
-ls -la /etc
-```
-
-لترتيب الملفات حسب آخر تعديل:
-
-```bash
-ls -lt --time-style=long-iso
-```
-
-<details>
-<summary>شرح سريع لمصطلح شائع</summary>
-
-في نظام الملفات يُعرف كل ملف بمُعرّف يُسمى `inode` يحمل بيانات الملف دون الاسم.
-
-</details>
-
-## جدول مختصر
-
-| الأمر        | الوصف                                  |
-| ------------ | -------------------------------------- |
-| `pwd`        | عرض المسار الحالي                      |
-| `grep`       | البحث داخل الملفات                     |
-| `chmod`      | تغيير صلاحيات الملفات                  |
-| `systemctl`  | إدارة الخدمات (systemd)                |
-
-## الخطوة التالية
-
-- تثبيت أدوات المونيتورينغ الأساسية.
-- قراءة ورقة المراجع المرفقة: [ورقة مراجع لينكس (PDF)](/pdf/linux-cheatsheet.pdf).
+Content coming soon.
