@@ -4,8 +4,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import CategoryCard from '../components/CategoryCard.astro';
 import CategoryIcon from '../components/CategoryIcon.astro';
+import SocialIcon from '../components/SocialIcon.astro';
 import { categories } from '../data/categories';
 import { docCategory, docPath, sortedDocs } from '../utils/docs';
+
+/**
+ * The homepage shows a curated subset of the documentation areas;
+ * /docs keeps listing all of them. Metadata stays in `categories` —
+ * this is only a selection of ids, in display order.
+ */
+const HOMEPAGE_AREA_IDS = [
+  'devops-fundamentals',
+  'operating-systems',
+  'networking',
+  'version-control',
+  'programming-scripting',
+  'containers',
+  'ci-cd-automation',
+  'container-orchestration',
+];
+const homepageAreas = categories.filter((category) =>
+  HOMEPAGE_AREA_IDS.includes(category.id),
+);
 
 const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
 
@@ -124,11 +144,65 @@ const ecosystem = [
 
       <ul class="grid border-b border-border sm:grid-cols-2 sm:gap-x-12">
         {
-          categories.map((category) => (
+          homepageAreas.map((category) => (
             <CategoryCard category={category} count={counts.get(category.id) ?? 0} />
           ))
         }
       </ul>
+    </section>
+
+    <!-- Author attribution -->
+    <section
+      class="border-t border-border py-8"
+      aria-label="Author attribution"
+      data-ar-aria="بيانات المؤلف"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
+        <p
+          class="max-w-2xl text-sm leading-relaxed text-muted"
+          data-ar="تم بناء DevOps Atlas وتتم صيانته بواسطة Mustafa Masoud — قاعدة معرفة شخصية لتعلّم DevOps وتوثيقه."
+        >
+          Built and maintained by Mustafa Masoud — a personal knowledge base for
+          learning and documenting DevOps.
+        </p>
+
+        <ul class="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <li>
+            <a
+              href="https://github.com/mustafammasoud"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent focus-visible:text-accent"
+              lang="en"
+            >
+              <SocialIcon name="github" class="h-5 w-5 shrink-0" />
+              <span>GitHub</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.linkedin.com/in/mustafammasoud/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent focus-visible:text-accent"
+              lang="en"
+            >
+              <SocialIcon name="linkedin" class="h-5 w-5 shrink-0" />
+              <span>LinkedIn</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="mailto:masoudmustafa90@gmail.com"
+              class="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent focus-visible:text-accent"
+              lang="en"
+            >
+              <SocialIcon name="mail" class="h-5 w-5 shrink-0" />
+              <span>Email</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </section>
   </main>
 </BaseLayout>
