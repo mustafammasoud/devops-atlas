@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import CategoryIcon from '../../components/CategoryIcon.astro';
+import TopicList from '../../components/TopicList.astro';
 import {
   categories,
   getCategory,
@@ -12,7 +13,7 @@ import {
   levelLabel,
   levelLabelAr,
 } from '../../data/categories';
-import { docPath, docTool, sortedDocs } from '../../utils/docs';
+import { docTool, sortedDocs, topicCount } from '../../utils/docs';
 
 export async function getStaticPaths() {
   // Every registered category gets a page (even while empty/planned),
@@ -41,17 +42,8 @@ const descriptionAr = category?.descriptionAr ?? `قسم ${label} في الوث�
 const count = docs.length;
 
 // Topic count copy: English default + Arabic variant.
-const countEn = count === 1 ? '1 topic' : `${count} topics`;
-const countAr =
-  count === 0
-    ? 'لا مواضيع بعد'
-    : count === 1
-      ? 'موضوع واحد'
-      : count === 2
-        ? 'موضوعان'
-        : count <= 10
-          ? `${count} مواضيع`
-          : `${count} موضوعاً`;
+const countEn = topicCount(count).en;
+const countAr = topicCount(count).ar;
 
 // Difficulty range from the levels actually present (metadata only).
 const LEVELS = ['beginner', 'intermediate', 'advanced'] as const;
@@ -71,12 +63,23 @@ const levelRangeAr =
       ? `المستوى: ${levelLabelAr(firstLevel)}`
       : `المستوى: ${levelLabelAr(firstLevel)} ← ${levelLabelAr(lastLevel)}`;
 
-// Learning structure: group by level, keep `order` inside each group.
-const structure = presentLevels.map((level) => ({
-  level,
-  label: levelLabel(level),
-  labelAr: levelLabelAr(level),
-  entries: docs.filter((doc) => doc.data.level === level),
+// Documentation is grouped by technology / tool (Area → Tool → Articles).
+// Articles written directly under the area (no tool segment) are listed first.
+const directEntries = docs.filter((doc) => !docTool(doc));
+const byTool = new Map<string, typeof docs>();
+for (const doc of docs) {
+  const tool = docTool(doc);
+  if (!tool) continue;
+  const toolDocs = byTool.get(tool) ?? [];
+  toolDocs.push(doc);
+  byTool.set(tool, toolDocs);
+}
+const toolGroups = [...byTool.entries()].map(([toolId, entries]) => ({
+  id: toolId,
+  label: toolLabel(toolId),
+  href: `/docs/${categoryId}/${toolId}`,
+  count: entries.length,
+  entries,
 }));
 
 const pageTitle = `${label} | DevOps Atlas`;
@@ -188,94 +191,80 @@ const pageTitle = `${label} | DevOps Atlas`;
         </section>
       ) : (
         <>
-          <section class="mt-10" aria-labelledby="structure-heading">
-            <h2
-              id="structure-heading"
-              class="mb-4 text-lg font-semibold"
-              data-ar="البنية التعليمية"
-            >
-              Learning structure
-            </h2>
-            <div class="grid gap-4 md:grid-cols-3">
-              {structure.map((group) => (
-                <div class="rounded-md border border-border bg-surface p-4">
-                  <h3 class="mb-3 flex items-center justify-between text-sm font-semibold">
-                    <span data-ar={group.labelAr}>{group.label}</span>
-                    <span class="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-normal text-muted tabular-nums">
-                      {group.entries.length}
-                    </span>
-                  </h3>
-                  <ol class="space-y-2">
-                    {group.entries.map((doc, index) => (
-                      <li>
-                        <a
-                          href={docPath(doc.id)}
-                          class="flex items-baseline gap-2 text-sm text-text/90 transition-colors hover:text-accent"
-                        >
-                          <span class="ltr shrink-0 text-xs text-muted tabular-nums">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <span class="leading-snug">{doc.data.title}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section class="mt-10" aria-labelledby="topics-heading">
-            <h2
-              id="topics-heading"
-              class="mb-4 text-lg font-semibold"
-              data-ar="قائمة المواضيع"
-            >
-              Topics list
-            </h2>
-            <ol class="divide-y divide-border rounded-md border border-border">
-              {docs.map((doc, index) => (
-                <li>
-                  <a
-                    href={docPath(doc.id)}
-                    class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-surface"
-                  >
-                    <span class="flex min-w-0 items-baseline gap-3">
-                      <span class="ltr shrink-0 text-xs text-muted tabular-nums">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <span class="min-w-0">
-                        <span class="block font-medium">{doc.data.title}</span>
-                        {doc.data.description && (
-                          <span class="mt-0.5 block truncate text-sm text-muted">
-                            {doc.data.description}
-                          </span>
-                        )}
-                      </span>
-                    </span>
-                    <span class="flex shrink-0 items-center gap-3">
-                      {
-                        docTool(doc) && (
-                          <span
-                            class="rounded border border-border bg-surface px-2 py-0.5 text-xs text-muted"
-                            lang="en"
-                          >
-                            {toolLabel(docTool(doc)!)}
-                          </span>
-                        )
-                      }
-                      <span
-                        class="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted"
-                        data-ar={levelLabelAr(doc.data.level)}
+          {
+            toolGroups.length > 0 && (
+              <section class="mt-10" aria-labelledby="tools-heading">
+                <h2
+                  id="tools-heading"
+                  class="mb-4 text-lg font-semibold"
+                  data-ar="التقنيات والأدوات"
+                >
+                  Technologies &amp; Tools
+                </h2>
+                <ul class="flex flex-wrap gap-2">
+                  {toolGroups.map((group) => (
+                    <li>
+                      <a
+                        href={group.href}
+                        class="flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm transition-colors hover:border-accent/50 hover:text-accent"
+                        lang="en"
                       >
-                        {levelLabel(doc.data.level)}
-                      </span>
-                      <span class="ltr text-xs text-muted tabular-nums">#{doc.data.order}</span>
+                        {group.label}
+                        <span class="ltr text-xs text-muted tabular-nums">
+                          {group.count}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+
+          <section
+            class="mt-10"
+            aria-labelledby="documentation-heading"
+          >
+            <h2
+              id="documentation-heading"
+              class="mb-4 text-lg font-semibold"
+              data-ar="التوثيق"
+            >
+              Documentation
+            </h2>
+
+            {
+              directEntries.length > 0 && (
+                <TopicList docs={directEntries} />
+              )
+            }
+
+            {
+              toolGroups.map((group, index) => (
+                <div
+                  class={
+                    index === 0 && directEntries.length === 0 ? '' : 'mt-6'
+                  }
+                >
+                  <div class="mb-2.5 flex items-baseline justify-between gap-3">
+                    <h3 class="text-sm font-semibold" lang="en">
+                      <a
+                        href={group.href}
+                        class="transition-colors hover:text-accent"
+                      >
+                        {group.label}
+                      </a>
+                    </h3>
+                    <span
+                      class="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-normal text-muted tabular-nums"
+                    >
+                      {group.count}
                     </span>
-                  </a>
-                </li>
-              ))}
-            </ol>
+                  </div>
+                  <TopicList docs={group.entries} />
+                </div>
+              ))
+            }
           </section>
         </>
       )

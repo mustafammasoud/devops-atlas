@@ -1,0 +1,116 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import TopicList from '../../../components/TopicList.astro';
+import {
+  categoryLabel,
+  canonicalCategoryId,
+  toolLabel,
+} from '../../../data/categories';
+import { docTool, sortedDocs, topicCount } from '../../../utils/docs';
+
+/**
+ * Tool landing page: `/docs/<area>/<tool>` — one per (area, tool) pair that
+ * actually has articles. Derived entirely from the content collection, so a
+ * new tool appears the moment its first article is committed.
+ */
+export async function getStaticPaths() {
+  const docs = await getCollection('docs', ({ data }) => !data.draft);
+  const groups = new Map<string, { area: string; tool: string; docs: typeof docs }>();
+
+  for (const doc of docs) {
+    const tool = docTool(doc);
+    if (!tool) continue;
+    const area = canonicalCategoryId(doc.data.category);
+    const key = `${area}\u0000${tool}`;
+    const group = groups.get(key) ?? { area, tool, docs: [] };
+    group.docs.push(doc);
+    groups.set(key, group);
+  }
+
+  return [...groups.values()].map((group) => ({
+    params: { area: group.area, tool: group.tool },
+    props: { docs: sortedDocs(group.docs) },
+  }));
+}
+
+const { area, tool } = Astro.params;
+const { docs } = Astro.props;
+
+const areaId = canonicalCategoryId(area!);
+const areaName = categoryLabel(areaId);
+const toolName = toolLabel(tool!);
+const count = topicCount(docs.length);
+
+const descriptionEn = `Documentation for ${toolName}.`;
+const descriptionAr = `التوثيق الخاص بـ ${toolName}.`;
+
+const pageTitle = `${toolName} | DevOps Atlas`;
+---
+
+<BaseLayout
+  title={pageTitle}
+  titleAr={`${toolName} | DevOps Atlas`}
+  description={descriptionEn}
+  descriptionAr={descriptionAr}
+>
+  <Header />
+
+  <main id="main" class="mx-auto w-full max-w-screen-2xl px-4 py-8">
+    <!-- Breadcrumbs: Home / Docs / Area / Tool -->
+    <nav
+      aria-label="Breadcrumb"
+      data-ar-aria="مسار التنقل"
+      class="mb-6 text-sm text-muted"
+    >
+      <ol class="flex flex-wrap items-center gap-1.5">
+        <li>
+          <a href="/" class="hover:text-accent" data-ar="الرئيسية">Home</a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li>
+          <a href="/docs" class="hover:text-accent" data-ar="الوثائق">Docs</a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li>
+          <a href={`/docs/${areaId}`} class="hover:text-accent">{areaName}</a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li aria-current="page" class="font-medium text-text" lang="en">
+          {toolName}
+        </li>
+      </ol>
+    </nav>
+
+    <header class="border-b border-border pb-8">
+      <h1
+        class="text-2xl font-semibold leading-snug tracking-tight sm:text-3xl"
+        lang="en"
+      >
+        {toolName}
+      </h1>
+
+      <p class="mt-4 max-w-3xl leading-relaxed text-muted" data-ar={descriptionAr}>
+        {descriptionEn}
+      </p>
+
+      <p class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
+        <span class="tabular-nums" data-ar={count.ar}>{count.en}</span>
+        <span aria-hidden="true">·</span>
+        <span lang="en">{areaName}</span>
+      </p>
+    </header>
+
+    <section class="mt-10" aria-labelledby="topics-heading">
+      <h2
+        id="topics-heading"
+        class="mb-4 text-lg font-semibold"
+        data-ar="المواضيع"
+      >
+        Topics
+      </h2>
+      <TopicList docs={docs} />
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { docPath, docTool } from '../utils/docs';
+import { toolLabel, levelLabel, levelLabelAr } from '../data/categories';
+
+type Doc = CollectionEntry<'docs'>;
+
+interface Props {
+  /** Ordered topic rows (already in canonical order). */
+  docs: Doc[];
+  /** Show the frontmatter order column on the right (default true). */
+  showOrder?: boolean;
+  /** Show a tool chip per row — for mixed lists where rows are not grouped by tool. */
+  showTool?: boolean;
+}
+
+const { docs, showOrder = true, showTool = false } = Astro.props;
+---
+
+<ol class="divide-y divide-border rounded-md border border-border">
+  {
+    docs.map((doc, index) => (
+      <li>
+        <a
+          href={docPath(doc.id)}
+          class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-surface"
+        >
+          <span class="flex min-w-0 items-baseline gap-3">
+            <span class="ltr shrink-0 text-xs text-muted tabular-nums">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span class="min-w-0">
+              <span class="block font-medium">{doc.data.title}</span>
+              {doc.data.description && (
+                <span class="mt-0.5 block truncate text-sm text-muted">
+                  {doc.data.description}
+                </span>
+              )}
+            </span>
+          </span>
+          <span class="flex shrink-0 items-center gap-3">
+            {showTool && docTool(doc) && (
+              <span
+                class="rounded border border-border bg-surface px-2 py-0.5 text-xs text-muted"
+                lang="en"
+              >
+                {toolLabel(docTool(doc)!)}
+              </span>
+            )}
+            <span
+              class="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted"
+              data-ar={levelLabelAr(doc.data.level)}
+            >
+              {levelLabel(doc.data.level)}
+            </span>
+            {showOrder && (
+              <span class="ltr text-xs text-muted tabular-nums">#{doc.data.order}</span>
+            )}
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ol>
