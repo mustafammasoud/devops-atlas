@@ -2,87 +2,62 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
-import {
-  categories,
-  categoryLabel,
-  canonicalCategoryId,
-  toolLabel,
-} from '../../data/categories';
-import { docPath, docTool, sortedDocs } from '../../utils/docs';
+import CategoryCard from '../../components/CategoryCard.astro';
+import { categories, canonicalCategoryId } from '../../data/categories';
+import { sortedDocs } from '../../utils/docs';
 
 const docs = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
 
-const knownIds = new Set(categories.map((category) => category.id));
-const orderedIds = [
-  ...categories.map((category) => category.id),
-  ...new Set(
-    docs
-      .map((doc) => canonicalCategoryId(doc.data.category))
-      .filter((id) => !knownIds.has(id)),
-  ),
-];
-
-const groups = orderedIds
-  .map((id) => ({
-    id,
-    label: categoryLabel(id),
-    entries: docs.filter((doc) => canonicalCategoryId(doc.data.category) === id),
-  }))
-  .filter((group) => group.entries.length > 0);
+const counts = new Map<string, number>();
+for (const doc of docs) {
+  const cat = canonicalCategoryId(doc.data.category);
+  counts.set(cat, (counts.get(cat) ?? 0) + 1);
+}
 ---
 
 <BaseLayout
-  title="All Documentation | DevOps Atlas"
-  titleAr="كل الوثائق | DevOps Atlas"
-  description="Index of all DevOps Atlas documentation."
-  descriptionAr="فهرس جميع وثائق DevOps Atlas."
+  title="Documentation | DevOps Atlas"
+  titleAr="الوثائق | DevOps Atlas"
+  description="Explore the DevOps Atlas knowledge base."
+  descriptionAr="استكشف قاعدة معرفية DevOps Atlas."
 >
   <Header />
 
   <main id="main" class="mx-auto w-full max-w-screen-2xl px-4 py-10">
-    <h1 class="text-2xl font-semibold tracking-tight" data-ar="كل الوثائق">
-      All Documentation
-    </h1>
+    <section class="max-w-2xl">
+      <h1
+        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+        data-ar="الوثائق"
+      >
+        Documentation
+      </h1>
+      <p class="mt-3 text-lg leading-relaxed text-muted" data-ar="استكشف قاعدة معرفية DevOps Atlas.">
+        Explore the DevOps Atlas knowledge base.
+      </p>
+    </section>
 
-    <div class="mt-8 space-y-10">
-      {
-        groups.map((group) => (
-          <section aria-labelledby={`cat-${group.id}`}>
-            <h2 id={`cat-${group.id}`} class="mb-3 text-lg font-semibold">
-              <a
-                href={`/docs/${group.id}`}
-                class="transition-colors hover:text-accent"
-                lang="en"
-              >
-                {group.label}
-              </a>
-            </h2>
-            <ul class="divide-y divide-border rounded-md border border-border">
-              {group.entries.map((entry) => (
-                <li>
-                  <a
-                    href={docPath(entry.id)}
-                    class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-surface"
-                  >
-                    <span class="font-medium">{entry.data.title}</span>
-                    <span class="flex items-center gap-3">
-                      {docTool(entry) && (
-                        <span
-                          class="rounded border border-border bg-surface px-2 py-0.5 text-xs text-muted"
-                          lang="en"
-                        >
-                          {toolLabel(docTool(entry)!)}
-                        </span>
-                      )}
-                      <span class="shrink-0 text-sm text-muted">{entry.data.description}</span>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))
-      }
-    </div>
+    <section
+      class="mt-10 border-t border-border pt-8"
+      aria-labelledby="areas-heading"
+    >
+      <h2
+        id="areas-heading"
+        class="mb-4 text-lg font-semibold"
+        data-ar="أقسام التوثيق"
+      >
+        Documentation Areas
+      </h2>
+
+      <ul class="grid border-b border-border sm:grid-cols-2 sm:gap-x-12">
+        {
+          categories.map((category) => (
+            <CategoryCard
+              category={category}
+              count={counts.get(category.id) ?? 0}
+            />
+          ))
+        }
+      </ul>
+    </section>
   </main>
 </BaseLayout>

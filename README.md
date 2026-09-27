@@ -30,8 +30,10 @@ No backend, database, auth, CMS or React. Nothing that is not needed yet.
 - **Search** — build-time JSON index + client-side dialog (Ctrl/⌘K or `/`),
   with Arabic-aware normalization (diacritics, alef/hamza, ta-marbuta). Zero
   search dependencies; the index is fetched lazily on first open.
-- **Navigation** — sidebar grouped by category, breadcrumbs, prev/next links,
-  scroll-spy table of contents, mobile disclosure menu, header nav.
+- **Navigation** — sidebar grouped by documentation area and nested by tool
+  (Area → Tool → Articles), breadcrumbs (Home / Docs / Area / Tool / Article),
+  area pages, tool landing pages, prev/next links, scroll-spy table of
+  contents, mobile disclosure menu, header nav.
 - **Reading UX** — heading anchor links, copy buttons on code blocks, image
   lightbox, dark/light theme with persistence, skip link, reduced-motion support.
 - **Images** — colocated images are optimized automatically by Astro; `Figure`
@@ -60,21 +62,32 @@ npm run check     # TypeScript / Astro diagnostics
 ```text
 ├── content/                  # educational content (Markdown/MDX) — the source of truth
 │   ├── README.md             # authoring guide (excluded from the build)
-│   ├── foundations/          # (empty folders are placeholders — see docs-roadmap.md)
-│   ├── linux/
+│   ├── devops-fundamentals/  # Documentation Areas (empty folders = placeholders,
+│   ├── operating-systems/    #   see docs-roadmap.md)
+│   │   └── linux/            # second level = Technology / Tool
+│   │       └── introduction.md
 │   ├── networking/
-│   ├── git/
-│   ├── docker/
-│   ├── ci-cd/
-│   ├── kubernetes/
-│   │   └── pods/
-│   │       ├── index.mdx
-│   │       └── images/       # images colocated with their document
-│   ├── cloud/
-│   ├── terraform/
+│   ├── version-control/
+│   │   └── git/
+│   ├── programming-scripting/
+│   ├── containers/
+│   │   └── docker/
+│   │       ├── introduction.md
+│   │       └── images/       # topic folder with colocated assets
+│   │           ├── index.mdx
+│   │           ├── images/   # images colocated with their document
+│   │           └── resources/
+│   ├── ci-cd-automation/
+│   ├── container-orchestration/
+│   │   └── kubernetes/
+│   │       ├── overview.md
+│   │       └── pods/
+│   ├── cloud-platforms/
+│   ├── infrastructure-as-code/
+│   ├── configuration-management/
 │   ├── observability/
-│   ├── security/
-│   └── troubleshooting/
+│   ├── security-devsecops/
+│   └── troubleshooting-production/
 ├── public/
 │   ├── images/               # shared static images
 │   ├── logo/                 # brand marks (mark + wordmark, light/dark SVG)
@@ -87,8 +100,8 @@ npm run check     # TypeScript / Astro diagnostics
 │   │                         # RelatedTopics, DocEnhancements, MermaidRuntime
 │   ├── layouts/              # BaseLayout, DocLayout (docs shell)
 │   ├── pages/                # routes: /, /docs, /docs/[category],
-│   │                         # /docs/[...slug], /search-index.json,
-│   │                         # /components-preview, 404
+│   │                         # /docs/[area]/[tool], /docs/[...slug],
+│   │                         # /search-index.json, /components-preview, 404
 │   ├── data/                 # category metadata
 │   ├── utils/                # shared helpers (doc URL mapping, canonical order)
 │   ├── styles/global.css     # design tokens, prose, RTL/LTR, themes, search dialog
@@ -102,27 +115,32 @@ npm run check     # TypeScript / Astro diagnostics
 
 ## Writing content
 
-Create a file under `content/<category>/<topic>.md` (or `.mdx`) and fill in the frontmatter:
+Create a file under `content/<area>/<tool>/<topic>.md` (or `.mdx`) and fill in the frontmatter:
 
 ```yaml
 ---
 title: البودات (Pods)
 description: الوحدة الأساسية في كوبرنيتيس.
-category: kubernetes        # any folder name; register it in src/data/categories.ts for a display label
-order: 2                    # sort order inside the sidebar category
-level: beginner             # beginner | intermediate | advanced
+category: container-orchestration   # documentation area id (register it in src/data/categories.ts for a display label)
+order: 2                            # sort order inside the sidebar group
+level: beginner                     # beginner | intermediate | advanced
 tags: [kubernetes, pods]
-draft: false                # drafts are excluded from the build
-language: ar                # content language: ar (RTL article region) | en (LTR)
+draft: false                        # drafts are excluded from the build
+language: ar                        # content language: ar (RTL article region) | en (LTR)
 ---
 ```
+
+The folder path sets the URL: `content/container-orchestration/kubernetes/pods/index.mdx`
+serves `/docs/container-orchestration/kubernetes/pods`, and every tool with at
+least one article gets a landing page at `/docs/<area>/<tool>` automatically.
 
 Content conventions:
 
 - **Images**: colocate them next to the document
-  (`content/kubernetes/pods/images/pod-lifecycle.svg`) and reference them with a relative
-  path (`![alt](./images/pod-lifecycle.svg)`). Astro optimizes SVG/PNG/WebP automatically.
-- **PDFs**: either colocated with the document (`content/<topic>/resources/x.pdf`,
+  (`content/container-orchestration/kubernetes/pods/images/pod-lifecycle.svg`) and
+  reference them with a relative path (`![alt](./images/pod-lifecycle.svg)`). Astro
+  optimizes SVG/PNG/WebP automatically.
+- **PDFs**: either colocated with the document (`content/<area>/<tool>/<topic>/resources/x.pdf`,
   imported in MDX) or site-wide in `public/pdf/` linked with `/pdf/<file>.pdf`.
 - **Diagrams**: use a ` ```mermaid ` fenced block — it renders as a diagram client-side
   (Mermaid is only downloaded on pages that contain one).

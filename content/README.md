@@ -27,7 +27,7 @@ order: 3
 تحفظ الملف، فيحدث التالي **تلقائياً**:
 
 * الصفحة تظهر في القائمة الجانبية تحت فئتها
-* رابطها `/docs/linux/monitoring`
+* رابطها `/docs/operating-systems/linux/monitoring`
 * تُدرج في البحث ومسار التنقل والتنقل السابق/التالي
 * تُبنى مع الموقع (`npm run build`)
 
@@ -74,7 +74,9 @@ content/<area>/<concept>.md               →  /docs/<area>/<concept>
 
 * أسماء المجلدات والملفات: **إنجليزية صغيرة بشرطة سفلية/واصلة** (`kebab-case`) —
   `load-balancer.md`، لا مسافات ولا أسماء عربية في المسارات (الروابط تبقى كما هي).
-* اسم مجلد الفئة العليا = قيمة `category` في الواجهة الأمامية.
+* اسم مجلد المستوى الأول = مجال التوثيق = قيمة `category` في الواجهة
+  الأمامية؛ اسم مجلد المستوى الثاني = التقنية/الأداة (يظهر في عنوان فرعي
+  تلقائياً، وينشأ له صفحة أداة `/docs/<area>/<tool>`).
 * الملف الوحيد يكفي للموضوعات البسيطة؛ استخدم `index.mdx` عند وجود أصول
   (`images/`, `resources/`) بجانب الصفحة.
 * الصور: `images/<name>.svg|png|webp` — تسمية تصف المحتوى
@@ -88,7 +90,7 @@ content/<area>/<concept>.md               →  /docs/<area>/<concept>
 ---
 title: عنوان الصفحة                 # مطلوب فقط مع category
 description: مختصر للفهرس والبحث     # موصى به
-category: kubernetes                # مطلوب — اسم مجلد الفئة
+category: container-orchestration    # مطلوب — اسم مجال التوثيق (المستوى الأول)
 order: 1                            # الترتيب داخل الفئة (الافتراضي 0)
 level: beginner                     # beginner | intermediate | advanced
 tags: [kubernetes, pods]   # عضويات متعددة — أساس المسارات التعليمية المستقبلية

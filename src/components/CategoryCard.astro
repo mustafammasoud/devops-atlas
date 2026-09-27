@@ -1,6 +1,7 @@
 ---
 import CategoryIcon from './CategoryIcon.astro';
 import type { Category } from '../data/categories';
+import { topicCount } from '../utils/docs';
 
 interface Props {
   category: Category;
@@ -12,15 +13,8 @@ const { category, count } = Astro.props;
 const planned = count === 0;
 
 /** Topic count: English default (site locale) + Arabic variant for the swap. */
-const countEn = count === 1 ? '1 topic' : `${count} topics`;
-const countAr =
-  count === 1
-    ? 'موضوع واحد'
-    : count === 2
-      ? 'موضوعان'
-      : count >= 3 && count <= 10
-        ? `${count} مواضيع`
-        : `${count} موضوعاً`;
+const countEn = topicCount(count).en;
+const countAr = topicCount(count).ar;
 ---
 
 <li class="border-t border-border">
