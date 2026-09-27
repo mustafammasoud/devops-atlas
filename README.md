@@ -2,9 +2,9 @@
 
 **Ops Handbook** is an open-source DevOps knowledge base and learning platform.
 It is not a blog: it is structured documentation, practical labs, diagrams, screenshots,
-code examples, troubleshooting notes and cheatsheets. The UI defaults to English with a
-working Arabic switch (persisted per browser); educational content is authored
-per-document in Arabic or English.
+code examples, troubleshooting notes and cheatsheets. The UI is English-only;
+individual articles may declare `language: ar` to render their content region
+as RTL for Arabic or mixed Arabic/English writing.
 
 All educational content lives as **Markdown/MDX files in this repository** (source of truth).
 The site is fully static and ready for Cloudflare Pages.
@@ -96,7 +96,7 @@ npm run check     # TypeScript / Astro diagnostics
 │   └── pdf/                  # static PDF resources (served as-is)
 ├── src/
 │   ├── components/           # Header, Search, Sidebar, TableOfContents, ThemeToggle,
-│   │                         # LocaleToggle, Callout, Steps, Figure, PdfCard, PdfEmbed,
+│   │                         # Callout, Steps, Figure, PdfCard, PdfEmbed,
 │   │                         # CategoryCard, CategoryIcon, ReadingProgress,
 │   │                         # RelatedTopics, DocEnhancements, MermaidRuntime
 │   ├── layouts/              # BaseLayout, DocLayout (docs shell)
@@ -128,7 +128,7 @@ order: 2                            # sort order inside the sidebar group
 level: beginner                     # beginner | intermediate | advanced
 tags: [kubernetes, pods]
 draft: false                        # drafts are excluded from the build
-language: ar                        # content language: ar (RTL article region) | en (LTR)
+# language: ar                      # optional — article region RTL (default: en)
 ---
 ```
 
@@ -152,8 +152,8 @@ Content conventions:
   import** — see [`content/README.md`](content/README.md) for the full authoring guide
   with snippets.
 - **Direction**: the document `language` sets `lang`/`dir` on the **article region** only;
-  page chrome follows the reader's UI locale (English default, Arabic via the header
-  switch). Code blocks, terminals, YAML/JSON and inline code are always forced LTR.
+  the page chrome is always English (`lang="en" dir="ltr"`). Code blocks, terminals,
+  YAML/JSON and inline code are always forced LTR.
 
 ## Content architecture principles
 
@@ -172,13 +172,12 @@ limitations) lives in [`docs-roadmap.md`](docs-roadmap.md).
    folder, loaded by the `glob` loader in `src/content.config.ts`. Content stays clearly
    separated from application code; images colocated with documents are still optimized by
    Astro (verified in the production build).
-2. **Locale-driven UI, content-driven direction** — static HTML ships in English
-   (site default); a head script re-applies the stored `atlas-locale` before first paint
-   and swaps `[data-ar*]` nodes client-side, so the header switch works without a rebuild.
-   The prose region keeps its own `dir`/`lang` from content frontmatter, everything
-   technical (code blocks, inline code, tags, URLs, tool names) is isolated LTR via CSS,
-   and layout uses CSS logical properties (`ms-*`, `ps-*`, `border-inline-start`) so the
-   same markup works in both directions.
+2. **English-first chrome, content-driven direction** — the site UI is English-only
+   (`lang="en" dir="ltr"`) with no language switcher; static HTML ships as-is with no
+   client-side locale runtime. The prose region keeps its own `dir`/`lang` from content
+   frontmatter (`language: ar` → RTL), everything technical (code blocks, inline code,
+   tags, URLs, tool names) is isolated LTR via CSS, and layout uses CSS logical properties
+   (`ms-*`, `ps-*`, `border-inline-start`) so the same markup works in both directions.
 3. **Static output, no adapter** — `output: 'static'` so the `dist/` folder can be pushed
    straight to Cloudflare Pages later (`git → GitHub → Cloudflare Pages`).
 4. **Shiki dual themes** — `gruvbox-light-medium` / `gruvbox-dark-medium` (warm
@@ -189,10 +188,10 @@ limitations) lives in [`docs-roadmap.md`](docs-roadmap.md).
 6. **Schema is single-sourced** — all frontmatter fields are declared once in
    `src/content.config.ts`; adding future fields (reading time, prerequisites,
    labs…) does not require restructuring.
-7. **UI language ≠ content language** — the language switch toggles the chrome
-   (nav, labels, metadata, descriptions) between English and Arabic and persists the
-   choice in `localStorage`; technical names (Linux, Docker, Kubernetes, CI/CD …) and
-   authored content never change with it.
+7. **UI language ≠ content language** — the chrome (nav, labels, metadata,
+   descriptions) is English-only; technical names (Linux, Docker, Kubernetes, CI/CD …)
+   and authored content are never translated for the UI, while an article itself may be
+   written in Arabic/English mix and opt into RTL via frontmatter.
 8. **Search is a static index, not a service** — `/search-index.json` is
    generated at build time from the collection and fetched lazily by the search
    dialog. Matching runs in the browser with Arabic normalization (diacritics

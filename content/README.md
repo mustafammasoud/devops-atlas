@@ -79,7 +79,7 @@ content/
         └── images/
             ├── index.mdx          # الصفحة نفسها
             ├── images/            # أصول محلية (صور/مخططات)
-            │   └── placeholder.svg
+            │   └── diagram.svg
             └── resources/         # ملفات PDF محلية
                 └── cheatsheet.pdf
 ```
@@ -101,7 +101,7 @@ order: 1                            # الترتيب داخل المجموعة (
 level: beginner                     # beginner | intermediate | advanced
 tags: [containers, docker]          # وسوم متعددة
 draft: false                        # true = لا يُبنى ولا يُفهرس
-language: ar                        # ar (RTL) | en (LTR) — لغة المحتوى
+# language: ar                      # اختياري — منطقة المقال RTL (الافتراضي en)
 ---
 ```
 
@@ -315,8 +315,8 @@ docker run nginx
 
 ## الاتجاه / Direction
 
-- `language: ar` → منطقة المقال RTL، `language: en` → LTR. واجهة الصفحة تتبع
-  لغة الواجهة المختارة (الإنجليزية افتراضياً) وليس لغة المحتوى.
+- `language: ar` → منطقة المقال RTL، `language: en` → LTR (الافتراضي). واجهة
+  الصفحة إنجليزية دائماً (`lang="en" dir="ltr"`) بغض النظر عن لغة المحتوى.
 - لا تضبط `dir` يدوياً في المحتوى العادي؛ النص العربي يعمل تلقائياً.
 - استخدم الصنف `ltr` على العناصر المزدوجة نادراً (المعرفات التقنية).
 - تعليقات `.mdx` تكتب بصيغة `{/* … */}` — تعليقات HTML خطأ في MDX.

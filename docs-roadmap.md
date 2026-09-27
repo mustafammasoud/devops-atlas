@@ -27,8 +27,7 @@ content/<area>/<concept>.md               →  /docs/<area>/<concept>
   only overrides it explicitly).
 - **Tool / technology** — the second folder level (`docker`, `kubernetes`,
   `linux` …). Each tool with at least one article automatically gets a tool
-  landing page at `/docs/<area>/<tool>`. Tool names stay English in every
-  locale.
+  landing page at `/docs/<area>/<tool>`. Tool names stay English.
 - **Article** — the actual page. Articles written directly under an area (no
   tool level) are still supported and appear ungrouped on the area page.
 
@@ -453,7 +452,7 @@ stays as-is.
   is the tool landing page, so an article sits at
   `/docs/<area>/<tool>/<article>`. A flat file `content/<area>/<tool>.md`
   would collide with the tool landing page and should not be used.
-- **Category presentation lives in one file**: Arabic descriptions, icons and
+- **Category presentation lives in one file**: descriptions, icons and
   tool display names are defined in `src/data/categories.ts` alongside labels
   and order — adding or changing them never requires touching content.
 - **Learning paths are implicit**: tags carry cross-cutting membership today;
