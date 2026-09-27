@@ -1,7 +1,7 @@
-# DevOps Atlas — Content Roadmap & Learning Architecture
+# Ops Handbook — Content Roadmap & Learning Architecture
 
 > A **human-readable content blueprint**, not an application configuration and
-> not a fixed roadmap. It answers: *what should exist in DevOps Atlas, how it
+> not a fixed roadmap. It answers: *what should exist in Ops Handbook, how it
 > is organized, what to learn first, and what depends on what.* The folder
 > structure in `content/` and the presentation registry in
 > `src/data/categories.ts` may grow, merge, split or disappear at any time —

@@ -1,6 +1,6 @@
-# DevOps Atlas
+# Ops Handbook
 
-**DevOps Atlas** is an open-source DevOps knowledge base and learning platform.
+**Ops Handbook** is an open-source DevOps knowledge base and learning platform.
 It is not a blog: it is structured documentation, practical labs, diagrams, screenshots,
 code examples, troubleshooting notes and cheatsheets. The UI defaults to English with a
 working Arabic switch (persisted per browser); educational content is authored
@@ -224,11 +224,11 @@ Assets (SVG):
 | File                                       | Use                                       |
 | ------------------------------------------ | ----------------------------------------- |
 | `public/logo/mark-light.svg` / `mark-dark.svg` | mark only (light / dark)              |
-| `public/logo/logo-light.svg` / `logo-dark.svg` | mark + “DevOps Atlas” wordmark (light / dark) |
+| `public/logo/logo-light.svg` / `logo-dark.svg` | mark + “Ops Handbook” wordmark (light / dark) |
 | `public/favicon.svg`                        | compact filled mark; switches with `prefers-color-scheme` |
 
-The wordmark uses the site’s system sans stack — “DevOps” at medium weight,
-“Atlas” at bold with slightly tightened tracking — so it always matches the
+The wordmark uses the site’s system sans stack — “Ops” at medium weight,
+“Handbook” at bold with slightly tightened tracking — so it always matches the
 interface without shipping a font file. The header renders the mark inline
 (`currentColor` frame/route + `fill-accent` node) so both themes follow the
 color tokens automatically.
@@ -246,7 +246,7 @@ Usage rules:
 ## Deployment (later)
 
 ```text
-Local development → Git → GitHub → Cloudflare Pages → devops-atlas.pages.dev
+Local development → Git → GitHub → Cloudflare Pages → ops-handbook.pages.dev
 ```
 
 Deployment is intentionally **not** configured in this milestone. The build is a plain

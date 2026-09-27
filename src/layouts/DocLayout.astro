@@ -40,7 +40,7 @@ const position = ordered.findIndex((doc) => doc.id === entry.id);
 const previous = position > 0 ? ordered[position - 1] : null;
 const next = position >= 0 && position < ordered.length - 1 ? ordered[position + 1] : null;
 
-const pageTitle = title === 'DevOps Atlas' ? 'DevOps Atlas' : `${title} | DevOps Atlas`;
+const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Handbook`;
 ---
 
 <BaseLayout title={pageTitle} description={description}>
