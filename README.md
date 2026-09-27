@@ -62,6 +62,8 @@ npm run check     # TypeScript / Astro diagnostics
 ```text
 ├── content/                  # educational content (Markdown/MDX) — the source of truth
 │   ├── README.md             # authoring guide (excluded from the build)
+│   ├── _template/            # copy-me article template (excluded from the build)
+│   │   └── article.mdx
 │   ├── devops-fundamentals/  # Documentation Areas (empty folders = placeholders,
 │   ├── operating-systems/    #   see docs-roadmap.md)
 │   │   └── linux/            # second level = Technology / Tool
@@ -115,13 +117,14 @@ npm run check     # TypeScript / Astro diagnostics
 
 ## Writing content
 
-Create a file under `content/<area>/<tool>/<topic>.md` (or `.mdx`) and fill in the frontmatter:
+Create a file under `content/<area>/<tool>/<topic>.md` (or `.mdx`) and fill in the frontmatter
+(start from `content/_template/article.mdx`):
 
 ```yaml
 ---
 title: البودات (Pods)
 description: الوحدة الأساسية في كوبرنيتيس.
-category: container-orchestration   # documentation area id (register it in src/data/categories.ts for a display label)
+# category / tool are derived from the folders — normally omitted
 order: 2                            # sort order inside the sidebar group
 level: beginner                     # beginner | intermediate | advanced
 tags: [kubernetes, pods]
@@ -130,9 +133,11 @@ language: ar                        # content language: ar (RTL article region) 
 ---
 ```
 
-The folder path sets the URL: `content/container-orchestration/kubernetes/pods/index.mdx`
-serves `/docs/container-orchestration/kubernetes/pods`, and every tool with at
-least one article gets a landing page at `/docs/<area>/<tool>` automatically.
+Only `title` is required: `category` and `tool` are **derived from the directory
+structure**. The folder path sets the URL —
+`content/container-orchestration/kubernetes/pods/index.mdx` serves
+`/docs/container-orchestration/kubernetes/pods` — and every tool with at least
+one article gets a landing page at `/docs/<area>/<tool>` automatically.
 
 Content conventions:
 

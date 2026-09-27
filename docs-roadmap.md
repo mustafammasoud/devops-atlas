@@ -51,9 +51,11 @@ folder existing.
 
 ## How the structure evolves
 
-- **Add an article**: create a file under `content/<area>/<tool>/` (or directly
-  under `content/<area>/`). It appears in navigation, search, the area page and
-  the tool landing page after the next build — no code changes.
+- **Add an article**: copy `content/_template/article.mdx` to
+  `content/<area>/<tool>/` (or drop a plain `topic.md` under `content/<area>/`).
+  It appears in navigation, search, the area page and the tool landing page
+  after the next build — no code changes. `category`/`tool` are derived from
+  the folders, so frontmatter stays minimal.
 - **Add a tool**: create `content/<area>/<newtool>/`. The tool landing page
   `/docs/<area>/<newtool>` is generated automatically from the collection the
   moment its first article exists. No registry, no route file, no config.
@@ -73,19 +75,24 @@ folder existing.
 
 The same article can serve several audiences (e.g. a networking article useful
 to both `container-orchestration` and `cloud-platforms` readers). Each page has
-exactly **one** sidebar home (`category:`) but any number of **tags**. Future
-curated learning paths (beginner track, exam prep, …) should be assembled from
-tags and metadata — never by duplicating or relocating content.
+exactly **one** sidebar home (its area folder) but any number of **tags**.
+Future curated learning paths (beginner track, exam prep, …) should be
+assembled from tags and metadata — never by duplicating or relocating content.
 
 ```yaml
 ---
-category: networking
 tags:
   - containers
   - kubernetes
   - networking
 ---
 ```
+
+If explicit learning phases (beginner track, ordered module, exam prep) are
+needed later, they should be **views over this metadata** — tag-curated lists
+or an `order`+`level` grouping in presentation code — not a new content
+schema, a course engine, or progress tracking. The reference-first architecture
+stays as-is.
 
 ## Current limitations
 
