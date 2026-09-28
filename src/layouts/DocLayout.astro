@@ -38,7 +38,7 @@ const next = position >= 0 && position < ordered.length - 1 ? ordered[position +
 const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Handbook`;
 ---
 
-<BaseLayout title={pageTitle} description={description}>
+<BaseLayout title={pageTitle} description={description} ogType="article" lang={language}>
   <Header />
   <ReadingProgress />
 

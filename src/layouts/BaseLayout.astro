@@ -1,15 +1,62 @@
 ---
 import '../styles/global.css';
 
+const DEFAULT_DESCRIPTION =
+  'Ops Handbook — a structured DevOps knowledge base: documentation, labs, diagrams, and command references.';
+
 interface Props {
   title: string;
   description?: string;
+  /** Keep the page out of search results (404, internal demo pages). */
+  noindex?: boolean;
+  /** Open Graph page type — documentation articles pass `article`. */
+  ogType?: 'website' | 'article';
+  /** Content language, used in structured data. */
+  lang?: string;
 }
 
 const {
   title,
-  description = 'Ops Handbook — a structured DevOps knowledge base: documentation, labs, diagrams, and command references.',
+  description: rawDescription,
+  noindex = false,
+  ogType = 'website',
+  lang = 'en',
 } = Astro.props;
+
+if (!Astro.site) {
+  throw new Error('[seo] astro.config.mjs must set `site` for canonical/OG URLs.');
+}
+
+const description = rawDescription?.trim() ? rawDescription : DEFAULT_DESCRIPTION;
+const siteName = 'Ops Handbook';
+
+// Canonical URL: production origin + route, normalized to a single
+// trailing-slash variant (trailingSlash: 'ignore' → no trailing slash,
+// except the site root).
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const canonical = new URL(pathname, Astro.site).href;
+const ogImage = new URL('/og/ops-handbook.png', Astro.site).href;
+const ogImageAlt = 'Ops Handbook — DevOps Knowledge Base';
+
+// Restrained structured data: the site plus the current page (WebPage, or
+// TechArticle on documentation articles). Real data only — no authors,
+// dates, or ratings are invented.
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', name: siteName, url: Astro.site.href },
+    ogType === 'article'
+      ? {
+          '@type': 'TechArticle',
+          headline: title.replace(/ \| Ops Handbook$/, ''),
+          description,
+          url: canonical,
+          inLanguage: lang,
+          mainEntityOfPage: canonical,
+        }
+      : { '@type': 'WebPage', name: title, description, url: canonical },
+  ],
+};
 ---
 
 <!doctype html>
@@ -20,6 +67,24 @@ const {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <!-- Theme-aware favicon: the exact header logo mark, light/dark variants. -->
     <link
       rel="icon"
