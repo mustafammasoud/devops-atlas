@@ -1,15 +1,13 @@
-------
-
 <button
   type="button"
   id="theme-toggle"
-  class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface text-muted transition-colors hover:border-accent/50 hover:text-text"
-  aria-label="Toggle dark mode"
-  title="Toggle dark mode"
+  class="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface text-muted transition-colors hover:border-accent/50 hover:text-text"
+  aria-label="Switch to dark theme"
+  title="Switch to dark theme"
 >
-  <!-- Shown in dark mode: switch back to light -->
+  <!-- Icon reflects the current theme: sun in light, moon in dark. -->
   <svg
-    class="hidden h-4 w-4 dark:block"
+    class="block h-4 w-4 dark:hidden"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -21,9 +19,8 @@
     <circle cx="12" cy="12" r="4"></circle>
     <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
   </svg>
-  <!-- Shown in light mode: switch to dark -->
   <svg
-    class="block h-4 w-4 dark:hidden"
+    class="hidden h-4 w-4 dark:block"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -34,16 +31,85 @@
   >
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
   </svg>
+  <!-- Shown only while following the system theme. -->
+  <span
+    id="theme-mode-dot"
+    class="absolute right-0.5 top-0.5 hidden h-1.5 w-1.5 rounded-full bg-accent"
+    aria-hidden="true"
+  ></span>
 </button>
 
 <script>
+  type ThemeMode = 'light' | 'dark' | 'system';
+  const STORAGE_KEY = 'theme';
+
   const button = document.getElementById('theme-toggle');
-  button?.addEventListener('click', () => {
-    const dark = document.documentElement.classList.toggle('dark');
+  const dot = document.getElementById('theme-mode-dot');
+  const systemQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function readMode(): ThemeMode {
     try {
-      localStorage.setItem('theme', dark ? 'dark' : 'light');
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === 'light' || stored === 'dark' || stored === 'system') {
+        return stored;
+      }
     } catch {
       /* storage unavailable */
     }
+    return 'system';
+  }
+
+  let mode: ThemeMode = readMode();
+
+  /** Label describes the next click: light → dark → system → light. */
+  function nextActionLabel(current: ThemeMode): string {
+    if (current === 'light') return 'Switch to dark theme';
+    if (current === 'dark') return 'Switch to system theme';
+    return 'Switch to light theme';
+  }
+
+  function apply(): void {
+    const dark = mode === 'dark' || (mode === 'system' && systemQuery.matches);
+    document.documentElement.classList.toggle('dark', dark);
+
+    const label = nextActionLabel(mode);
+    button?.setAttribute('aria-label', label);
+    button?.setAttribute('title', label);
+    dot?.classList.toggle('hidden', mode !== 'system');
+
+    try {
+      localStorage.setItem(STORAGE_KEY, mode);
+    } catch {
+      /* storage unavailable */
+    }
+  }
+
+  function onSystemChange(): void {
+    apply();
+  }
+
+  /** Follow OS preference changes live — but only while in system mode. */
+  function watchSystemPreference(): void {
+    systemQuery.removeEventListener('change', onSystemChange);
+    if (mode === 'system') {
+      systemQuery.addEventListener('change', onSystemChange);
+    }
+  }
+
+  button?.addEventListener('click', () => {
+    mode = mode === 'light' ? 'dark' : mode === 'dark' ? 'system' : 'light';
+    apply();
+    watchSystemPreference();
   });
+
+  // Sync labels/dot with the theme the inline head script already applied —
+  // no flash, no re-reading of the resolved state.
+  apply();
+  watchSystemPreference();
+
+  window.addEventListener(
+    'pagehide',
+    () => systemQuery.removeEventListener('change', onSystemChange),
+    { once: true },
+  );
 </script>

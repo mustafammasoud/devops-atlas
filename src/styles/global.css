@@ -127,6 +127,53 @@
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* Header nav links — dedicated tokens so both themes stay WCAG AA    */
+/* against the navbar background (--c-bg): default ≥ 4.5:1, with a     */
+/* brighter hover (plus pill) and an accent active state.              */
+/* ------------------------------------------------------------------ */
+:root {
+  --nav-link: #4f4636; /* 8.10:1 on #f4efe4 */
+  --nav-link-hover: #2b2418; /* 13.38:1 */
+  --nav-link-active: #8a5a24; /* 5.13:1 */
+}
+
+.dark {
+  --nav-link: #cfc6b6; /* 10.92:1 on #17130f */
+  --nav-link-hover: #e8e1d4; /* 14.21:1 */
+  --nav-link-active: #d0a45c; /* 8.05:1 */
+}
+
+.nav-link {
+  position: relative;
+  color: var(--nav-link);
+}
+
+.nav-link:hover {
+  background-color: var(--c-surface-2);
+  color: var(--nav-link-hover);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+.nav-link[aria-current='page'] {
+  color: var(--nav-link-active);
+}
+
+.nav-link[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.125rem;
+  height: 2px;
+  border-radius: 1px;
+  background-color: var(--nav-link-active);
+}
+
 /* Small uppercase label used above sections and sidebar groups. */
 .eyebrow {
   font-size: 0.6875rem;
@@ -494,6 +541,15 @@ pre.astro-code:hover .code-copy,
 
 .search-dialog::backdrop {
   background: rgb(0 0 0 / 0.45);
+}
+
+/* Phones: near edge-to-edge, taller, softer corners. */
+@media (max-width: 639px) {
+  .search-dialog {
+    width: calc(100vw - 1rem);
+    max-height: 85vh;
+    border-radius: 1rem;
+  }
 }
 
 .search-dialog input[type='search']::-webkit-search-cancel-button {

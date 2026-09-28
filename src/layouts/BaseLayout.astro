@@ -33,14 +33,19 @@ const {
       href="/logo/mark-dark.svg"
       media="(prefers-color-scheme: dark)"
     />
-    <!-- Applies the stored theme before first paint to avoid a flash. -->
+    <!-- Applies the stored theme (light / dark / system) before first paint. -->
     <script is:inline>
       (function () {
         try {
           var stored = localStorage.getItem('theme');
-          var dark = stored
-            ? stored === 'dark'
-            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var mode =
+            stored === 'light' || stored === 'dark' || stored === 'system'
+              ? stored
+              : 'system';
+          var dark =
+            mode === 'dark' ||
+            (mode === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
           document.documentElement.classList.toggle('dark', dark);
         } catch (e) {
           /* storage unavailable — keep the light default */
