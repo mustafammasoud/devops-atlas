@@ -247,7 +247,7 @@ kbd {
   margin-block: 1.1rem;
 }
 
-.prose :where(a) {
+.prose :where(a):not([download]) {
   color: var(--c-accent);
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -619,6 +619,33 @@ pre.astro-code:hover .code-copy,
 
 .search-dialog input[type='search']::-webkit-search-cancel-button {
   display: none;
+}
+
+/* Keyboard-selected result -------------------------------------------------
+   Driven purely by the existing aria-selected state set by ↑/↓. Strongest
+   result state: specificity outranks the hover/focus-visible utilities
+   (which only add --c-surface) and the temporary bg-surface class the script
+   toggles. Warm palette tokens only; tokens flip automatically in dark mode. */
+#search-results [role='option'][aria-selected='true'] > a {
+  /* Surface listed first at 86%: identical mix, and it doubles as the
+     bundler's no-color-mix fallback (accent 14%). */
+  background-color: color-mix(in srgb, var(--c-surface-2) 86%, var(--c-accent));
+  box-shadow: inset 2px 0 0 var(--c-accent);
+}
+
+/* Stronger text contrast inside the selection (muted title meta + snippet). */
+#search-results [role='option'][aria-selected='true'] a .text-muted {
+  color: color-mix(in srgb, var(--c-text) 55%, var(--c-muted));
+}
+
+/* Chosen/hovered area card (homepage + /docs index) ----------------------
+   Mirrors the strong search-selection treatment: warm accent-tinted surface
+   plus the same 2px inline accent bar. Surface listed first at 86% so the
+   bundler's no-color-mix fallback stays on-palette. */
+.area-card:hover,
+.area-card:focus-visible {
+  background-color: color-mix(in srgb, var(--c-surface-2) 86%, var(--c-accent));
+  box-shadow: inset 2px 0 0 var(--c-accent);
 }
 
 /* Match highlighting in search results --------------------------------- */
