@@ -12,42 +12,86 @@ const fileName = href.split('/').pop() ?? href;
 const name = title ?? fileName;
 ---
 
-<div class="my-6 flex flex-wrap items-center gap-4 rounded-md border border-border bg-surface p-4">
-  <svg
-    class="h-8 w-8 shrink-0 text-muted"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.6"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-    <path d="M14 2v6h6"></path>
-    <path d="M9 13h6M9 17h4"></path>
-  </svg>
+<div class="my-6 flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+  <div class="flex min-w-0 items-start gap-3.5 sm:items-center">
+    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-surface-2/70 text-accent">
+      <svg
+        class="h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <path d="M14 2v6h6"></path>
+        <path d="M9 13h6M9 17h4"></path>
+      </svg>
+    </div>
 
-  <div class="min-w-0 flex-1">
-    <p class="truncate font-mono text-[0.9rem] font-medium" dir="ltr">{name}</p>
-    {description && <p class="mt-0.5 text-sm text-muted">{description}</p>}
+    <div class="min-w-0 flex-1">
+      <p
+        class:list={[
+          'font-semibold text-text leading-snug break-words',
+          title ? 'text-[0.95rem] sm:text-base font-sans' : 'text-sm font-mono',
+        ]}
+        dir="auto"
+      >
+        {name}
+      </p>
+      {description && (
+        <p class="mt-1 text-xs sm:text-sm text-muted leading-relaxed break-words" dir="auto">
+          {description}
+        </p>
+      )}
+    </div>
   </div>
 
-  <div class="flex shrink-0 gap-2 text-sm">
+  <div class="grid w-full grid-cols-1 gap-2 min-[400px]:grid-cols-2 sm:w-auto sm:shrink-0 sm:flex sm:flex-row sm:gap-2 text-sm">
     <a
       href={href}
       target="_blank"
       rel="noopener"
-      class="rounded-md border border-border bg-bg px-3 py-1.5 font-medium transition-colors hover:border-accent/50 hover:text-accent"
+      class="inline-flex items-center justify-center gap-1.5 rounded-md border border-border bg-bg px-3.5 py-2 text-xs sm:text-sm font-medium text-text transition-colors hover:border-accent/60 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
-      Open in new tab
+      <svg
+        class="h-4 w-4 shrink-0 opacity-70"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+      <span>Open in new tab</span>
     </a>
     <a
       href={href}
       download
-      class="rounded-md bg-accent px-3 py-1.5 font-medium text-accent-contrast transition-opacity hover:opacity-90"
+      class="inline-flex items-center justify-center gap-1.5 rounded-md bg-accent px-3.5 py-2 text-xs sm:text-sm font-medium text-accent-contrast transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
-      Download
+      <svg
+        class="h-4 w-4 shrink-0 opacity-85"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      <span>Download</span>
     </a>
   </div>
 </div>
