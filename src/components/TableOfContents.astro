@@ -36,7 +36,11 @@ const items = headings.filter((heading) => heading.depth >= 2 && heading.depth <
 }
 
 <script>
-  // Scroll-spy: highlights the section currently being read.
+  // Scroll-spy: highlights exactly one section while reading.
+  // IntersectionObserver does the work — no per-scroll math. The active
+  // link persists between headings (empty observer windows keep the last
+  // value), the last heading wins at the page bottom, and plain anchor
+  // links keep working (and stay keyboard-accessible) without JavaScript.
   const links = Array.from(
     document.querySelectorAll<HTMLAnchorElement>('nav[data-toc] a.toc-link'),
   );
@@ -45,24 +49,43 @@ const items = headings.filter((heading) => heading.depth >= 2 && heading.depth <
     .map((id) => document.getElementById(id))
     .filter((el): el is HTMLElement => el !== null);
 
-  if (targets.length > 0) {
+  if (links.length > 0 && targets.length > 0) {
     const visible = new Set<string>();
+    let activeId: string | null = null;
+
+    const atPageBottom = (): boolean =>
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight - 4;
+
+    const setActive = (id: string | null): void => {
+      if (id === activeId) return;
+      activeId = id;
+      links.forEach((link, index) => {
+        const active = ids[index] === id;
+        link.classList.toggle('is-active', active);
+        if (active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) visible.add(entry.target.id);
           else visible.delete(entry.target.id);
         }
-        const activeId = ids.find((id) => visible.has(id));
-        links.forEach((link, index) => {
-          const active = ids[index] === activeId;
-          link.classList.toggle('is-active', active);
-          if (active) link.setAttribute('aria-current', 'location');
-          else link.removeAttribute('aria-current');
-        });
+        // First heading currently in the reading band …
+        let nextId = ids.find((id) => visible.has(id));
+        // … else last heading when scrolled to the bottom …
+        if (!nextId && atPageBottom()) nextId = ids[ids.length - 1];
+        // … else keep the previous highlight; before the first band, start
+        // with the first section so exactly one is always current.
+        if (!nextId) nextId = activeId ?? ids[0];
+        setActive(nextId);
       },
       { rootMargin: '-96px 0px -60% 0px', threshold: 0 },
     );
     targets.forEach((target) => observer.observe(target));
+    setActive(ids[0]);
   }
 </script>

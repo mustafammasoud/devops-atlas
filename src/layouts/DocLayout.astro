@@ -8,7 +8,8 @@ import DocEnhancements from '../components/DocEnhancements.astro';
 import MermaidRuntime from '../components/MermaidRuntime.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import RelatedTopics from '../components/RelatedTopics.astro';
-import { categoryLabel, toolLabel, levelLabel } from '../data/categories';
+import CategoryIcon from '../components/CategoryIcon.astro';
+import { categoryLabel, getCategory, toolLabel, levelLabel } from '../data/categories';
 import { docCategory, docPath, docTool, sortedDocs } from '../utils/docs';
 import type { CollectionEntry } from 'astro:content';
 
@@ -34,6 +35,39 @@ const ordered = sortedDocs(await getCollection('docs', ({ data }) => !data.draft
 const position = ordered.findIndex((doc) => doc.id === entry.id);
 const previous = position > 0 ? ordered[position - 1] : null;
 const next = position >= 0 && position < ordered.length - 1 ? ordered[position + 1] : null;
+
+// Fundamentals learning path: the devops-fundamentals articles ordered by
+// their frontmatter `order`. Derived entirely from content metadata — no
+// hardcoded URLs — so steps stay correct if articles change.
+const FUNDAMENTALS_CATEGORY = 'devops-fundamentals';
+const pathDocs = ordered
+  .filter((doc) => docCategory(doc) === FUNDAMENTALS_CATEGORY)
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
+const stepIndex = pathDocs.findIndex((doc) => doc.id === entry.id);
+const inPath = stepIndex >= 0;
+const step = inPath ? stepIndex + 1 : 0;
+const pathPrevious = inPath && stepIndex > 0 ? pathDocs[stepIndex - 1] : null;
+const pathNext = inPath && stepIndex < pathDocs.length - 1 ? pathDocs[stepIndex + 1] : null;
+const pathRoutes = pathDocs.map((doc) => docPath(doc.id));
+
+// Fundamentals pages navigate within the path; everything else keeps the
+// generic canonical prev/next.
+const prevDoc = inPath ? pathPrevious : previous;
+const nextDoc = inPath ? pathNext : next;
+
+// Last updated: from the article's frontmatter `date` only. Omitted when
+// absent — a date is never invented or relabelled.
+const lastUpdated = entry.data.date
+  ? new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC',
+    }).format(entry.data.date)
+  : null;
+
+// Current area, reused by the collapsed sidebar rail for context.
+const categoryMeta = getCategory(category);
 
 const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Handbook`;
 ---
@@ -64,6 +98,21 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
           <Sidebar currentId={entry.id} />
         </div>
       </aside>
+
+      <!-- Context while the sidebar is collapsed: current area icon and a
+           compact "Docs" label. Decorative — no focusable children. -->
+      <div
+        class="docs-sidebar-rail"
+        aria-hidden="true"
+        title={categoryMeta?.label ?? categoryLabel(category)}
+      >
+        {
+          categoryMeta && (
+            <CategoryIcon name={categoryMeta.icon} class="h-5 w-5" />
+          )
+        }
+        <span class="docs-sidebar-rail-label" lang="en">Docs</span>
+      </div>
 
       <button
         type="button"
@@ -155,6 +204,13 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
           <span aria-hidden="true"> · </span>
           <span>{levelLabel(level)}</span>
         </p>
+        {
+          lastUpdated && (
+            <p class="mb-2 text-sm text-muted" lang="en">
+              {`Last updated · ${lastUpdated}`}
+            </p>
+          )
+        }
         <h1 class="text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">{title}</h1>
         {
           description && (
@@ -182,36 +238,194 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
         <slot />
       </article>
 
-      <!-- Prev / next -->
+      <!-- Marker observed to auto-complete a Fundamentals article when the
+           reader actually reaches the end (never on load alone). -->
+      {inPath && <div data-fp-end aria-hidden="true" class="h-px"></div>}
+
+      <!-- Prev / next. Fundamentals pages get the learning-path variant
+           (step context + progress) integrated into this same navigation. -->
       <nav
-        class="mt-12 grid max-w-3xl gap-4 border-t border-border pt-6 sm:grid-cols-2"
-        aria-label="Page navigation"
+        class="mt-12 max-w-3xl border-t border-border pt-6"
+        aria-label={inPath ? 'Fundamentals learning path' : 'Page navigation'}
       >
         {
-          previous ? (
-            <a
-              href={docPath(previous.id)}
-              class="rounded-md border border-border p-4 transition-colors hover:border-accent/50 hover:bg-surface"
-            >
-              <span class="text-xs text-muted">Previous</span>
-              <span class="mt-1 block font-medium">{previous.data.title}</span>
-            </a>
-          ) : (
-            <span />
+          inPath && (
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+              <p class="eyebrow eyebrow-accent" lang="en">
+                {`Fundamentals · Step ${step} of ${pathDocs.length}`}
+              </p>
+              <div
+                class="fp-controls text-sm"
+                data-fp
+                data-fp-current={docPath(entry.id)}
+                data-fp-path={pathRoutes.join(',')}
+                hidden
+              >
+                <span class="fp-count text-muted" data-fp-count aria-live="polite"></span>
+                <a class="font-medium text-accent hover:underline" data-fp-continue hidden>
+                  Continue →
+                </a>
+                <span class="font-medium text-accent" data-fp-done hidden></span>
+                <button
+                  type="button"
+                  class="fp-toggle"
+                  data-fp-toggle
+                  aria-pressed="false"
+                >
+                  ✓ Mark as complete
+                </button>
+              </div>
+            </div>
           )
         }
-        {
-          next && (
-            <a
-              href={docPath(next.id)}
-              class="rounded-md border border-border p-4 text-end transition-colors hover:border-accent/50 hover:bg-surface sm:col-start-2"
-            >
-              <span class="text-xs text-muted">Next</span>
-              <span class="mt-1 block font-medium">{next.data.title}</span>
-            </a>
-          )
-        }
+        <div class={`grid gap-4 sm:grid-cols-2${inPath ? ' mt-4' : ''}`}>
+          {
+            prevDoc ? (
+              <a
+                href={docPath(prevDoc.id)}
+                class="rounded-md border border-border p-4 transition-colors hover:border-accent/50 hover:bg-surface"
+              >
+                <span class="text-xs text-muted">Previous</span>
+                <span class="mt-1 block font-medium">{prevDoc.data.title}</span>
+              </a>
+            ) : (
+              <span />
+            )
+          }
+          {
+            nextDoc ? (
+              <a
+                href={docPath(nextDoc.id)}
+                class="rounded-md border border-border p-4 text-end transition-colors hover:border-accent/50 hover:bg-surface sm:col-start-2"
+              >
+                <span class="text-xs text-muted">Next</span>
+                <span class="mt-1 block font-medium">{nextDoc.data.title}</span>
+              </a>
+            ) : (
+              <span />
+            )
+          }
+        </div>
       </nav>
+
+      <!-- Fundamentals progress: localStorage only — no cookies, network,
+           or personal data. Controls start hidden and are revealed after
+           storage is read; if storage is unavailable they stay hidden. -->
+      <script>
+        const STORE_KEY = 'ops-handbook:fundamentals-progress';
+
+        const controls = document.querySelector<HTMLElement>('[data-fp]');
+        if (controls) {
+          const normalize = (route: string): string => route.replace(/\/+$/, '') || '/';
+
+          const read = (): string[] | null => {
+            try {
+              const raw = localStorage.getItem(STORE_KEY);
+              if (!raw) return [];
+              const parsed: unknown = JSON.parse(raw);
+              if (!Array.isArray(parsed)) return [];
+              return parsed.filter((value): value is string => typeof value === 'string');
+            } catch {
+              return null; // storage unavailable or corrupt — degrade
+            }
+          };
+
+          const stored = read();
+          const current = normalize(controls.dataset.fpCurrent ?? '');
+          const path = (controls.dataset.fpPath ?? '')
+            .split(',')
+            .filter(Boolean)
+            .map(normalize);
+
+          if (stored !== null && path.includes(current)) {
+            let completed = stored.map(normalize).filter((route) => path.includes(route));
+
+            const countEl = controls.querySelector<HTMLElement>('[data-fp-count]');
+            const continueEl = controls.querySelector<HTMLAnchorElement>('[data-fp-continue]');
+            const doneEl = controls.querySelector<HTMLElement>('[data-fp-done]');
+            const toggleEl = controls.querySelector<HTMLButtonElement>('[data-fp-toggle]');
+
+            const isDone = (route: string): boolean => completed.includes(route);
+
+            const render = (): void => {
+              const doneCount = path.filter(isDone).length;
+              const allDone = doneCount === path.length;
+              if (countEl) countEl.textContent = `${doneCount} / ${path.length} completed`;
+              if (toggleEl) {
+                const done = isDone(current);
+                toggleEl.setAttribute('aria-pressed', String(done));
+                toggleEl.textContent = done ? '✓ Completed' : '✓ Mark as complete';
+              }
+              if (continueEl && doneEl) {
+                doneEl.hidden = !allDone;
+                if (allDone) {
+                  continueEl.hidden = true;
+                } else {
+                  // Progress-derived: next incomplete article after the
+                  // current one, else the first incomplete one.
+                  const currentIndex = path.indexOf(current);
+                  const forward = path.slice(currentIndex + 1).find((r) => !isDone(r));
+                  const target = forward ?? path.find((r) => !isDone(r));
+                  if (target && target !== current) {
+                    continueEl.href = target;
+                    continueEl.setAttribute(
+                      'aria-label',
+                      'Continue to the next incomplete Fundamentals article',
+                    );
+                    continueEl.hidden = false;
+                  } else {
+                    continueEl.hidden = true;
+                  }
+                }
+              }
+              controls.hidden = false;
+            };
+
+            const setDone = (route: string, done: boolean): void => {
+              const next = new Set(completed);
+              if (done) next.add(route);
+              else next.delete(route);
+              completed = path.filter((r) => next.has(r));
+              try {
+                localStorage.setItem(STORE_KEY, JSON.stringify(completed));
+              } catch {
+                /* storage unavailable — keep the in-memory state */
+              }
+              render();
+            };
+
+            toggleEl?.addEventListener('click', () => {
+              setDone(current, toggleEl.getAttribute('aria-pressed') !== 'true');
+            });
+
+            // Auto-complete on reaching the article's end: requires a real
+            // scroll first (never on load) plus a short dwell.
+            const endMarker = document.querySelector('[data-fp-end]');
+            let scrolled = false;
+            let dwell: ReturnType<typeof setTimeout> | undefined;
+            const onScroll = (): void => {
+              scrolled = true;
+              window.removeEventListener('scroll', onScroll);
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            if (endMarker && 'IntersectionObserver' in window) {
+              const io = new IntersectionObserver((entries) => {
+                for (const entry of entries) {
+                  if (entry.isIntersecting && scrolled) {
+                    dwell = window.setTimeout(() => setDone(current, true), 800);
+                  } else if (dwell !== undefined) {
+                    clearTimeout(dwell);
+                    dwell = undefined;
+                  }
+                }
+              });
+              io.observe(endMarker);
+            }
+
+            render();
+          }
+        }
+      </script>
 
       <RelatedTopics entry={entry} />
     </main>
