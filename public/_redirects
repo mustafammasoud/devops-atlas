@@ -1,0 +1,20 @@
+# Cloudflare Pages Redirects
+# Static 301 redirects for legacy Ops Handbook URLs
+
+# Legacy top-level category routes redirected to documentation areas
+/docs/foundations /docs/devops-fundamentals 301
+/docs/linux /docs/operating-systems 301
+/docs/git /docs/version-control 301
+/docs/docker /docs/containers 301
+/docs/ci-cd /docs/ci-cd-automation 301
+/docs/kubernetes /docs/container-orchestration 301
+/docs/cloud /docs/cloud-platforms 301
+/docs/terraform /docs/infrastructure-as-code 301
+/docs/security /docs/security-devsecops 301
+/docs/troubleshooting /docs/troubleshooting-production 301
+
+# Legacy article routes redirected to nested technology paths
+/docs/docker/introduction /docs/containers/docker/introduction 301
+/docs/kubernetes/overview /docs/container-orchestration/kubernetes/overview 301
+/docs/kubernetes/pods /docs/container-orchestration/kubernetes/pods 301
+/docs/linux/introduction /docs/operating-systems/linux/introduction 301
