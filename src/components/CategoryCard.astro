@@ -1,19 +1,19 @@
 ---
 import CategoryIcon from './CategoryIcon.astro';
 import type { Category } from '../data/categories';
-import { topicCount } from '../utils/docs';
+import { articleCount } from '../utils/docs';
 
 interface Props {
   category: Category;
-  /** Number of published topics in this category (computed at build time). */
+  /** Number of published articles in this category (computed at build time). */
   count: number;
 }
 
 const { category, count } = Astro.props;
 const planned = count === 0;
 
-/** Topic-count copy shown on the card. */
-const countText = topicCount(count);
+/** Article-count copy shown on the card. */
+const countText = articleCount(count);
 ---
 
 <li class="border-t border-border">

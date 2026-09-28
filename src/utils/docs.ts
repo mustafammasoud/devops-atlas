@@ -75,8 +75,41 @@ export function docSlug(id: string): string {
 }
 
 /**
- * Topic-count copy for a number of documents.
+ * Article-count copy for a number of documents.
  */
-export function topicCount(count: number): string {
-  return count === 1 ? '1 topic' : `${count} topics`;
+export function articleCount(count: number): string {
+  return count === 1 ? '1 article' : `${count} articles`;
 }
+
+/** Backward-compatible alias for articleCount. */
+export const topicCount = articleCount;
+
+/**
+ * Comparator for sorting articles by recency.
+ * Priority:
+ * 1. Explicit frontmatter `date` (descending: newest first).
+ * 2. Reverse canonical order so newly added documentation areas, tools,
+ *    and articles appear first.
+ */
+export function compareLatestDocs(a: Doc, b: Doc): number {
+  const dateA = a.data.date ? new Date(a.data.date).getTime() : undefined;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : undefined;
+
+  if (dateA !== undefined && dateB !== undefined) {
+    if (dateA !== dateB) return dateB - dateA;
+  } else if (dateA !== undefined) {
+    return -1;
+  } else if (dateB !== undefined) {
+    return 1;
+  }
+
+  return compareDocs(b, a);
+}
+
+/**
+ * Returns the latest published articles from the docs collection.
+ */
+export function latestDocs(docs: Doc[], limit = 4): Doc[] {
+  return [...docs].sort(compareLatestDocs).slice(0, limit);
+}
+
