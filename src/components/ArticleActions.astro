@@ -1,0 +1,135 @@
+---
+import SocialIcon from './SocialIcon.astro';
+
+interface Props {
+  /** Source-file edit URL, or null when the entry has no content path. */
+  editUrl: string | null;
+  /** Canonical article URL passed to the share sheet and the copy fallback. */
+  shareUrl: string;
+  shareTitle: string;
+}
+
+const { editUrl, shareUrl, shareTitle } = Astro.props;
+---
+
+<div class="article-actions" data-share-root>
+  {
+    editUrl && (
+      <a
+        class="article-action"
+        href={editUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Edit the source file on GitHub"
+      >
+        <SocialIcon name="github" class="h-4 w-4 shrink-0" />
+        Edit on GitHub
+      </a>
+    )
+  }
+  <button
+    type="button"
+    class="article-action"
+    data-share
+    data-share-url={shareUrl}
+    data-share-title={shareTitle}
+  >
+    <svg
+      class="h-4 w-4 shrink-0"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98"></path>
+    </svg>
+    Share
+  </button>
+  <p class="article-share-status" data-share-status role="status"></p>
+  <input
+    class="article-share-url"
+    data-share-fallback
+    type="text"
+    readonly
+    hidden
+    value={shareUrl}
+    spellcheck="false"
+    autocomplete="off"
+    aria-label="Article URL"
+  />
+</div>
+
+<script>
+  import { shareArticle } from '../utils/share';
+
+  const root = document.querySelector<HTMLElement>('[data-share-root]');
+  const button = root?.querySelector<HTMLButtonElement>('[data-share]');
+  const status = root?.querySelector<HTMLElement>('[data-share-status]');
+  const fallback = root?.querySelector<HTMLInputElement>('[data-share-fallback]');
+
+  async function copyText(value: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+        return true;
+      }
+    } catch {
+      /* clipboard blocked — reveal the selected URL for manual copying */
+    }
+
+    // Clipboard access requires a secure context and user permission. The
+    // caller reveals and selects its readonly URL field when it is unavailable.
+    return false;
+  }
+
+  button?.addEventListener('click', async () => {
+    const url = button.dataset.shareUrl ?? '';
+    const title = button.dataset.shareTitle ?? document.title;
+    if (!url || button.disabled) return;
+
+    button.disabled = true;
+    try {
+      const result = await shareArticle(
+        { title, url },
+        {
+          share:
+            typeof navigator.share === 'function'
+              ? (data) => navigator.share(data)
+              : undefined,
+          canShare:
+            typeof navigator.canShare === 'function'
+              ? (data) => navigator.canShare(data)
+              : undefined,
+          copy: copyText,
+        },
+      );
+
+      if (result === 'aborted' || result === 'shared') {
+        if (status) status.textContent = '';
+        if (fallback) fallback.hidden = true;
+        return;
+      }
+
+      if (result === 'copied') {
+        if (status) status.textContent = 'Link copied';
+        if (fallback) fallback.hidden = true;
+        return;
+      }
+
+      if (fallback) {
+        fallback.hidden = false;
+        fallback.focus();
+        fallback.select();
+      }
+      if (status) status.textContent = 'Copy this link';
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>

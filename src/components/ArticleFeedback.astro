@@ -1,0 +1,59 @@
+---
+interface Props {
+  /** Prefilled GitHub issue for "No". A normal link — works without JavaScript. */
+  issueUrl: string;
+}
+
+const { issueUrl } = Astro.props;
+---
+
+<!--
+  "Yes" is a checkbox drawn as a button. Checking it only swaps this row
+  (no storage, request, or cookie). The swap is CSS, so it still confirms
+  when JavaScript is disabled. "No" is a real link to a prefilled issue.
+-->
+<div
+  class="article-feedback"
+  data-feedback
+  role="group"
+  aria-labelledby="article-feedback-prompt"
+>
+  <p id="article-feedback-prompt" class="text-sm text-muted">Was this helpful?</p>
+  <div class="article-feedback-actions">
+    <label class="article-action article-feedback-yes">
+      <input class="article-feedback-input" type="checkbox" data-feedback-yes />
+      <span aria-hidden="true">👍</span>
+      Yes
+    </label>
+    <a
+      class="article-action"
+      href={issueUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="No, open a GitHub issue for this article"
+    >
+      <span aria-hidden="true">👎</span>
+      No
+    </a>
+  </div>
+  <p
+    class="article-feedback-thanks"
+    data-feedback-thanks
+    tabindex="-1"
+    role="status"
+  >
+    Thanks for the feedback.
+  </p>
+</div>
+
+<script>
+  // Moves focus to the confirmation when JavaScript is available.
+  // The visual swap itself does not depend on this script.
+  const input = document.querySelector<HTMLInputElement>('[data-feedback-yes]');
+  const thanks = document.querySelector<HTMLElement>('[data-feedback-thanks]');
+
+  input?.addEventListener('change', () => {
+    if (!input.checked || !thanks) return;
+    requestAnimationFrame(() => thanks.focus());
+  });
+</script>

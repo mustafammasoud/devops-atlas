@@ -9,8 +9,11 @@ import MermaidRuntime from '../components/MermaidRuntime.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import RelatedTopics from '../components/RelatedTopics.astro';
 import CategoryIcon from '../components/CategoryIcon.astro';
+import ArticleActions from '../components/ArticleActions.astro';
+import ArticleFeedback from '../components/ArticleFeedback.astro';
 import { categoryLabel, getCategory, toolLabel, levelLabel } from '../data/categories';
 import { docCategory, docPath, docTool, sortedDocs } from '../utils/docs';
+import { githubEditUrl, githubFeedbackIssueUrl } from '../utils/github';
 import type { CollectionEntry } from 'astro:content';
 
 interface Heading {
@@ -70,6 +73,13 @@ const lastUpdated = entry.data.date
 const categoryMeta = getCategory(category);
 
 const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Handbook`;
+
+// Canonical URL for sharing / issue prefill.
+const canonicalUrl = Astro.site
+  ? new URL(docPath(entry.id), Astro.site).href
+  : docPath(entry.id);
+const editUrl = githubEditUrl(entry.filePath);
+const issueUrl = githubFeedbackIssueUrl(title, canonicalUrl);
 ---
 
 <BaseLayout title={pageTitle} description={description} ogType="article" lang={language}>
@@ -233,10 +243,14 @@ const pageTitle = title === 'Ops Handbook' ? 'Ops Handbook' : `${title} | Ops Ha
         }
       </header>
 
+      <ArticleActions editUrl={editUrl} shareUrl={canonicalUrl} shareTitle={title} />
+
       <!-- The document region owns its language and text direction. -->
       <article class="prose max-w-3xl" dir={dir} lang={language}>
         <slot />
       </article>
+
+      <ArticleFeedback issueUrl={issueUrl} />
 
       <!-- Marker observed to auto-complete a Fundamentals article when the
            reader actually reaches the end (never on load alone). -->
