@@ -33,30 +33,33 @@ const category = docCategory(entry);
 const tool = docTool(entry);
 const dir = language === 'ar' ? 'rtl' : 'ltr';
 
-// Prev/next across the whole documentation in canonical order.
-const ordered = sortedDocs(await getCollection('docs', ({ data }) => !data.draft));
-const position = ordered.findIndex((doc) => doc.id === entry.id);
-const previous = position > 0 ? ordered[position - 1] : null;
-const next = position >= 0 && position < ordered.length - 1 ? ordered[position + 1] : null;
+// Every article belongs to exactly one learning-path group: its tool when
+// nested (`area/tool/article`), otherwise its area. The ordered article list
+// is derived entirely from content metadata — no hardcoded URLs — and drafts
+// are already excluded above. Prev/next and progress never cross groups.
+const ordered = sortedDocs(
+  await getCollection('docs', ({ data }) => !data.draft),
+);
+const groupTool = tool;
+const groupDocs = ordered.filter(
+  (doc) =>
+    docCategory(doc) === category &&
+    (groupTool ? docTool(doc) === groupTool : !docTool(doc)),
+);
+const stepIndex = groupDocs.findIndex((doc) => doc.id === entry.id);
+const inGroup = stepIndex >= 0;
+const step = inGroup ? stepIndex + 1 : 0;
+const prevDoc = inGroup && stepIndex > 0 ? groupDocs[stepIndex - 1] : null;
+const nextDoc =
+  inGroup && stepIndex < groupDocs.length - 1 ? groupDocs[stepIndex + 1] : null;
 
-// Fundamentals learning path: the devops-fundamentals articles ordered by
-// their frontmatter `order`. Derived entirely from content metadata — no
-// hardcoded URLs — so steps stay correct if articles change.
-const FUNDAMENTALS_CATEGORY = 'devops-fundamentals';
-const pathDocs = ordered
-  .filter((doc) => docCategory(doc) === FUNDAMENTALS_CATEGORY)
-  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
-const stepIndex = pathDocs.findIndex((doc) => doc.id === entry.id);
-const inPath = stepIndex >= 0;
-const step = inPath ? stepIndex + 1 : 0;
-const pathPrevious = inPath && stepIndex > 0 ? pathDocs[stepIndex - 1] : null;
-const pathNext = inPath && stepIndex < pathDocs.length - 1 ? pathDocs[stepIndex + 1] : null;
-const pathRoutes = pathDocs.map((doc) => docPath(doc.id));
-
-// Fundamentals pages navigate within the path; everything else keeps the
-// generic canonical prev/next.
-const prevDoc = inPath ? pathPrevious : previous;
-const nextDoc = inPath ? pathNext : next;
+// Learning-path display label and per-group progress scope. The group key
+// is namespaced by area so identically named tools in different areas
+// (hypothetically) stay independent.
+const groupLabel = groupTool ? toolLabel(groupTool) : categoryLabel(category);
+const groupKey = groupTool ? `${category}/${groupTool}` : category;
+const progressKey = `ops-handbook:progress:${groupKey}`;
+const pathRoutes = groupDocs.map((doc) => docPath(doc.id));
 
 // Last updated: from the article's frontmatter `date` only. Omitted when
 // absent — a date is never invented or relabelled.
@@ -252,27 +255,29 @@ const issueUrl = githubFeedbackIssueUrl(title, canonicalUrl);
 
       <ArticleFeedback issueUrl={issueUrl} />
 
-      <!-- Marker observed to auto-complete a Fundamentals article when the
-           reader actually reaches the end (never on load alone). -->
-      {inPath && <div data-fp-end aria-hidden="true" class="h-px"></div>}
+      <!-- Marker observed to auto-complete an article when the reader
+           actually reaches the end (never on load alone). -->
+      {inGroup && <div data-fp-end aria-hidden="true" class="h-px"></div>}
 
-      <!-- Prev / next. Fundamentals pages get the learning-path variant
-           (step context + progress) integrated into this same navigation. -->
+      <!-- Prev / next. Every page gets the learning-path variant
+           (step context + progress) integrated into this same navigation,
+           scoped to the article's own group. -->
       <nav
         class="mt-12 max-w-3xl border-t border-border pt-6"
-        aria-label={inPath ? 'Fundamentals learning path' : 'Page navigation'}
+        aria-label={inGroup ? `${groupLabel} learning path` : 'Page navigation'}
       >
         {
-          inPath && (
+          inGroup && (
             <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
               <p class="eyebrow eyebrow-accent" lang="en">
-                {`Fundamentals · Step ${step} of ${pathDocs.length}`}
+                {`${groupLabel} · Step ${step} of ${groupDocs.length}`}
               </p>
               <div
                 class="fp-controls text-sm"
                 data-fp
                 data-fp-current={docPath(entry.id)}
                 data-fp-path={pathRoutes.join(',')}
+                data-fp-store={progressKey}
                 hidden
               >
                 <span class="fp-count text-muted" data-fp-count aria-live="polite"></span>
@@ -292,49 +297,55 @@ const issueUrl = githubFeedbackIssueUrl(title, canonicalUrl);
             </div>
           )
         }
-        <div class={`grid gap-4 sm:grid-cols-2${inPath ? ' mt-4' : ''}`}>
-          {
-            prevDoc ? (
-              <a
-                href={docPath(prevDoc.id)}
-                class="rounded-md border border-border p-4 transition-colors hover:border-accent/50 hover:bg-surface"
-              >
-                <span class="text-xs text-muted">Previous</span>
-                <span class="mt-1 block font-medium">{prevDoc.data.title}</span>
-              </a>
-            ) : (
-              <span />
-            )
-          }
-          {
-            nextDoc ? (
-              <a
-                href={docPath(nextDoc.id)}
-                class="rounded-md border border-border p-4 text-end transition-colors hover:border-accent/50 hover:bg-surface sm:col-start-2"
-              >
-                <span class="text-xs text-muted">Next</span>
-                <span class="mt-1 block font-medium">{nextDoc.data.title}</span>
-              </a>
-            ) : (
-              <span />
-            )
-          }
-        </div>
+        {
+          (prevDoc || nextDoc) && (
+            <div class={`grid gap-4 sm:grid-cols-2${inGroup ? ' mt-4' : ''}`}>
+              {prevDoc ? (
+                <a
+                  href={docPath(prevDoc.id)}
+                  class="rounded-md border border-border p-4 transition-colors hover:border-accent/50 hover:bg-surface"
+                >
+                  <span class="text-xs text-muted">Previous</span>
+                  <span class="mt-1 block font-medium">{prevDoc.data.title}</span>
+                </a>
+              ) : (
+                <span />
+              )}
+              {nextDoc ? (
+                <a
+                  href={docPath(nextDoc.id)}
+                  class="rounded-md border border-border p-4 text-end transition-colors hover:border-accent/50 hover:bg-surface sm:col-start-2"
+                >
+                  <span class="text-xs text-muted">Next</span>
+                  <span class="mt-1 block font-medium">{nextDoc.data.title}</span>
+                </a>
+              ) : (
+                <span />
+              )}
+            </div>
+          )
+        }
       </nav>
 
-      <!-- Fundamentals progress: localStorage only — no cookies, network,
-           or personal data. Controls start hidden and are revealed after
-           storage is read; if storage is unavailable they stay hidden. -->
+      <!-- Learning-path progress: localStorage only — no cookies, network,
+           or personal data. Each group has its own storage key (passed via
+           data-fp-store), so progress is scoped per group. Controls start
+           hidden and are revealed after storage is read; if storage is
+           unavailable they stay hidden. -->
       <script>
-        const STORE_KEY = 'ops-handbook:fundamentals-progress';
+        // Pre-generalization key — read as a fallback so existing
+        // Fundamentals progress carries over (only that group used it).
+        const LEGACY_STORE_KEY = 'ops-handbook:fundamentals-progress';
 
         const controls = document.querySelector<HTMLElement>('[data-fp]');
         if (controls) {
+          const STORE_KEY = controls.dataset.fpStore ?? LEGACY_STORE_KEY;
           const normalize = (route: string): string => route.replace(/\/+$/, '') || '/';
 
           const read = (): string[] | null => {
             try {
-              const raw = localStorage.getItem(STORE_KEY);
+              const raw =
+                localStorage.getItem(STORE_KEY) ?? localStorage.getItem(LEGACY_STORE_KEY);
               if (!raw) return [];
               const parsed: unknown = JSON.parse(raw);
               if (!Array.isArray(parsed)) return [];
@@ -384,7 +395,7 @@ const issueUrl = githubFeedbackIssueUrl(title, canonicalUrl);
                     continueEl.href = target;
                     continueEl.setAttribute(
                       'aria-label',
-                      'Continue to the next incomplete Fundamentals article',
+                      'Continue to the next incomplete article',
                     );
                     continueEl.hidden = false;
                   } else {

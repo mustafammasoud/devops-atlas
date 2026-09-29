@@ -213,6 +213,43 @@ kbd {
   text-align: left;
 }
 
+/* Mixed-direction articles (dir="rtl"): per-paragraph base direction.
+   `unicode-bidi: plaintext` makes each block resolve its own base direction
+   from its first strong character (the `dir="auto"` heuristic): Arabic
+   paragraphs/headings stay RTL, while English sentences and headings inside
+   the RTL document get a true LTR base — so trailing periods, quotes, and
+   numbers land on the correct side instead of flipping to the paragraph's
+   RTL edge. Under plaintext Chromium resolves `start` against each block's
+   detected base, so English blocks align left and Arabic blocks right — the
+   requested mixed-direction behavior. Scoped to .prose[dir='rtl'] so LTR
+   pages are untouched. Code blocks and inline <code> keep their explicit
+   LTR isolation above. */
+.prose[dir='rtl'] {
+  unicode-bidi: plaintext;
+}
+
+.prose[dir='rtl']
+  :where(
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    li,
+    dt,
+    dd,
+    blockquote,
+    figcaption,
+    caption,
+    th,
+    td,
+    summary
+  ) {
+  unicode-bidi: plaintext;
+}
+
 /* ------------------------------------------------------------------ */
 /* Accessibility helpers                                               */
 /* ------------------------------------------------------------------ */
@@ -765,16 +802,6 @@ pre.astro-code:hover .code-copy,
 /* Stronger text contrast inside the selection (muted title meta + snippet). */
 #search-results [role='option'][aria-selected='true'] a .text-muted {
   color: color-mix(in srgb, var(--c-text) 55%, var(--c-muted));
-}
-
-/* Chosen/hovered area card (homepage + /docs index) ----------------------
-   Mirrors the strong search-selection treatment: warm accent-tinted surface
-   plus the same 2px inline accent bar. Surface listed first at 86% so the
-   bundler's no-color-mix fallback stays on-palette. */
-.area-card:hover,
-.area-card:focus-visible {
-  background-color: color-mix(in srgb, var(--c-surface-2) 86%, var(--c-accent));
-  box-shadow: inset 2px 0 0 var(--c-accent);
 }
 
 /* Match highlighting in search results --------------------------------- */
