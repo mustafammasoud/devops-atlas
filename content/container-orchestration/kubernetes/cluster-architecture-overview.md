@@ -1,0 +1,671 @@
+---
+
+title: Kubernetes Cluster Architecture — Overview
+description: Understand the main components of a Kubernetes cluster and how the control plane and worker nodes work together.
+order: 4
+category: container-orchestration
+level: beginner
+draft: false
+tags: [kubernetes]
+language: ar
+--------
+
+## 1. Big Picture
+
+قبل ما ندخل في تفاصيل كل Component، خلينا نفهم الأول **Kubernetes Cluster** شكله عامل إزاي.
+
+ببساطة، الـ **Cluster** هو مجموعة Machines بتشتغل مع بعض علشان Kubernetes يقدر يشغّل ويدير الـcontainerized applications.
+
+الـCluster بيتقسم بشكل أساسي إلى جزئين:
+
+```text
+                    Kubernetes Cluster
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+         Control Plane              Worker Nodes
+            
+```
+
+يعني عندنا فكرة بسيطة جدًا:
+
+> **Control Plane = Brain**
+> **Worker Nodes = Machines that run the Workloads**
+
+الـControl Plane هو اللي بيدير الـCluster وبيقرر إيه المفروض يحصل.
+
+أما الـWorker Nodes فهي الـMachines اللي عليها الـApplications والـPods بتشتغل فعليًا.
+
+---
+
+
+## 2. Kubernetes Cluster Architecture
+
+الصورة العامة للـArchitecture ممكن تكون بالشكل ده:
+
+```text
+                    Kubernetes Cluster
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+             ▼                           ▼
+       ┌─────────────┐             ┌──────────────┐
+       │ Control     │             │ Worker Nodes │
+       │ Plane       │             │              │
+       └─────────────┘             └──────────────┘
+             │                           │
+     ┌───────┼────────┐          ┌───────┼────────┐
+     │       │        │          │       │        │
+     ▼       ▼        ▼          ▼       ▼        ▼
+  API     etcd   Scheduler    kubelet  kube-   Runtime
+ Server                   Controllers  proxy
+                                             │
+                                             ▼
+                                            Pods
+```
+
+
+
+---
+
+
+## 3. Control Plane
+
+الـ**Control Plane** هو الجزء المسؤول عن **إدارة الـCluster**.
+
+هو اللي بيستقبل الـrequests، بيخزن الـCluster state، بيقرر الـPods هتشتغل على أنهي Node، وبيحاول باستمرار يخلي الـCluster يوصل للـDesired State.
+
+الـControl Plane بشكل أساسي يحتوي على:
+
+```text
+Control Plane
+│
+├── kube-apiserver
+├── etcd
+├── kube-scheduler
+└── kube-controller-manager
+```
+
+كل Component له وظيفة مختلفة.
+
+---
+
+
+## 4. kube-apiserver
+
+الـ**kube-apiserver** هو أهم نقطة اتصال في Kubernetes.
+
+تقدر تعتبره **Gateway** للـKubernetes API.
+
+لما تستخدم:
+
+```bash
+kubectl get pods
+```
+
+أنت مش بتكلم الـPod مباشرة.
+
+الـ`kubectl` بيتكلم مع:
+
+```text
+kubectl
+   │
+   ▼
+kube-apiserver
+```
+
+والـAPI Server بعد كده بيتعامل مع باقي الـKubernetes Components.
+
+```text
+User
+ │
+ │ kubectl
+ ▼
+kube-apiserver
+ │
+ ├── etcd
+ ├── Scheduler
+ ├── Controllers
+ └── Worker Nodes
+```
+
+فممكن نقول:
+
+> **kube-apiserver = Main communication gateway of Kubernetes**
+
+هو مش مسؤول عن تشغيل الـContainers.
+
+هو مسؤول عن التعامل مع الـKubernetes API وتنظيم الـcommunication مع باقي الـComponents.
+
+---
+
+
+## 5. etcd
+
+الـ**etcd** هو الـdatabase الخاصة بالـKubernetes Cluster State.
+
+هو distributed key-value store بيخزن الـinformation اللي Kubernetes محتاجها علشان يعرف حالة الـCluster.
+
+مثلًا Kubernetes محتاج يعرف:
+
+```text
+What Nodes exist?
+What Pods exist?
+What Deployments exist?
+What is the desired state?
+What configuration exists?
+```
+
+الـetcd بيخزن الـstate دي.
+
+بشكل مبسط:
+
+```text
+              kube-apiserver
+                    │
+                    ▼
+                  etcd
+                    │
+                    ▼
+             Cluster State
+```
+
+مثال:
+
+لو أنت عايز Deployment يكون عنده:
+
+```yaml
+replicas: 3
+```
+
+فده جزء من الـDesired State اللي Kubernetes بيحتفظ بيه.
+
+المهم هنا:
+
+> **etcd stores the state — it doesn't run your applications.**
+
+---
+
+
+## 6. kube-scheduler
+
+الـ**kube-scheduler** مسؤول عن اختيار الـWorker Node المناسبة للـPod.
+
+لما Kubernetes يلاقي Pod محتاج يتشغل ومفيش Node محددة ليه، الـScheduler يبدأ يقرر:
+
+```text
+            New Pod
+               │
+               ▼
+        kube-scheduler
+               │
+       ┌───────┼───────┐
+       ▼       ▼       ▼
+     Node A  Node B  Node C
+               │
+               ▼
+        Selected Node
+```
+
+الـScheduler ممكن ياخد في اعتباره حاجات زي:
+
+* CPU / Memory availability
+* Resource requests
+* Node conditions
+* Scheduling constraints
+* Policies
+
+لكن خد بالك من نقطة مهمة:
+
+> **Scheduler chooses the Node. It does not run the Pod.**
+
+يعني هو بيقول:
+
+```text
+"This Pod should run on Node B."
+```
+
+وبعد كده الـWorker Node هي اللي تتولى تشغيله.
+
+---
+
+
+## 7. Controllers
+
+الـ**Controllers** من أهم الأفكار في Kubernetes.
+
+وظيفتها الأساسية إنها تفضل تقارن بين:
+
+```text             
+                      Compare
+      Desired State  ───────►  Current State
+```
+
+ولو في فرق، تحاول تصلحه.
+
+مثال:
+
+أنت عايز:
+
+```text
+3 Pods
+```
+
+لكن حاليًا عندك:
+
+```text
+2 Pods
+```
+
+الـController يلاحظ الفرق:
+
+```text
+Desired State = 3 Pods
+Current State = 2 Pods
+              │
+              ▼
+        Difference detected
+              │
+              ▼
+       Create another Pod
+```
+
+وده جزء أساسي من فكرة **Reconciliation** في Kubernetes.
+
+```mermaid
+flowchart TD
+    A["Desired State<br/>3 Pods"] --> B["Controller"]
+    C["Current State<br/>2 Pods"] --> B
+    B --> D{"States match?"}
+    D -->|No| E["Take corrective action"]
+    E --> F["Create missing Pod"]
+    F --> C
+    D -->|Yes| G["Continue monitoring"]
+```
+
+فببساطة:
+
+> **Controllers continuously work to make Current State match Desired State.**
+
+---
+
+
+## 8. Worker Nodes
+
+الجزء التاني من الـCluster هو **Worker Nodes**.
+
+دي الـMachines اللي الـApplications بتشتغل عليها فعليًا.
+
+الـWorker Node ممكن تكون:
+
+* Physical Machine
+* Virtual Machine
+* Cloud Instance
+
+وكل Worker Node بيكون عليها Components مسؤولة عن تشغيل وإدارة الـWorkloads.
+
+```text
+Worker Node
+│
+├── kubelet
+├── kube-proxy
+├── Container Runtime
+└── Pods
+    ├── Container
+    └── Container
+```
+
+---
+
+
+## 9. kubelet
+
+الـ**kubelet** هو الـKubernetes Agent اللي بيشتغل على كل Worker Node.
+
+وظيفته الأساسية إنه يتأكد إن الـPods المطلوبة على الـNode شغالة بالشكل المطلوب.
+
+بشكل مبسط:
+
+```text
+Control Plane
+      │
+      │ API
+      ▼
+   kubelet
+      │
+      ▼
+Container Runtime
+      │
+      ▼
+    Pods
+```
+
+يعني الـkubelet هو حلقة الوصل بين الـKubernetes Control Plane والـWorkloads الموجودة على الـNode.
+
+هو بيتابع الـPods، ويتعامل مع الـContainer Runtime، ويرجع information عن حالة الـNode والـPods للـControl Plane.
+
+---
+
+
+## 10. Container Runtime
+
+الـ**Container Runtime** هو الـsoftware المسؤول فعليًا عن تشغيل الـContainers.
+
+أمثلة مشهورة:
+
+* `containerd`
+* `CRI-O`
+
+Kubernetes نفسه مش هو اللي بيعمل `run container`.
+
+بدل كده:
+
+```text
+Kubernetes
+    │
+    ▼
+  kubelet
+    │
+    ▼
+Container Runtime
+    │
+    ▼
+ Container
+```
+
+يعني Kubernetes بيدير الـWorkloads، والـContainer Runtime هو اللي بيتولى تشغيل الـContainers فعليًا.
+
+---
+
+
+## 11. kube-proxy
+
+الـ**kube-proxy** هو Component مرتبط بالـnetworking على الـWorker Node.
+
+وظيفته الأساسية مرتبطة بتطبيق الـnetworking rules المطلوبة للوصول إلى Kubernetes **Services** وتوجيه الـtraffic إلى الـappropriate backend Pods.
+
+بشكل مبسط:
+
+```text
+Client
+  │
+  ▼
+Service
+  │
+  ▼
+kube-proxy / networking rules
+  │
+  ├──────► Pod
+  ├──────► Pod
+  └──────► Pod
+```
+
+فهو جزء من الصورة الخاصة بالـService networking والـtraffic handling.
+
+---
+
+
+## 12. The Complete Architecture
+
+دلوقتي نقدر نجمع كل حاجة مع بعض.
+
+```text
+                         Kubernetes Cluster
+                                │
+             ┌──────────────────┴──────────────────┐
+             │                                     │
+             ▼                                     ▼
+      ┌───────────────┐                    ┌───────────────┐
+      │ Control Plane │                    │ Worker Node   │
+      └───────────────┘                    └───────────────┘
+             │                                     │
+      ┌──────┼──────┐                      ┌───────┼────────┐
+      │      │      │                      │       │        │
+      ▼      ▼      ▼                      ▼       ▼        ▼
+    API    etcd  Scheduler              kubelet kube-proxy Runtime
+   Server          │                         │                │
+      │            │                         │                ▼
+      │            └───────────────►         │              Containers
+      │                                      │
+      └──────────────────────────────────────┘
+                                             │
+                                             ▼
+                                            Pods
+```
+
+---
+
+
+## 13. How Everything Works Together
+
+خلينا ناخد مثال بسيط.
+
+أنت عملت:
+
+```bash
+kubectl apply -f deployment.yaml
+```
+
+الـflow بشكل مبسط:
+
+
+```mermaid
+flowchart TD
+    A["kubectl apply"] --> B["kube-apiserver"]
+
+    B --> C["etcd<br/>Store Cluster State"]
+    B --> D["Controllers"]
+
+    D --> E["Create / Manage Pod"]
+    E --> F["kube-scheduler"]
+
+    F --> G["Select Worker Node"]
+
+    G --> H["kubelet"]
+    H --> I["Container Runtime"]
+    I --> J["Pod / Container"]
+
+    J --> K["Current State"]
+
+    K --> D
+```
+
+لاحظ إن الـflow مش مجرد:
+
+```text
+User → Pod
+```
+
+فيه مجموعة Components بتشتغل مع بعض علشان Kubernetes يحافظ على الـDesired State.
+
+---
+
+
+## 14. The Kubernetes Control Loop
+
+دي من أهم الأفكار اللي لازم تثبت في دماغك من البداية.
+
+Kubernetes مش مجرد مجموعة Commands بتنفذها مرة وخلاص.
+
+هو **Continuous Control System**.
+
+يعني باستمرار:
+
+```text
+Desired State
+      │
+      ▼
+Kubernetes
+      │
+      ▼
+Current State
+      │
+      ▼
+Compare
+      │
+      ▼
+Reconcile
+      │
+      ▼
+Current State
+      │
+      └──────────────► Repeat
+```
+
+Mermaid:
+
+```mermaid
+flowchart LR
+    A["Desired State"] --> B["Kubernetes Control Plane"]
+    B --> C["Current State"]
+    C --> D{"Match?"}
+    D -->|No| E["Reconcile"]
+    E --> B
+    D -->|Yes| F["Keep Monitoring"]
+    F --> B
+```
+
+وده السبب إن Kubernetes يقدر يتعامل مع حاجات زي:
+
+* Failed Pods
+* Scaling
+* Node failures
+* Application updates
+* Maintaining replicas
+
+لأن الـCluster مش بيبص على الـstate مرة واحدة.
+
+هو باستمرار بيحاول يخلي:
+
+```text
+Current State ≈ Desired State
+```
+
+---
+
+
+## 15. The Most Important Mental Model
+
+لو عايز تختصر الـCluster Architecture كلها في دماغك، فكر فيها كده:
+
+```text
+                 CONTROL PLANE
+              "What should happen?"
+                       │
+                       ▼
+                kube-apiserver
+                       │
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+        etcd       Scheduler    Controllers
+          │            │            │
+          └────────────┴────────────┘
+                       │
+                       ▼
+                 WORKER NODES
+                 "Run the work"
+                       │
+              ┌────────┼────────┐
+              ▼        ▼        ▼
+           kubelet  kube-proxy Runtime
+                                  │
+                                  ▼
+                                 Pods
+```
+
+بمعنى:
+
+> **Control Plane manages the Cluster.**
+
+> **Scheduler decides where Pods should run.**
+
+> **Controllers keep the Cluster aligned with the Desired State.**
+
+> **kubelet manages workloads on the Node.**
+
+> **Container Runtime actually runs the Containers.**
+
+> **Pods are where the application workloads run.**
+
+---
+
+
+## 16. Quick Reference
+
+| Component                 | Main Responsibility                              |
+| ------------------------- | ------------------------------------------------ |
+| `kube-apiserver`          | Kubernetes API and communication gateway         |
+| `etcd`                    | Stores cluster state                             |
+| `kube-scheduler`          | Selects Nodes for Pods                           |
+| `kube-controller-manager` | Runs controllers and reconciles state            |
+| `kubelet`                 | Manages Pods on a Worker Node                    |
+| `kube-proxy`              | Supports Service networking and traffic handling |
+| Container Runtime         | Runs Containers                                  |
+| Pod                       | Runs the application workload                    |
+
+---
+
+
+## 17. Final Mental Model
+
+متحاولش تحفظ الـComponents كأسماء منفصلة.
+
+اربطهم ببعض:
+
+```text
+                 Kubernetes Cluster
+                        │
+           ┌────────────┴────────────┐
+           │                         │
+           ▼                         ▼
+     Control Plane              Worker Nodes
+           │                         │
+           │                         ├── kubelet
+           │                         ├── kube-proxy
+           │                         ├── Runtime
+           │                         └── Pods
+           │
+     ┌─────┼──────┐
+     │     │      │
+     ▼     ▼      ▼
+    API   etcd  Scheduler
+   Server        + Controllers
+```
+
+والـoverall flow:
+
+```text
+User
+ │
+ ▼
+kubectl
+ │
+ ▼
+kube-apiserver
+ │
+ ├──► etcd
+ │
+ ├──► Controllers
+ │
+ └──► Scheduler
+          │
+          ▼
+     Worker Node
+          │
+        kubelet
+          │
+   Container Runtime
+          │
+          ▼
+         Pod
+```
+
+**The core idea:**
+
+> Kubernetes Cluster = **Control Plane + Worker Nodes**
+
+> Control Plane **decides and manages**.
+
+> Worker Nodes **execute and run workloads**.
+
+> The entire system continuously works to make the **Current State match the Desired State**.
