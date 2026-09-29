@@ -7,7 +7,8 @@ import Figure from '../components/Figure.astro';
 import PdfCard from '../components/PdfCard.astro';
 import PdfEmbed from '../components/PdfEmbed.astro';
 import DocEnhancements from '../components/DocEnhancements.astro';
-import sampleDiagram from '../../content/container-orchestration/kubernetes/pods/images/pod-lifecycle.svg';
+
+const sampleDiagram = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="160" viewBox="0 0 600 160"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#64748b"/></marker></defs><rect width="600" height="160" fill="#ffffff" rx="8"/><g fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"><rect x="30" y="55" width="150" height="50" rx="8"/><rect x="225" y="55" width="150" height="50" rx="8"/><rect x="420" y="55" width="150" height="50" rx="8"/></g><g stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"><path d="M185 80 H213"/><path d="M380 80 H408"/></g><g fill="#0f172a" font-family="Segoe UI, Tahoma, Arial, sans-serif" font-size="15" text-anchor="middle" dominant-baseline="middle"><text x="105" y="81">First step</text><text x="300" y="81">Second step</text><text x="495" y="81">Third step</text></g></svg>`)}`;
 ---
 
 <!--
@@ -48,7 +49,7 @@ import sampleDiagram from '../../content/container-orchestration/kubernetes/pods
       <h2 id="figure">Figure</h2>
       <Figure
         src={sampleDiagram}
-        alt="Sample image (pod lifecycle diagram from the sample content page)"
+        alt="Sample diagram (placeholder three-step flow)"
         caption="Sample caption below the figure."
       />
 
