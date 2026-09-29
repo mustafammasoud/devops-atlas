@@ -19,35 +19,29 @@ Kubernetes :
 
 الصورة العامة:
 
-```text
-Kubernetes Cluster
-        │
-        ▼
-      Nodes
-        │
-        ▼
-       Pods
-        │
-        ▼
-   Containers
+```mermaid
+flowchart TD
+    A[Kubernetes Cluster] --> B[Nodes]
+    B --> C[Pods]
+    C --> D[Containers]
 ```
 
 وحول الـPods فيه resources بتساعدني في إدارة الـapplication:
 
-```text
-                    Kubernetes
-                         │
-              ┌──────────┴──────────┐
-              │                     │
-           Workloads             Supporting
-              │                     │
-          Deployment             Service
-              │                  ConfigMap
-              ▼                    Secret
-             Pods                  Volume
-              │                  Namespace
-              ▼
-         Containers
+```mermaid
+flowchart TD
+    A[Kubernetes] --> B[Workloads]
+    A --> C[Supporting]
+
+    B --> D[Deployment]
+    D --> E[Pods]
+    E --> F[Containers]
+
+    C --> G[Service]
+    C --> H[ConfigMap]
+    C --> I[Secret]
+    C --> J[Volume]
+    C --> K[Namespace]
 ```
 
 
@@ -91,17 +85,15 @@ flowchart TB
 
 والـNode بتوفر الـcompute resources اللي الـworkloads هتستخدمها.
 
-```text
-Worker Node
-│
-├── CPU
-├── Memory
-├── Storage
-│
-└── Pods
-    ├── Pod
-    ├── Pod
-    └── Pod
+```mermaid
+flowchart TD
+    A[Worker Node] --> B[CPU]
+    A --> C[Memory]
+    A --> D[Storage]
+    A --> E[Pods]
+    E --> F[Pod]
+    E --> G[Pod]
+    E --> H[Pod]
 ```
 
 في Kubernetes عندنا نوعين أساسيين من الـNodes من ناحية الـrole:
@@ -254,16 +246,12 @@ replicas: 3
 
 والـDeployment يساعد Kubernetes في الحفاظ على العدد المطلوب من الـPods.
 
-```text
-Deployment
-     │
-     ▼
-Desired Replicas = 3
-     │
-     ▼
-┌────┼────┐
-▼    ▼    ▼
-Pod  Pod  Pod
+```mermaid
+flowchart TD
+    A[Deployment] --> B["Desired Replicas = 3"]
+    B --> C[Pod]
+    B --> D[Pod]
+    B --> E[Pod]
 ```
 
 ---
@@ -274,15 +262,12 @@ Pod  Pod  Pod
 
 الصورة المبسطة:
 
-```text
-Deployment
-     │
-     ▼
-ReplicaSet
-     │
-     ├── Pod
-     ├── Pod
-     └── Pod
+```mermaid
+flowchart TD
+    A[Deployment] --> B[ReplicaSet]
+    B --> C[Pod]
+    B --> D[Pod]
+    B --> E[Pod]
 ```
 
 الـDeployment مسؤول عن higher-level application management، والـReplicaSet مسؤول عن maintaining the desired number of Pod replicas.
@@ -339,31 +324,27 @@ flowchart LR
 
 مثلاً عندي:
 
-```text
-                 Service
-                    │
-          ┌─────────┼─────────┐
-          ▼         ▼         ▼
-        Pod 1     Pod 2     Pod 3
-          │         │         │
-       App #1    App #2    App #3
+```mermaid
+flowchart TD
+    A[Service] --> B[Pod 1]
+    A --> C[Pod 2]
+    A --> D[Pod 3]
+    B --> E[App #1]
+    C --> F[App #2]
+    D --> G[App #3]
 ```
 
 والـDeployment هو اللي بيدير الـPods:
 
-```text
-             Deployment
-                  │
-                  ▼
-             ReplicaSet
-                  │
-        ┌─────────┼─────────┐
-        ▼         ▼         ▼
-      Pod 1     Pod 2     Pod 3
-        ▲         ▲         ▲
-        └─────────┼─────────┘
-                  │
-               Service
+```mermaid
+flowchart TD
+    A[Deployment] --> B[ReplicaSet]
+    B --> C[Pod 1]
+    B --> D[Pod 2]
+    B --> E[Pod 3]
+    F[Service] --> C
+    F --> D
+    F --> E
 ```
 
 فبشكل مبسط:
@@ -401,18 +382,11 @@ environment = production
 
 مثلاً الـService ممكن تستخدم label selector عشان تعرف الـPods اللي المفروض تبعتلها traffic.
 
-```text
-Service
-   │
-   │ selector: app=nginx
-   ▼
-┌───────────────┐
-│ Pod 1         │ app=nginx
-│ Pod 2         │ app=nginx
-│ Pod 3         │ app=redis
-└───────────────┘
-
-Service → Pod 1, Pod 2
+```mermaid
+flowchart TD
+    A["Service<br/>selector: app=nginx"] --> B["Pod 1<br/>app=nginx"]
+    A --> C["Pod 2<br/>app=nginx"]
+    A -.->|does not match| D["Pod 3<br/>app=redis"]
 ```
 
 وده concept مهم جدًا لأن الـServices والـDeployments والـcontrollers بيعتمدوا على labels في حالات كتير.
@@ -433,15 +407,9 @@ API_URL=...
 
 ممكن أخزن الـnon-sensitive configuration في **ConfigMap**.
 
-```text
-ConfigMap
-│
-├── APP_ENV=production
-├── LOG_LEVEL=info
-└── API_URL=...
-        │
-        ▼
-      Pod
+```mermaid
+flowchart TD
+    A["ConfigMap<br/>APP_ENV=production<br/>LOG_LEVEL=info<br/>API_URL=..."] --> B[Pod]
 ```
 
 الفكرة الأساسية:
@@ -471,15 +439,9 @@ Configuration
 
 مثلاً:
 
-```text
-Secret
-│
-├── DB_USERNAME
-├── DB_PASSWORD
-└── API_TOKEN
-       │
-       ▼
-      Pod
+```mermaid
+flowchart TD
+    A["Secret<br/>DB_USERNAME<br/>DB_PASSWORD<br/>API_TOKEN"] --> B[Pod]
 ```
 
 الفكرة:
@@ -527,15 +489,11 @@ API_TOKEN=********
 
 لو عندي application محتاجة persistent data، ممكن أستخدم **Volumes**.
 
-```text
-Pod
-│
-├── Container
-│
-└── Volume
-       │
-       ▼
- Persistent Storage
+```mermaid
+flowchart TD
+    A[Pod] --> B[Container]
+    A --> C[Volume]
+    C --> D[Persistent Storage]
 ```
 
 مثلاً:
@@ -562,23 +520,29 @@ Database Pod
 
 مثلاً:
 
-```text
-Kubernetes Cluster
-│
-├── production
-│   ├── Pods
-│   ├── Services
-│   └── Deployments
-│
-├── staging
-│   ├── Pods
-│   ├── Services
-│   └── Deployments
-│
-└── development
-    ├── Pods
-    ├── Services
-    └── Deployments
+```mermaid
+flowchart TD
+    A[Kubernetes Cluster] --> NS1
+    A --> NS2
+    A --> NS3
+
+    subgraph NS1 [production]
+        P1[Pods]
+        P2[Services]
+        P3[Deployments]
+    end
+
+    subgraph NS2 [staging]
+        S1[Pods]
+        S2[Services]
+        S3[Deployments]
+    end
+
+    subgraph NS3 [development]
+        D1[Pods]
+        D2[Services]
+        D3[Deployments]
+    end
 ```
 
 ده بيساعد في:
@@ -635,24 +599,27 @@ flowchart TB
 
 ممكن application بسيطة في Kubernetes تبقى بالشكل ده:
 
-```text
-                    Namespace
-                        │
-              ┌─────────┴─────────┐
-              │                   │
-          Deployment           Service
-              │                   │
-          ReplicaSet              │
-              │                   │
-       ┌──────┼──────┐            │
-       ▼      ▼      ▼            │
-      Pod    Pod    Pod ◄─────────┘
-       │      │      │
-    Container Container Container
-       │
-       ├── ConfigMap
-       ├── Secret
-       └── Volume
+```mermaid
+flowchart TD
+    A[Namespace] --> B[Deployment]
+    A --> C[Service]
+
+    B --> D[ReplicaSet]
+    D --> E[Pod]
+    D --> F[Pod]
+    D --> G[Pod]
+
+    C --> E
+    C --> F
+    C --> G
+
+    E --> H[Container]
+    F --> I[Container]
+    G --> J[Container]
+
+    H --> K[ConfigMap]
+    H --> L[Secret]
+    H --> M[Volume]
 ```
 
 دي صورة قريبة  من الـpattern اللي هتقابله في applications حقيقية.
@@ -706,29 +673,20 @@ flowchart LR
 
 لو لسه جديد في Kubernetes، أهم hierarchy أفتكرها هي:
 
-```text
-Cluster
-   │
-   └── Nodes
-         │
-         └── Pods
-               │
-               └── Containers
+```mermaid
+flowchart TD
+    A[Cluster] --> B[Nodes]
+    B --> C[Pods]
+    C --> D[Containers]
 ```
 
 وبعدين أضيف الـmanagement layer:
 
-```text
-Deployment
-    │
-    ▼
-ReplicaSet
-    │
-    ▼
-Pods
-    │
-    ▼
-Containers
+```mermaid
+flowchart TD
+    A[Deployment] --> B[ReplicaSet]
+    B --> C[Pods]
+    C --> D[Containers]
 ```
 
 والـnetworking layer:
@@ -742,22 +700,22 @@ Pods
 
 والـconfiguration/storage:
 
-```text
-ConfigMap ──┐
-Secret ─────┼──► Pod
-Volume ─────┘
+```mermaid
+flowchart TD
+    A[ConfigMap] --> D[Pod]
+    B[Secret] --> D
+    C[Volume] --> D
 ```
 
 والـorganization:
 
-```text
-Namespace
-    │
-    ├── Deployments
-    ├── Services
-    ├── Pods
-    ├── ConfigMaps
-    └── Secrets
+```mermaid
+flowchart TD
+    A[Namespace] --> B[Deployments]
+    A --> C[Services]
+    A --> D[Pods]
+    A --> E[ConfigMaps]
+    A --> F[Secrets]
 ```
 
 ---
@@ -837,29 +795,28 @@ flowchart TB
 
 الصورة الكاملة:
 
-```text
-                    Kubernetes Cluster
-                           │
-                     ┌─────┴─────┐
-                     │           │
-                Control Plane   Nodes
-                                 │
-                                 ▼
-                                Pods
-                                 │
-                                 ▼
-                             Containers
+```mermaid
+flowchart TD
+    A[Kubernetes Cluster] --> B[Control Plane]
+    A --> C[Nodes]
+    C --> D[Pods]
+    D --> E[Containers]
 
-               ┌────────────────────────────────┐
-               │ Management & Supporting Layer  │
-               │                                │
-               │ Deployment → ReplicaSet → Pods │
-               │ Service ────────────────→ Pods │
-               │ ConfigMap ──────────────→ Pods │
-               │ Secret ─────────────────→ Pods │
-               │ Volume ─────────────────→ Pods │
-               │ Namespace → organizes resources│
-               └────────────────────────────────┘
+    subgraph M [Management & Supporting Layer]
+        F[Deployment] --> G[ReplicaSet]
+        H[Service]
+        I[ConfigMap]
+        J[Secret]
+        K[Volume]
+        L[Namespace]
+    end
+
+    G --> D
+    H --> D
+    I --> D
+    J --> D
+    K --> D
+    L -->|organizes resources| A
 ```
 
 **الفكرة الأساسية:**

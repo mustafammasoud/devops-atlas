@@ -43,13 +43,11 @@ language: ar
 
 مثلاً عندي application مكونة من:
 
-```text
-                 My Application
-                      │
-        ┌─────────────┼─────────────┐
-        ▼             ▼             ▼
-      Frontend       API          Database
-      Container    Container      Container
+```mermaid
+flowchart TD
+    A[My Application] --> B[Frontend Container]
+    A --> C[API Container]
+    A --> D[Database Container]
 ```
 
 لو application بسيطة، ممكن أدير الـcontainers دي manually.
@@ -84,19 +82,15 @@ Database × 2
 
 ممكن أبسط Kubernetes بالشكل ده:
 
-```text
-        Containerized Applications
-                  │
-                  ▼
-             Kubernetes
-                  │
-       ┌──────────┼──────────┐
-       ▼          ▼          ▼
-    Deploy      Scale      Manage
-       │          │          │
-       └──────────┼──────────┘
-                  ▼
-        Running Applications
+```mermaid
+flowchart TD
+    A[Containerized Applications] --> B[Kubernetes]
+    B --> C[Deploy]
+    B --> D[Scale]
+    B --> E[Manage]
+    C --> F[Running Applications]
+    D --> F
+    E --> F
 ```
 
 بدل ما أقول:
@@ -123,18 +117,15 @@ Database × 2
 
 مثلاً:
 
-```text
-Application
-    │
-    ▼
- Kubernetes Resources
-    │
-    ├── Pods
-    ├── Deployments
-    ├── Services
-    ├── ConfigMaps
-    ├── Secrets
-    └── Volumes
+```mermaid
+flowchart TD
+    A[Application] --> B[Kubernetes Resources]
+    B --> C[Pods]
+    B --> D[Deployments]
+    B --> E[Services]
+    B --> F[ConfigMaps]
+    B --> G[Secrets]
+    B --> H[Volumes]
 ```
 
 الـcontainers نفسها بتشتغل داخل **Pods**، والـPods بتتم إدارتها باستخدام resources مختلفة حسب احتياج الـapplication.
@@ -177,20 +168,11 @@ Current State
 
 مثلاً:
 
-```text
-Desired State
-3 Pods
-   │
-   │ compare
-   ▼
-Current State
-2 Pods
-   │
-   ▼
-Kubernetes takes action
-   │
-   ▼
-3 Pods
+```mermaid
+flowchart TD
+    A["Desired State<br/>3 Pods"] -->|compare| B["Current State<br/>2 Pods"]
+    B --> C[Kubernetes takes action]
+    C --> D["3 Pods"]
 ```
 
 وده مفهوم أساسي جدًا في Kubernetes وهيرجع معانا باستمرار.
@@ -221,16 +203,14 @@ Monitor
 
 Kubernetes بيقدم mechanisms تساعد في أتمتة العمليات دي.
 
-```text
-              Kubernetes
-                   │
-       ┌───────────┼───────────┐
-       ▼           ▼           ▼
-    Deploy       Scale       Recover
-       │           │           │
-       └───────────┼───────────┘
-                   ▼
-          Automated Management
+```mermaid
+flowchart TD
+    A[Kubernetes] --> B[Deploy]
+    A --> C[Scale]
+    A --> D[Recover]
+    B --> E[Automated Management]
+    C --> E
+    D --> E
 ```
 
 المهم إن Kubernetes **مش magic**؛ هو platform فيها components وcontrollers وAPIs بتتعاون عشان تحقق الـdesired state.
@@ -241,24 +221,10 @@ Kubernetes بيقدم mechanisms تساعد في أتمتة العمليات د�
 
 ممكن أشوف Kubernetes كطبقة management فوق الـinfrastructure والـcontainer runtime.
 
-```text
-┌─────────────────────────────────┐
-│       My Applications            │
-│      Containerized Workloads     │
-└────────────────┬────────────────┘
-                 │
-┌────────────────▼────────────────┐
-│           Kubernetes             │
-│                                  │
-│  Deployment / Scaling / Network  │
-│  Scheduling / Self-Healing / ... │
-└────────────────┬────────────────┘
-                 │
-┌────────────────▼────────────────┐
-│        Infrastructure            │
-│                                  │
-│   VMs / Physical Machines / ...  │
-└─────────────────────────────────┘
+```mermaid
+flowchart TD
+    A["My Applications<br/>Containerized Workloads"] --> B["Kubernetes<br/>Deployment / Scaling / Network<br/>Scheduling / Self-Healing / ..."]
+    B --> C["Infrastructure<br/>VMs / Physical Machines / ..."]
 ```
 
 Kubernetes therefore acts as a **management and orchestration layer** between my workloads and the underlying infrastructure.
@@ -299,19 +265,11 @@ Kubernetes مش بديل عن الـcontainers.
 
 الـrelationship بينهم أقرب لكده:
 
-```text
-Container
-   │
-   │ is the unit being run
-   ▼
-Container Runtime
-   │
-   ▼
-Kubernetes
-   │
-   │ manages and orchestrates
-   ▼
-Containerized Workloads
+```mermaid
+flowchart TD
+    A[Container] -->|is the unit being run| B[Container Runtime]
+    B --> C[Kubernetes]
+    C -->|manages and orchestrates| D[Containerized Workloads]
 ```
 
 Kubernetes يحتاج **Container Runtime** لتشغيل الـcontainers على الـNodes.
@@ -368,14 +326,14 @@ Kubernetes بيقدم mechanisms لحل مجموعة كبيرة من مشاكل 
 
 افترض إن عندي web application:
 
-```text
-                 Web Application
-                       │
-              ┌────────┼────────┐
-              ▼        ▼        ▼
-             Pod      Pod      Pod
-              │        │        │
-           App #1    App #2    App #3
+```mermaid
+flowchart TD
+    A[Web Application] --> B[Pod]
+    A --> C[Pod]
+    A --> D[Pod]
+    B --> E[App #1]
+    C --> F[App #2]
+    D --> G[App #3]
 ```
 
 وأنا عايز دائمًا يكون عندي:
@@ -393,22 +351,12 @@ Current = 2
 
 Kubernetes يلاحظ إن الـcurrent state مش مطابق للـdesired state، ويبدأ mechanisms لتحقيق الحالة المطلوبة.
 
-```text
-        Desired State
-        3 Pods
-           │
-           ▼
-      Kubernetes
-           │
-           ▼
-     Current State
-        2 Pods
-           │
-           ▼
-      Reconciliation
-           │
-           ▼
-        3 Pods
+```mermaid
+flowchart TD
+    A["Desired State<br/>3 Pods"] --> B[Kubernetes]
+    B --> C["Current State<br/>2 Pods"]
+    C --> D[Reconciliation]
+    D --> E["3 Pods"]
 ```
 
 الفكرة دي من أهم الأفكار اللي لازم تفضل ثابتة في دماغي وأنا بتعلم Kubernetes.
@@ -486,25 +434,16 @@ flowchart TB
 
 لكن العلاقة الحقيقية أهم من مجرد الشكل:
 
-```text
-Application
-     │
-     ▼
-Containerized Workload
-     │
-     ▼
-   Kubernetes
-     │
-     ├── Deploy
-     ├── Scale
-     ├── Schedule
-     ├── Manage
-     ├── Recover
-     └── Network
-     │
-     ▼
- Kubernetes Cluster
-     │
-     ▼
-Infrastructure
+```mermaid
+flowchart TD
+    A[Application] --> B[Containerized Workload]
+    B --> C[Kubernetes]
+    C --> D[Deploy]
+    C --> E[Scale]
+    C --> F[Schedule]
+    C --> G[Manage]
+    C --> H[Recover]
+    C --> I[Network]
+    C --> J[Kubernetes Cluster]
+    J --> K[Infrastructure]
 ```

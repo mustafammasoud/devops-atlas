@@ -18,13 +18,10 @@ language: ar
 
 الـCluster بيتقسم بشكل أساسي إلى جزئين:
 
-```text
-                    Kubernetes Cluster
-                           │
-              ┌────────────┴────────────┐
-              │                         │
-         Control Plane              Worker Nodes
-            
+```mermaid
+flowchart TD
+    A[Kubernetes Cluster] --> B[Control Plane]
+    A --> C[Worker Nodes]
 ```
 
 يعني عندنا فكرة بسيطة جدًا:
@@ -43,25 +40,25 @@ language: ar
 
 الصورة العامة للـArchitecture ممكن تكون بالشكل ده:
 
-```text
-                    Kubernetes Cluster
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-             ▼                           ▼
-       ┌─────────────┐             ┌──────────────┐
-       │ Control     │             │ Worker Nodes │
-       │ Plane       │             │              │
-       └─────────────┘             └──────────────┘
-             │                           │
-     ┌───────┼────────┐          ┌───────┼────────┐
-     │       │        │          │       │        │
-     ▼       ▼        ▼          ▼       ▼        ▼
-  API     etcd   Scheduler    kubelet  kube-   Runtime
- Server                   Controllers  proxy
-                                             │
-                                             ▼
-                                            Pods
+```mermaid
+flowchart TD
+    A[Kubernetes Cluster] --> B
+    A --> C
+
+    subgraph B [Control Plane]
+        B1[API Server]
+        B2[etcd]
+        B3[Scheduler]
+        B4[Controllers]
+    end
+
+    subgraph C [Worker Nodes]
+        C1[kubelet]
+        C2[kube-proxy]
+        C3[Container Runtime]
+    end
+
+    C3 --> D[Pods]
 ```
 
 
@@ -77,13 +74,12 @@ language: ar
 
 الـControl Plane بشكل أساسي يحتوي على:
 
-```text
-Control Plane
-│
-├── kube-apiserver
-├── etcd
-├── kube-scheduler
-└── kube-controller-manager
+```mermaid
+flowchart TD
+    A[Control Plane] --> B[kube-apiserver]
+    A --> C[etcd]
+    A --> D[kube-scheduler]
+    A --> E[kube-controller-manager]
 ```
 
 كل Component له وظيفة مختلفة.
@@ -116,17 +112,13 @@ kube-apiserver
 
 والـAPI Server بعد كده بيتعامل مع باقي الـKubernetes Components.
 
-```text
-User
- │
- │ kubectl
- ▼
-kube-apiserver
- │
- ├── etcd
- ├── Scheduler
- ├── Controllers
- └── Worker Nodes
+```mermaid
+flowchart TD
+    A[User] -->|kubectl| B[kube-apiserver]
+    B --> C[etcd]
+    B --> D[Scheduler]
+    B --> E[Controllers]
+    B --> F[Worker Nodes]
 ```
 
 فممكن نقول:
@@ -193,18 +185,13 @@ replicas: 3
 
 لما Kubernetes يلاقي Pod محتاج يتشغل ومفيش Node محددة ليه، الـScheduler يبدأ يقرر:
 
-```text
-            New Pod
-               │
-               ▼
-        kube-scheduler
-               │
-       ┌───────┼───────┐
-       ▼       ▼       ▼
-     Node A  Node B  Node C
-               │
-               ▼
-        Selected Node
+```mermaid
+flowchart TD
+    A[New Pod] --> B[kube-scheduler]
+    B --> C[Node A]
+    B --> D[Node B]
+    B --> E[Node C]
+    D --> F[Selected Node]
 ```
 
 الـScheduler ممكن ياخد في اعتباره حاجات زي:
@@ -304,15 +291,14 @@ flowchart TD
 
 وكل Worker Node بيكون عليها Components مسؤولة عن تشغيل وإدارة الـWorkloads.
 
-```text
-Worker Node
-│
-├── kubelet
-├── kube-proxy
-├── Container Runtime
-└── Pods
-    ├── Container
-    └── Container
+```mermaid
+flowchart TD
+    A[Worker Node] --> B[kubelet]
+    A --> C[kube-proxy]
+    A --> D[Container Runtime]
+    A --> E[Pods]
+    E --> F[Container]
+    E --> G[Container]
 ```
 
 ---
@@ -326,18 +312,11 @@ Worker Node
 
 بشكل مبسط:
 
-```text
-Control Plane
-      │
-      │ API
-      ▼
-   kubelet
-      │
-      ▼
-Container Runtime
-      │
-      ▼
-    Pods
+```mermaid
+flowchart TD
+    A[Control Plane] -->|API| B[kubelet]
+    B --> C[Container Runtime]
+    C --> D[Pods]
 ```
 
 يعني الـkubelet هو حلقة الوصل بين الـKubernetes Control Plane والـWorkloads الموجودة على الـNode.
@@ -360,17 +339,11 @@ Kubernetes نفسه مش هو اللي بيعمل `run container`.
 
 بدل كده:
 
-```text
-Kubernetes
-    │
-    ▼
-  kubelet
-    │
-    ▼
-Container Runtime
-    │
-    ▼
- Container
+```mermaid
+flowchart TD
+    A[Kubernetes] --> B[kubelet]
+    B --> C[Container Runtime]
+    C --> D[Container]
 ```
 
 يعني Kubernetes بيدير الـWorkloads، والـContainer Runtime هو اللي بيتولى تشغيل الـContainers فعليًا.
@@ -386,18 +359,13 @@ Container Runtime
 
 بشكل مبسط:
 
-```text
-Client
-  │
-  ▼
-Service
-  │
-  ▼
-kube-proxy / networking rules
-  │
-  ├──────► Pod
-  ├──────► Pod
-  └──────► Pod
+```mermaid
+flowchart TD
+    A[Client] --> B[Service]
+    B --> C[kube-proxy / networking rules]
+    C --> D[Pod]
+    C --> E[Pod]
+    C --> F[Pod]
 ```
 
 فهو جزء من الصورة الخاصة بالـService networking والـtraffic handling.
@@ -409,28 +377,27 @@ kube-proxy / networking rules
 
 دلوقتي نقدر نجمع كل حاجة مع بعض.
 
-```text
-                         Kubernetes Cluster
-                                │
-             ┌──────────────────┴──────────────────┐
-             │                                     │
-             ▼                                     ▼
-      ┌───────────────┐                    ┌───────────────┐
-      │ Control Plane │                    │ Worker Node   │
-      └───────────────┘                    └───────────────┘
-             │                                     │
-      ┌──────┼──────┐                      ┌───────┼────────┐
-      │      │      │                      │       │        │
-      ▼      ▼      ▼                      ▼       ▼        ▼
-    API    etcd  Scheduler              kubelet kube-proxy Runtime
-   Server          │                         │                │
-      │            │                         │                ▼
-      │            └───────────────►         │              Containers
-      │                                      │
-      └──────────────────────────────────────┘
-                                             │
-                                             ▼
-                                            Pods
+```mermaid
+flowchart TD
+    A[Kubernetes Cluster] --> B
+    A --> C
+
+    subgraph B [Control Plane]
+        B1[API Server]
+        B2[etcd]
+        B3[Scheduler]
+    end
+
+    subgraph C [Worker Node]
+        C1[kubelet]
+        C2[kube-proxy]
+        C3[Runtime]
+    end
+
+    B3 --> C1
+    B1 --> C1
+    C3 --> D[Containers]
+    C1 --> E[Pods]
 ```
 
 ---
@@ -548,29 +515,21 @@ Current State ≈ Desired State
 
 لو عايز تختصر الـCluster Architecture كلها في دماغك، فكر فيها كده:
 
-```text
-                 CONTROL PLANE
-              "What should happen?"
-                       │
-                       ▼
-                kube-apiserver
-                       │
-          ┌────────────┼────────────┐
-          ▼            ▼            ▼
-        etcd       Scheduler    Controllers
-          │            │            │
-          └────────────┴────────────┘
-                       │
-                       ▼
-                 WORKER NODES
-                 "Run the work"
-                       │
-              ┌────────┼────────┐
-              ▼        ▼        ▼
-           kubelet  kube-proxy Runtime
-                                  │
-                                  ▼
-                                 Pods
+```mermaid
+flowchart TD
+    A["Control Plane<br/>What should happen?"] --> B[kube-apiserver]
+    B --> C[etcd]
+    B --> D[Scheduler]
+    B --> E[Controllers]
+
+    C --> F["Worker Nodes<br/>Run the work"]
+    D --> F
+    E --> F
+
+    F --> G[kubelet]
+    F --> H[kube-proxy]
+    F --> I[Runtime]
+    I --> J[Pods]
 ```
 
 بمعنى:
@@ -612,52 +571,34 @@ Current State ≈ Desired State
 
 اربطهم ببعض:
 
-```text
-                 Kubernetes Cluster
-                        │
-           ┌────────────┴────────────┐
-           │                         │
-           ▼                         ▼
-     Control Plane              Worker Nodes
-           │                         │
-           │                         ├── kubelet
-           │                         ├── kube-proxy
-           │                         ├── Runtime
-           │                         └── Pods
-           │
-     ┌─────┼──────┐
-     │     │      │
-     ▼     ▼      ▼
-    API   etcd  Scheduler
-   Server        + Controllers
+```mermaid
+flowchart TD
+    A[Kubernetes Cluster] --> B[Control Plane]
+    A --> C[Worker Nodes]
+
+    B --> D[API Server]
+    B --> E[etcd]
+    B --> F[Scheduler + Controllers]
+
+    C --> G[kubelet]
+    C --> H[kube-proxy]
+    C --> I[Runtime]
+    C --> J[Pods]
 ```
 
 والـoverall flow:
 
-```text
-User
- │
- ▼
-kubectl
- │
- ▼
-kube-apiserver
- │
- ├──► etcd
- │
- ├──► Controllers
- │
- └──► Scheduler
-          │
-          ▼
-     Worker Node
-          │
-        kubelet
-          │
-   Container Runtime
-          │
-          ▼
-         Pod
+```mermaid
+flowchart TD
+    A[User] --> B[kubectl]
+    B --> C[kube-apiserver]
+    C --> D[etcd]
+    C --> E[Controllers]
+    C --> F[Scheduler]
+    F --> G[Worker Node]
+    G --> H[kubelet]
+    H --> I[Container Runtime]
+    I --> J[Pod]
 ```
 
 **The core idea:**

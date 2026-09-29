@@ -43,33 +43,30 @@ language: ar
 
 لكن application أكبر ممكن تكون:
 
-```text id="xq3b1m"
-Application
-│
-├── Frontend
-│   ├── Container
-│   └── Container
-│
-├── Backend API
-│   ├── Container
-│   ├── Container
-│   └── Container
-│
-└── Worker
-    ├── Container
-    └── Container
+```mermaid
+flowchart TD
+    A[Application] --> B[Frontend]
+    A --> C[Backend API]
+    A --> D[Worker]
+    B --> E[Container]
+    B --> F[Container]
+    C --> G[Container]
+    C --> H[Container]
+    C --> I[Container]
+    D --> J[Container]
+    D --> K[Container]
 ```
 
 ولو الـapplication شغالة على أكثر من server:
 
-```text id="5p0l3x"
-             Application
-                  │
-      ┌───────────┼───────────┐
-      ▼           ▼           ▼
-   Server 1    Server 2    Server 3
-      │           │           │
-   Containers  Containers  Containers
+```mermaid
+flowchart TD
+    A[Application] --> B[Server 1]
+    A --> C[Server 2]
+    A --> D[Server 3]
+    B --> E[Containers]
+    C --> F[Containers]
+    D --> G[Containers]
 ```
 
 هنا تبدأ تظهر مجموعة كبيرة من المشاكل.
@@ -179,23 +176,13 @@ flowchart TD
 
 لكن في environments أكبر، ممكن يكون عندي:
 
-```text id="k5n2pz"
-Kubernetes Cluster
-
-┌─────────────┐
-│   Node 1    │
-│   Pods      │
-└─────────────┘
-
-┌─────────────┐
-│   Node 2    │
-│   Pods      │
-└─────────────┘
-
-┌─────────────┐
-│   Node 3    │
-│   Pods      │
-└─────────────┘
+```mermaid
+flowchart TD
+    subgraph A [Kubernetes Cluster]
+        N1["Node 1<br/>Pods"]
+        N2["Node 2<br/>Pods"]
+        N3["Node 3<br/>Pods"]
+    end
 ```
 
 السؤال هنا:
@@ -396,14 +383,14 @@ Memory: 2Gi
 
 وبالتالي Kubernetes يقدر يستخدم الـavailable resources بشكل أكثر تنظيمًا.
 
-```text id="k2r7xp"
-             Cluster Resources
-                    │
-        ┌───────────┼───────────┐
-        ▼           ▼           ▼
-      Node 1      Node 2      Node 3
-        │           │           │
-      Pods        Pods        Pods
+```mermaid
+flowchart TD
+    A[Cluster Resources] --> B[Node 1]
+    A --> C[Node 2]
+    A --> D[Node 3]
+    B --> E[Pods]
+    C --> F[Pods]
+    D --> G[Pods]
 ```
 
 هنفصل الـresource management والـscheduling قدام ان شاء الله .
@@ -425,14 +412,14 @@ Memory: 2Gi
 
 Kubernetes بيسمحلي أشغل workloads على multiple Nodes وmultiple instances، حسب الـarchitecture والـrequirements بتاعة الـapplication.
 
-```text id="r6m2pk"
-             Application
-                  │
-        ┌─────────┼─────────┐
-        ▼         ▼         ▼
-      Node 1    Node 2    Node 3
-        │         │         │
-       Pod       Pod       Pod
+```mermaid
+flowchart TD
+    A[Application] --> B[Node 1]
+    A --> C[Node 2]
+    A --> D[Node 3]
+    B --> E[Pod]
+    C --> F[Pod]
+    D --> G[Pod]
 ```
 
 وده يساعد في تقليل الـsingle points of failure، لكن **Kubernetes وحده لا يضمن High Availability تلقائيًا**؛ لازم الـapplication والـcluster architecture يكونوا مصممين لتحقيق الـavailability المطلوبة.
@@ -461,16 +448,14 @@ Manage networking manually
 
 مع Kubernetes:
 
-```text id="a8v2kc"
-                 Kubernetes
-                     │
-        ┌────────────┼────────────┐
-        ▼            ▼            ▼
-     Deploy        Scale       Recover
-        │            │            │
-        └────────────┼────────────┘
-                     ▼
-                 Automate
+```mermaid
+flowchart TD
+    A[Kubernetes] --> B[Deploy]
+    A --> C[Scale]
+    A --> D[Recover]
+    B --> E[Automate]
+    C --> E
+    D --> E
 ```
 
 الفكرة مش إن Kubernetes "يلغي الـoperations"، لكن إنه **يحوّل جزء كبير من الـoperational work إلى automated, declarative processes**.
@@ -589,24 +574,15 @@ flowchart LR
 
 كل ما الـsystem يكبر، عدد الـoperational concerns بيزيد:
 
-```text id="v3m8kx"
-More Applications
-       +
-More Containers
-       +
-More Nodes
-       +
-More Traffic
-       +
-More Deployments
-       +
-More Failures
-       │
-       ▼
-More Operational Complexity
-       │
-       ▼
-     Kubernetes
+```mermaid
+flowchart TD
+    A[More Applications] --> G[More Operational Complexity]
+    B[More Containers] --> G
+    C[More Nodes] --> G
+    D[More Traffic] --> G
+    E[More Deployments] --> G
+    F[More Failures] --> G
+    G --> H[Kubernetes]
 ```
 
 ---
@@ -640,31 +616,19 @@ More Operational Complexity
 
 عايز أفتكر المشكلة الأساسية:
 
-```text
-        Containerized Applications
-                    │
-                    ▼
-            Environment Grows
-                    │
-                    ▼
-       More Containers + Nodes
-                    │
-                    ▼
-       More Operational Problems
-                    │
-       ┌────────────┼────────────┐
-       ▼            ▼            ▼
-    Scaling      Failures     Networking
-       │            │            │
-       └────────────┼────────────┘
-                    ▼
-          Operational Complexity
-                    │
-                    ▼
-               Kubernetes
-                    │
-                    ▼
-          Automated Orchestration
+```mermaid
+flowchart TD
+    A[Containerized Applications] --> B[Environment Grows]
+    B --> C[More Containers + Nodes]
+    C --> D[More Operational Problems]
+    D --> E[Scaling]
+    D --> F[Failures]
+    D --> G[Networking]
+    E --> H[Operational Complexity]
+    F --> H
+    G --> H
+    H --> I[Kubernetes]
+    I --> J[Automated Orchestration]
 ```
 
 ---
@@ -695,20 +659,12 @@ More Operational Complexity
 
 وبالتالي:
 
-```text
-Manual Container Management
-           │
-           ▼
-   Operational Complexity
-           │
-           ▼
-       Kubernetes
-           │
-           ▼
-Automated Orchestration
-           │
-           ▼
-Reliable & Scalable Workloads
+```mermaid
+flowchart TD
+    A[Manual Container Management] --> B[Operational Complexity]
+    B --> C[Kubernetes]
+    C --> D[Automated Orchestration]
+    D --> E[Reliable & Scalable Workloads]
 ```
 
 وده هو السبب الأساسي اللي بيخليني أستخدم Kubernetes.
