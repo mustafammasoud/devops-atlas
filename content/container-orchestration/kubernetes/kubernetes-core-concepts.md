@@ -108,8 +108,6 @@ Worker Nodes
         └── Run Workloads
 ```
 
-هنشرح الـControl Plane والـWorker Nodes بالتفصيل في **Cluster Architecture Overview**.
-
 ---
 
 ## 3. Pod
@@ -271,8 +269,6 @@ flowchart TD
 ```
 
 الـDeployment مسؤول عن higher-level application management، والـReplicaSet مسؤول عن maintaining the desired number of Pod replicas.
-
-مش محتاج أدخل في تفاصيل الـReplicaSet دلوقتي؛ هنفصلها لما نوصل للـDeployments.
 
 ---
 
@@ -448,9 +444,7 @@ flowchart TD
 
 > **Secret is designed for sensitive configuration data.**
 
-لكن مهم جدًا أفهم إن وجود البيانات في Kubernetes Secret **مش معناه تلقائيًا إنها encrypted everywhere** أو إن Secret management أصبح آمنًا بالكامل. طريقة التخزين والـencryption-at-rest والـaccess control مهمة جدًا.
-
-هنفصل الـSecrets في جزء الـSecurity.
+لكن مهم جدًا فهم إن وجود البيانات في Kubernetes Secret **مش معناه تلقائيًا إنها encrypted everywhere** أو إن Secret management أصبح آمنًا بالكامل. طريقة التخزين والـencryption-at-rest والـaccess control مهمة جدًا.
 
 ---
 
@@ -509,8 +503,6 @@ Database Pod
 ```
 
 الـVolume بيفصل الـstorage عن lifecycle بتاع الـcontainer حسب نوع الـvolume.
-
-هنفصل أنواع الـVolumes والـPersistent Volumes لاحقًا.
 
 ---
 
@@ -622,7 +614,7 @@ flowchart TD
     H --> M[Volume]
 ```
 
-دي صورة قريبة  من الـpattern اللي هتقابله في applications حقيقية.
+دي صورة قريبة  من الـpattern اللي هقابله في applications حقيقية.
 
 ---
 
@@ -671,7 +663,7 @@ flowchart LR
 
 ## 19. The Most Important Mental Model
 
-لو لسه جديد في Kubernetes، أهم hierarchy أفتكرها هي:
+لو لسه جديد في Kubernetes، أهم hierarchy :
 
 ```mermaid
 flowchart TD
@@ -769,7 +761,7 @@ flowchart TB
 
 ---
 
-## Final Summary
+## 22. Final Summary
 
 ان Kubernetes عنده مجموعة من الـ**Core Concepts**، وكل concept له responsibility واضحة.
 

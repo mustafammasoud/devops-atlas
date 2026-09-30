@@ -130,8 +130,6 @@ flowchart TD
 
 الـcontainers نفسها بتشتغل داخل **Pods**، والـPods بتتم إدارتها باستخدام resources مختلفة حسب احتياج الـapplication.
 
-هنشرح كل concept بالتفصيل بعدين.
-
 ---
 
 ## 4. Kubernetes as a Desired-State System
@@ -201,7 +199,7 @@ Update Application
 Monitor
 ```
 
-Kubernetes بيقدم mechanisms تساعد في أتمتة العمليات دي.
+ف Kubernetes بيقدم mechanisms تساعد في أتمتة العمليات دي.
 
 ```mermaid
 flowchart TD
@@ -255,13 +253,11 @@ flowchart TB
 
 الـControl Plane مسؤول عن **management and orchestration**، والـWorker Nodes بتشغل الـworkloads.
 
-هندخل في تفاصيل الـCluster Architecture في الصفحة القادمة.
-
 ---
 
 ## 8. Kubernetes Does Not Replace Containers
 
-Kubernetes مش بديل عن الـcontainers.
+ عندنا Kubernetes مش بديل عن الـ containers.
 
 الـrelationship بينهم أقرب لكده:
 
@@ -272,7 +268,7 @@ flowchart TD
     C -->|manages and orchestrates| D[Containerized Workloads]
 ```
 
-Kubernetes يحتاج **Container Runtime** لتشغيل الـcontainers على الـNodes.
+ف Kubernetes يحتاج **Container Runtime** لتشغيل الـcontainers على الـNodes.
 
 ومن أمثلة الـruntimes المستخدمة مع Kubernetes:
 
@@ -288,7 +284,7 @@ Kubernetes يحتاج **Container Runtime** لتشغيل الـcontainers على
 
 ## 9. What Problems Does Kubernetes Help Solve?
 
-Kubernetes بيقدم mechanisms لحل مجموعة كبيرة من مشاكل تشغيل الـcontainerized applications.
+عندنا Kubernetes بيقدم mechanisms لحل مجموعة كبيرة من مشاكل تشغيل الـcontainerized applications.
 
 ### Deployment
 
@@ -318,7 +314,6 @@ Kubernetes بيقدم mechanisms لحل مجموعة كبيرة من مشاكل 
 
 أقدر أحدد resource requirements وlimits للـworkloads.
 
-كل feature من دول هتتشرح بالتفصيل في أجزاء لاحقة.
 
 ---
 
@@ -349,7 +344,7 @@ Desired = 3
 Current = 2
 ```
 
-Kubernetes يلاحظ إن الـcurrent state مش مطابق للـdesired state، ويبدأ mechanisms لتحقيق الحالة المطلوبة.
+ف Kubernetes يلاحظ إن الـcurrent state مش مطابق للـdesired state، ويبدأ mechanisms لتحقيق الحالة المطلوبة.
 
 ```mermaid
 flowchart TD
@@ -359,13 +354,13 @@ flowchart TD
     D --> E["3 Pods"]
 ```
 
-الفكرة دي من أهم الأفكار اللي لازم تفضل ثابتة في دماغي وأنا بتعلم Kubernetes.
+الفكرة دي من أهم الأفكار اللي لازم تفضل ثابتة في الدماغ اثناء تعلم Kubernetes.
 
 ---
 
 ## 11. Kubernetes Declarative Model
 
-Kubernetes بيعتمد بشكل كبير على **Declarative Configuration**.
+عندنا Kubernetes بيعتمد بشكل كبير على **Declarative Configuration**.
 
 يعني بدل ما أقول:
 
@@ -398,11 +393,11 @@ flowchart LR
     F --> C
 ```
 
-ده بيمهد لمفهوم مهم جدًا اسمه:
+ده بيمهد لمفهوم مهم  اسمه:
 
 **Reconciliation Loop**
 
-واللي هنشوفه كتير جدًا بعدين.
+واللي هنشوفه كتير  بعدين.
 
 ---
 

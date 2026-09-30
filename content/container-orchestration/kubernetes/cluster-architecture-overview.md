@@ -27,6 +27,7 @@ flowchart TD
 يعني عندنا فكرة بسيطة جدًا:
 
 > **Control Plane = Brain**
+> 
 > **Worker Nodes = Machines that run the Workloads**
 
 الـControl Plane هو اللي بيدير الـCluster وبيقرر إيه المفروض يحصل.
@@ -335,7 +336,7 @@ flowchart TD
 * `containerd`
 * `CRI-O`
 
-Kubernetes نفسه مش هو اللي بيعمل `run container`.
+ف Kubernetes نفسه مش هو اللي بيعمل `run container`.
 
 بدل كده:
 
@@ -450,36 +451,13 @@ User → Pod
 
 ## 14. The Kubernetes Control Loop
 
-دي من أهم الأفكار اللي لازم تثبت في دماغك من البداية.
+دي من أهم الأفكار اللي لازم تثبت .
 
-Kubernetes مش مجرد مجموعة Commands بتنفذها مرة وخلاص.
+عندنا Kubernetes مش مجرد مجموعة Commands بتنفذها مرة وخلاص.
 
 هو **Continuous Control System**.
 
 يعني باستمرار:
-
-```text
-Desired State
-      │
-      ▼
-Kubernetes
-      │
-      ▼
-Current State
-      │
-      ▼
-Compare
-      │
-      ▼
-Reconcile
-      │
-      ▼
-Current State
-      │
-      └──────────────► Repeat
-```
-
-Mermaid:
 
 ```mermaid
 flowchart LR
@@ -513,7 +491,7 @@ Current State ≈ Desired State
 
 ## 15. The Most Important Mental Model
 
-لو عايز تختصر الـCluster Architecture كلها في دماغك، فكر فيها كده:
+  اختصار الـCluster Architecture  :
 
 ```mermaid
 flowchart TD
@@ -566,10 +544,6 @@ flowchart TD
 
 
 ## 17. Final Mental Model
-
-متحاولش تحفظ الـComponents كأسماء منفصلة.
-
-اربطهم ببعض:
 
 ```mermaid
 flowchart TD

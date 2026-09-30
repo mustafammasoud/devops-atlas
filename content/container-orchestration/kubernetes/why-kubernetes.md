@@ -47,7 +47,7 @@ language: ar
 flowchart TD
     A[Application] --> B[Frontend]
     A --> C[Backend API]
-    A --> D[Worker]
+    A --> D[Database]
     B --> E[Container]
     B --> F[Container]
     C --> G[Container]
@@ -105,7 +105,7 @@ API
 * إمتى أقلل العدد؟
 * إزاي أوزع الـtraffic؟
 
-Kubernetes بيساعدني في **automated scaling and workload management**.
+ف Kubernetes بيساعدني في **automated scaling and workload management**.
 
 ```mermaid id="q7k2p4"
 flowchart LR
@@ -148,7 +148,7 @@ Current = 2
 
 لو أنا مسؤول عن الـsystem manually، لازم أكتشف المشكلة وأعمل recovery.
 
-Kubernetes عنده mechanisms للـ**self-healing** تساعد في إعادة الـworkload للحالة المطلوبة.
+ف Kubernetes عنده mechanisms للـ**self-healing** تساعد في إعادة الـworkload للحالة المطلوبة.
 
 ```mermaid id="1j4r8x"
 flowchart TD
@@ -197,7 +197,7 @@ flowchart TD
 * Policies
 * Constraints
 
-Kubernetes عنده **Scheduling mechanisms** لاختيار الـappropriate Node للـworkload.
+ف Kubernetes عنده **Scheduling mechanisms** لاختيار الـappropriate Node للـworkload.
 
 ```mermaid id="3d5n9k"
 flowchart LR
@@ -246,8 +246,6 @@ flowchart LR
     C --> D[Database Service]
     D --> E[Database Pods]
 ```
-
-هنشرح الـServices والـNetworking بالتفصيل قدام  ان شاء الله.
 
 ---
 
@@ -393,8 +391,6 @@ flowchart TD
     D --> G[Pods]
 ```
 
-هنفصل الـresource management والـscheduling قدام ان شاء الله .
-
 ---
 
 ## 9. High Availability
@@ -410,7 +406,7 @@ flowchart TD
 
 لأن لو الـserver وقع، الـapplication ممكن تتأثر.
 
-Kubernetes بيسمحلي أشغل workloads على multiple Nodes وmultiple instances، حسب الـarchitecture والـrequirements بتاعة الـapplication.
+ف Kubernetes بيسمحلي أشغل workloads على multiple Nodes وmultiple instances، حسب الـarchitecture والـrequirements بتاعة الـapplication.
 
 ```mermaid
 flowchart TD
@@ -466,7 +462,7 @@ flowchart TD
 
 سؤال مهم.
 
-Docker أو أي Container Runtime ممتاز في تشغيل الـcontainers.
+عندنا Docker أو أي Container Runtime ممتاز في تشغيل الـcontainers.
 
 لكن تشغيل container مش هو نفس إدارة **large-scale containerized applications**.
 
