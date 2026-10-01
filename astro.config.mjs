@@ -16,9 +16,12 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       // Dual themes so the same markup works in light and dark mode.
-      // Gruvbox's earth-tone palette matches the warm paper / dark coffee UI.
+      // Code blocks are always dark terminal/editor surfaces (the warm
+      // paper UI paints their background via --c-code-bg in global.css),
+      // so light mode reads the dark gruvbox palette too — earth-tone
+      // colors that match the warm paper / dark coffee UI.
       themes: {
-        light: 'gruvbox-light-medium',
+        light: 'gruvbox-dark-medium',
         dark: 'gruvbox-dark-medium',
       },
       defaultColor: false,

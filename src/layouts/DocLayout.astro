@@ -181,15 +181,15 @@ const issueUrl = githubFeedbackIssueUrl(title, canonicalUrl);
       >
         <ol class="flex flex-wrap items-center gap-1.5">
           <li>
-            <a href="/" class="hover:text-accent">Home</a>
+            <a href="/" class="hover:text-accent-ink">Home</a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <a href="/docs" class="hover:text-accent">Docs</a>
+            <a href="/docs" class="hover:text-accent-ink">Docs</a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <a href={`/docs/${category}`} class="hover:text-accent">
+            <a href={`/docs/${category}`} class="hover:text-accent-ink">
               {categoryLabel(category)}
             </a>
           </li>
@@ -281,10 +281,10 @@ const issueUrl = githubFeedbackIssueUrl(title, canonicalUrl);
                 hidden
               >
                 <span class="fp-count text-muted" data-fp-count aria-live="polite"></span>
-                <a class="font-medium text-accent hover:underline" data-fp-continue hidden>
+                <a class="font-medium text-accent-ink hover:underline" data-fp-continue hidden>
                   Continue →
                 </a>
-                <span class="font-medium text-accent" data-fp-done hidden></span>
+                <span class="font-medium text-accent-ink" data-fp-done hidden></span>
                 <button
                   type="button"
                   class="fp-toggle"

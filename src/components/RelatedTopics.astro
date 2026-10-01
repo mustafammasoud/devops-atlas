@@ -28,7 +28,7 @@ const related = sortedDocs(await getCollection('docs', ({ data }) => !data.draft
           return (
             <a
               href={docPath(doc.id)}
-              class="rounded-md border border-border bg-surface p-4 transition-colors hover:border-accent/50"
+              class="rounded-md border border-border bg-surface p-4 shadow-card transition-colors hover:border-accent/50"
             >
               <span class="block text-xs text-muted" lang="en">
                 {categoryLabel(docCategory(doc))}

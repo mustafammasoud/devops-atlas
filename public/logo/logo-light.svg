@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 214 40" role="img" aria-label="Ops Handbook">
   <title>Ops Handbook</title>
   <g transform="scale(1.25)">
-    <g fill="none" stroke="#2b2418" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <g fill="none" stroke="#25231f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3.25" y="3.25" width="25.5" height="25.5" rx="6.5"/>
       <path d="M10 23.5V16Q10 14 12 14H18.75"/>
     </g>
-    <circle cx="21.5" cy="14" r="3" fill="#8a5a24"/>
+    <circle cx="21.5" cy="14" r="3" fill="#9a6b32"/>
   </g>
   <text
     x="52"
@@ -14,6 +14,6 @@
     font-size="21"
     font-weight="500"
     letter-spacing="-0.2"
-    fill="#2b2418"
+    fill="#25231f"
   >Ops <tspan font-weight="700">Handbook</tspan></text>
 </svg>

@@ -180,9 +180,9 @@ limitations) lives in [`docs-roadmap.md`](docs-roadmap.md).
    (`ms-*`, `ps-*`, `border-inline-start`) so the same markup works in both directions.
 3. **Static output, no adapter** — `output: 'static'` so the `dist/` folder can be pushed
    straight to Cloudflare Pages later (`git → GitHub → Cloudflare Pages`).
-4. **Shiki dual themes** — `gruvbox-light-medium` / `gruvbox-dark-medium` (warm
-   earth tones that match the paper/dark-coffee UI) with `defaultColor: false`,
-   so dark mode is a CSS-only switch with no re-highlighting.
+4. **Shiki dual themes** — `gruvbox-dark-medium` for both modes with
+   `defaultColor: false`: code blocks are always dark terminal surfaces set into the
+   warm paper UI, so dark mode is a CSS-only switch with no re-highlighting.
 5. **Mermaid is lazy** — loaded via dynamic `import('mermaid')` only when a page actually
    contains a diagram; it never blocks pages without diagrams.
 6. **Schema is single-sourced** — all frontmatter fields are declared once in
@@ -237,8 +237,7 @@ Usage rules:
 - Use light assets on light backgrounds and dark assets on dark backgrounds.
 - Keep clear space around the mark of at least ¼ of its height.
 - Minimum size: 24 px for the mark; the favicon stays legible at 16 px.
-- Don’t stretch, rotate, recolor outside the palette (coffee `#8a5a24` /
-  gold `#d0a45c`), or swap the route for other symbols.
+- Don’t stretch, rotate, recolor outside the palette (`#9a6b32` light / `#d0a45c` dark), or swap the route for other symbols.
 
 ## Deployment (later)
 

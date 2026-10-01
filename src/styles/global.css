@@ -16,41 +16,83 @@
 /* Warm editorial color system                                         */
 /* Printed-manual paper (light) / dark coffee graphite (dark), one     */
 /* muted coffee-amber accent. No blue, no gradients, no neon.          */
+/* Every value below is a design token — adjust the palette here, not  */
+/* in individual components.                                           */
 /* ------------------------------------------------------------------ */
 :root {
   color-scheme: light;
-  --c-bg: #f4efe4;
-  --c-surface: #fbf8f1;
-  --c-surface-2: #ece4d2;
-  --c-border: #ddd3bd;
-  --c-text: #2b2418;
-  --c-muted: #6d6353;
-  --c-accent: #8a5a24;
-  --c-accent-contrast: #fffcf5;
-  --c-note-bg: #efe9dc;
-  --c-note-border: #d8cdb6;
+
+  /* Surfaces — warm paper, never pure white. */
+  --c-bg: #f5efe4; /* page background              (--background)   */
+  --c-surface: #fffaf1; /* cards, panels, nav surfaces    (--surface)     */
+  --c-surface-alt: #fffdf8; /* nested panels, table headers (--surface-alt) */
+  --c-surface-2: #f1e7d6; /* hover fills, inline code (= accent-soft)  */
+  --c-border: #d8cdbb; /* hairline borders             (--border)      */
+
+  /* Text. */
+  --c-text: #25231f; /* body copy                 (--text-primary)   */
+  --c-muted: #70695f; /* metadata, captions        (--text-secondary) */
+  --c-secondary: #5f665f; /* calm slate secondary      (--secondary)     */
+
+  /* Accent — used intentionally: links, active states, section numbers,
+     arrows, small highlights. `--c-accent-ink` is the same accent sized
+     for text (≥ 4.5:1 on the paper background); `--c-accent` stays the
+     spec value for borders, bars, icons and fills. */
+  --c-accent: #9a6b32; /* (--accent)                                        */
+  --c-accent-ink: #8f6230; /* 4.64:1 on #f5efe4                               */
+  --c-accent-soft: #f1e7d6; /* tinted fills              (--accent-soft)    */
+  --c-accent-contrast: #fffcf5; /* text on accent fills                           */
+
+  /* Code blocks stay dark in both themes — terminal/editor surfaces. */
+  --c-code-bg: #24231f; /* (--code-background)                                 */
+  --c-code-border: #3b3833;
+  --c-code-fg: #ebdbb2;
+  --c-code-muted: #a79c8a;
+  --c-code-chrome-bg: #2f2d28; /* copy button + language badge on code */
+  --c-code-chrome-border: #4a463f;
+
+  /* Elevation — barely-there, like pages resting on a desk. */
+  --c-shadow-card: 0 1px 2px rgb(45 35 20 / 0.05), 0 10px 30px rgb(45 35 20 / 0.06);
+  --c-shadow-code: 0 8px 24px rgb(45 35 20 / 0.1);
+
+  /* Callouts — same warm palette, only lightly tinted. */
+  --c-note-bg: #f2ede2;
+  --c-note-border: #d8cdbb;
   --c-note-fg: #57503f;
-  --c-tip-bg: #ecefe1;
-  --c-tip-border: #c7cfb0;
-  --c-tip-fg: #56683c;
-  --c-warning-bg: #f6e7dc;
-  --c-warning-border: #dfc1ad;
-  --c-warning-fg: #98492a;
-  --c-lab-bg: #f1e8ed;
-  --c-lab-border: #d8c4cd;
-  --c-lab-fg: #71475c;
+  --c-tip-bg: #f1e7d6;
+  --c-tip-border: #dcc7a6;
+  --c-tip-fg: #7e5527;
+  --c-warning-bg: #f6e6d7;
+  --c-warning-border: #e0c3a4;
+  --c-warning-fg: #93492a;
+  --c-lab-bg: #eeeae0;
+  --c-lab-border: #d1cabb;
+  --c-lab-fg: #4d5548;
 }
 
 .dark {
   color-scheme: dark;
   --c-bg: #17130f;
   --c-surface: #201a14;
+  --c-surface-alt: #201a14; /* same as surface — keeps dark tables unchanged */
   --c-surface-2: #2a231a;
   --c-border: #3a3226;
   --c-text: #e8e1d4;
   --c-muted: #a79c8a;
+  --c-secondary: #8b9187;
   --c-accent: #d0a45c;
+  --c-accent-ink: #d0a45c; /* the dark accent already passes on dark surfaces */
+  --c-accent-soft: #2a231a;
   --c-accent-contrast: #1c1610;
+  /* Code chrome in dark mode mirrors the current surface/border tokens. */
+  --c-code-bg: #282828; /* gruvbox-dark background, unchanged */
+  --c-code-border: #3a3226;
+  --c-code-fg: #ebdbb2;
+  --c-code-muted: #a79c8a;
+  --c-code-chrome-bg: #201a14;
+  --c-code-chrome-border: #3a3226;
+  --c-shadow-card: none;
+  --c-shadow-code: none;
   --c-note-bg: #211c15;
   --c-note-border: #3b3427;
   --c-note-fg: #c5bba9;
@@ -68,12 +110,18 @@
 @theme inline {
   --color-bg: var(--c-bg);
   --color-surface: var(--c-surface);
+  --color-surface-alt: var(--c-surface-alt);
   --color-surface-2: var(--c-surface-2);
   --color-border: var(--c-border);
   --color-text: var(--c-text);
   --color-muted: var(--c-muted);
+  --color-secondary: var(--c-secondary);
   --color-accent: var(--c-accent);
+  --color-accent-ink: var(--c-accent-ink);
+  --color-accent-soft: var(--c-accent-soft);
   --color-accent-contrast: var(--c-accent-contrast);
+  --shadow-card: var(--c-shadow-card);
+  --shadow-code: var(--c-shadow-code);
   --color-note-bg: var(--c-note-bg);
   --color-note-border: var(--c-note-border);
   --color-note-fg: var(--c-note-fg);
@@ -133,9 +181,9 @@
 /* brighter hover (plus pill) and an accent active state.              */
 /* ------------------------------------------------------------------ */
 :root {
-  --nav-link: #4f4636; /* 8.10:1 on #f4efe4 */
-  --nav-link-hover: #2b2418; /* 13.38:1 */
-  --nav-link-active: #8a5a24; /* 5.13:1 */
+  --nav-link: #4f4636; /* 8.93:1 on #fffaf1 */
+  --nav-link-hover: #25231f; /* 15.10:1 */
+  --nav-link-active: #8f6230; /* 5.10:1 — accent sized for text */
 }
 
 .dark {
@@ -184,7 +232,7 @@
 }
 
 .eyebrow-accent {
-  color: var(--c-accent);
+  color: var(--c-accent-ink);
 }
 
 /* ------------------------------------------------------------------ */
@@ -285,13 +333,15 @@ kbd {
 }
 
 .prose :where(a):not([download]) {
-  color: var(--c-accent);
+  color: var(--c-accent-ink);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }
 
 .prose :where(a:hover) {
+  /* Darken in place — no second hue. */
+  color: color-mix(in srgb, var(--c-accent-ink) 84%, #000);
   text-decoration-thickness: 2px;
 }
 
@@ -381,7 +431,7 @@ kbd {
 }
 
 .prose :where(th) {
-  background-color: var(--c-surface);
+  background-color: var(--c-surface-alt);
   font-weight: 700;
 }
 
@@ -425,7 +475,7 @@ kbd {
 .article-action:hover {
   border-color: color-mix(in srgb, var(--c-accent) 55%, var(--c-border));
   background: var(--c-surface-2);
-  color: var(--c-accent);
+  color: var(--c-accent-ink);
 }
 
 .article-action:focus-visible {
@@ -519,22 +569,28 @@ kbd {
 }
 
 /* Inline code -------------------------------------------------------- */
+/* Inline code — a warm chip with a hairline so it stays defined on paper
+   and inside tinted callouts. */
 .prose :where(code) {
+  border: 1px solid color-mix(in srgb, var(--c-border) 65%, transparent);
   border-radius: 0.25rem;
   background-color: var(--c-surface-2);
-  padding: 0.15em 0.4em;
+  padding: 0.1em 0.4em;
   font-family: var(--font-mono);
   font-size: 0.875em;
 }
 
 /* Don't re-style the code inside a block. */
 .prose :where(pre code) {
+  border: 0;
   background: none;
   padding: 0;
 }
 
 /* Code blocks (Shiki) ------------------------------------------------ */
 /* Code, terminals, YAML, JSON and URLs are always left-to-right.      */
+/* Blocks stay dark in both themes: terminal/editor surfaces set into   */
+/* the paper (--c-code-bg), visually separate from prose.               */
 .prose pre,
 pre.astro-code {
   direction: ltr;
@@ -542,35 +598,45 @@ pre.astro-code {
   position: relative;
   margin-block: 1.5rem;
   overflow-x: auto;
-  border: 1px solid var(--c-border);
+  border: 1px solid var(--c-code-border);
   border-radius: 0.5rem;
+  background-color: var(--c-code-bg);
+  box-shadow: var(--c-shadow-code);
+  color: var(--c-code-fg);
   padding: 1rem 1.15rem;
   font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.7;
 }
 
-.prose pre {
-  background-color: var(--c-surface);
-}
-
-/* Shiki dual themes (defaultColor: false) */
+/* Shiki dual themes (defaultColor: false). Light mode reads the dark
+   gruvbox palette (see astro.config.mjs) because light-mode code blocks
+   are dark surfaces; the background is painted once by the rule above,
+   so tokens stay transparent. Fallbacks keep hand-written
+   <pre class="astro-code"> markup (no Shiki vars) readable. */
 pre.astro-code,
 pre.astro-code span {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
-  font-style: var(--shiki-light-font-style);
-  font-weight: var(--shiki-light-font-weight);
-  text-decoration: var(--shiki-light-text-decoration);
+  color: var(--shiki-light, var(--c-code-fg));
+  font-style: var(--shiki-light-font-style, normal);
+  font-weight: var(--shiki-light-font-weight, normal);
+  text-decoration: var(--shiki-light-text-decoration, none);
+}
+
+/* Tokens never paint their own background — the pre does. */
+pre.astro-code span {
+  background-color: transparent;
 }
 
 .dark pre.astro-code,
 .dark pre.astro-code span {
-  color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
-  font-style: var(--shiki-dark-font-style);
-  font-weight: var(--shiki-dark-font-weight);
-  text-decoration: var(--shiki-dark-text-decoration);
+  color: var(--shiki-dark, var(--c-code-fg));
+  font-style: var(--shiki-dark-font-style, normal);
+  font-weight: var(--shiki-dark-font-weight, normal);
+  text-decoration: var(--shiki-dark-text-decoration, none);
+}
+
+.dark pre.astro-code span {
+  background-color: transparent;
 }
 
 /* Mermaid diagrams ---------------------------------------------------- */
@@ -626,7 +692,8 @@ pre.astro-code span {
   opacity: 1;
 }
 
-/* Code copy button (added client-side) --------------------------------- */
+/* Code copy button (added client-side) — a dark chrome pill so it reads
+   as part of the code surface in both themes. ------------------------- */
 .code-copy {
   position: absolute;
   top: 0.5rem;
@@ -634,10 +701,10 @@ pre.astro-code span {
   z-index: 1;
   direction: rtl;
   unicode-bidi: isolate;
-  border: 1px solid var(--c-border);
+  border: 1px solid var(--c-code-chrome-border);
   border-radius: 0.375rem;
-  background-color: var(--c-surface);
-  color: var(--c-muted);
+  background-color: var(--c-code-chrome-bg);
+  color: var(--c-code-muted);
   padding: 0.15rem 0.55rem;
   font-size: 0.75rem;
   line-height: 1.4;
@@ -706,7 +773,7 @@ pre.astro-code:hover .code-copy,
 }
 
 .toc-link.is-active {
-  color: var(--c-accent);
+  color: var(--c-accent-ink);
   border-inline-start-color: var(--c-accent);
   font-weight: 500;
 }
@@ -746,28 +813,28 @@ pre.astro-code:hover .code-copy,
 
 .fp-toggle:hover {
   border-color: color-mix(in srgb, var(--c-accent) 50%, transparent);
-  color: var(--c-accent);
+  color: var(--c-accent-ink);
 }
 
 /* State is conveyed by text + border shape, never color alone. */
 .fp-toggle[aria-pressed='true'] {
   border-color: color-mix(in srgb, var(--c-accent) 45%, transparent);
   background-color: color-mix(in srgb, var(--c-accent) 12%, transparent);
-  color: var(--c-accent);
+  color: var(--c-accent-ink);
 }
 
-/* Search dialog -------------------------------------------------------- */
+/* Search dialog — a floating documentation panel on the warm surface. */
 .search-dialog {
   width: min(92vw, 40rem);
   max-height: 80vh;
   margin: auto;
   border: 1px solid var(--c-border);
   border-radius: 0.5rem;
-  background-color: var(--c-bg);
+  background-color: var(--c-surface);
   color: var(--c-text);
   padding: 0;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgb(56 38 16 / 0.20);
+  box-shadow: 0 24px 60px rgb(45 35 20 / 0.2);
 }
 
 .search-dialog::backdrop {
@@ -790,7 +857,7 @@ pre.astro-code:hover .code-copy,
 /* Keyboard-selected result -------------------------------------------------
    Driven purely by the existing aria-selected state set by ↑/↓. Strongest
    result state: specificity outranks the hover/focus-visible utilities
-   (which only add --c-surface) and the temporary bg-surface class the script
+   (which only add --c-bg) and the temporary bg-bg class the script
    toggles. Warm palette tokens only; tokens flip automatically in dark mode. */
 #search-results [role='option'][aria-selected='true'] > a {
   /* Surface listed first at 86%: identical mix, and it doubles as the
@@ -849,7 +916,7 @@ pre.astro-code {
   top: 0.5rem;
   inset-inline-start: 1rem;
   direction: ltr;
-  color: var(--c-muted);
+  color: var(--c-code-muted);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;

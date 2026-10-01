@@ -8,7 +8,7 @@ const isDocs = Astro.url.pathname.startsWith('/docs');
 ---
 
 <header
-  class="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75"
+  class="sticky top-0 z-40 border-b border-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/75"
 >
   <div class="mx-auto flex h-14 max-w-screen-2xl items-center gap-3 px-4 sm:gap-4">
     <!-- Left: logo + primary nav -->
@@ -65,7 +65,7 @@ const isDocs = Astro.url.pathname.startsWith('/docs');
         rel="noopener noreferrer"
         aria-label="GitHub repository"
         title="GitHub repository"
-        class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface text-muted transition-colors hover:border-accent/50 hover:text-text"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-bg text-muted transition-colors hover:border-accent/50 hover:text-text"
       >
         <SocialIcon name="github" class="h-5 w-5 shrink-0" />
       </a>

@@ -9,7 +9,7 @@
 <button
   type="button"
   id="search-trigger"
-  class="flex h-11 w-auto items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-sm text-muted transition-colors hover:border-accent/50 hover:text-text sm:h-9 sm:w-full sm:rounded-md sm:bg-bg sm:px-3"
+  class="flex h-11 w-auto items-center gap-2 rounded-full border border-border bg-bg px-3.5 text-sm text-muted transition-colors hover:border-accent/50 hover:text-text sm:h-9 sm:w-full sm:rounded-md sm:px-3"
   aria-haspopup="dialog"
   aria-controls="search-dialog"
   aria-label="Search the documentation"
@@ -43,7 +43,7 @@
   aria-label="Search the documentation"
 >
   <div class="flex max-h-[80vh] flex-col p-3">
-    <div class="flex items-center gap-2 rounded-full border border-border bg-surface px-4 sm:rounded-md sm:px-3">
+    <div class="flex items-center gap-2 rounded-full border border-border bg-bg px-4 sm:rounded-md sm:px-3">
       <svg
         class="h-4 w-4 shrink-0 text-muted"
         viewBox="0 0 24 24"
@@ -270,7 +270,7 @@
         const link = document.createElement('a');
         link.href = doc.u;
         link.className =
-          'block rounded-md px-3 py-2.5 transition-colors hover:bg-surface focus-visible:bg-surface';
+          'block rounded-md px-3 py-2.5 transition-colors hover:bg-bg focus-visible:bg-bg';
 
         const top = document.createElement('span');
         top.className = 'flex items-center justify-between gap-2';
@@ -332,7 +332,7 @@
       options.forEach((option, i) => {
         const on = i === active;
         option.setAttribute('aria-selected', String(on));
-        option.querySelector('a')?.classList.toggle('bg-surface', on);
+        option.querySelector('a')?.classList.toggle('bg-bg', on);
         if (on) {
           input!.setAttribute('aria-activedescendant', option.id);
           option.scrollIntoView({ block: 'nearest' });

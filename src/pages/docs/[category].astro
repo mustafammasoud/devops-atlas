@@ -90,11 +90,11 @@ const pageTitle = `${label} | Ops Handbook`;
     >
       <ol class="flex flex-wrap items-center gap-1.5">
         <li>
-          <a href="/" class="hover:text-accent">Home</a>
+          <a href="/" class="hover:text-accent-ink">Home</a>
         </li>
         <li aria-hidden="true">/</li>
         <li>
-          <a href="/docs" class="hover:text-accent">Docs</a>
+          <a href="/docs" class="hover:text-accent-ink">Docs</a>
         </li>
         <li aria-hidden="true">/</li>
         <li aria-current="page" class="font-medium text-text" lang="en">{label}</li>
@@ -162,7 +162,7 @@ const pageTitle = `${label} | Ops Handbook`;
           <div class="mt-5 flex flex-wrap justify-center gap-3 text-sm">
             <a
               href="/docs"
-              class="rounded-md border border-border bg-bg px-3.5 py-2 font-medium transition-colors hover:border-accent/50 hover:text-accent"
+              class="rounded-md border border-border bg-bg px-3.5 py-2 font-medium transition-colors hover:border-accent/50 hover:text-accent-ink"
             >
               Browse available documentation
             </a>
@@ -170,7 +170,7 @@ const pageTitle = `${label} | Ops Handbook`;
               href="https://github.com/mustafammasoud/ops-handbook/blob/main/docs-roadmap.md"
               target="_blank"
               rel="noopener"
-              class="rounded-md px-3.5 py-2 font-medium text-muted transition-colors hover:text-accent"
+              class="rounded-md px-3.5 py-2 font-medium text-muted transition-colors hover:text-accent-ink"
             >
               Content roadmap ↗
             </a>
@@ -192,7 +192,7 @@ const pageTitle = `${label} | Ops Handbook`;
                     <li>
                       <a
                         href={group.href}
-                        class="flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm transition-colors hover:border-accent/50 hover:text-accent"
+                        class="flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm transition-colors hover:border-accent/50 hover:text-accent-ink"
                         lang="en"
                       >
                         {group.label}
@@ -235,7 +235,7 @@ const pageTitle = `${label} | Ops Handbook`;
                     <h3 class="text-sm font-semibold" lang="en">
                       <a
                         href={group.href}
-                        class="transition-colors hover:text-accent"
+                        class="transition-colors hover:text-accent-ink"
                       >
                         {group.label}
                       </a>

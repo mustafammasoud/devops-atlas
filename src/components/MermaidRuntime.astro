@@ -40,10 +40,100 @@
 
     const { default: mermaid } = await import('mermaid');
     const dark = document.documentElement.classList.contains('dark');
+
+    // Light diagrams use the warm palette: off-white panels, dark text,
+    // muted borders, amber accents and slate/gray secondary lines — no
+    // default blues/purples/greens. Dark mode keeps Mermaid's own theme.
+    const lightThemeVariables = {
+      fontFamily:
+        'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      fontSize: '14px',
+
+      // Panels / nodes
+      primaryColor: '#FFFDF8',
+      mainBkg: '#FFFDF8',
+      nodeBorder: '#D8CDBB',
+      clusterBkg: '#F1E7D6',
+      clusterBorder: '#D8CDBB',
+      titleColor: '#25231F',
+      background: '#FFFAF1',
+
+      // Text and lines
+      primaryTextColor: '#25231F',
+      textColor: '#25231F',
+      lineColor: '#5F665F',
+      defaultLinkColor: '#5F665F',
+      secondaryColor: '#F1E7D6',
+      tertiaryColor: '#F5EFE4',
+      edgeLabelBackground: '#FFFAF1',
+
+      // Sequence diagrams
+      actorBkg: '#F1E7D6',
+      actorBorder: '#9A6B32',
+      actorTextColor: '#25231F',
+      actorLineColor: '#70695F',
+      signalColor: '#25231F',
+      signalTextColor: '#25231F',
+      labelBoxBkgColor: '#F1E7D6',
+      labelBoxBorderColor: '#D8CDBB',
+      labelTextColor: '#25231F',
+      loopTextColor: '#25231F',
+      activationBkgColor: '#F1E7D6',
+      activationBorderColor: '#9A6B32',
+      sequenceNumberColor: '#25231F',
+      noteBkgColor: '#F1E7D6',
+      noteBorderColor: '#9A6B32',
+      noteTextColor: '#25231F',
+
+      // State / class / misc
+      forkBkgColor: '#F1E7D6',
+      joinBkgColor: '#F1E7D6',
+      classBkgColor: '#FFFDF8',
+      classBorder: '#D8CDBB',
+      fillType0: '#FFFDF8',
+      fillType1: '#F1E7D6',
+      fillType2: '#F5EFE4',
+
+      // Categorical palettes (mindmap sections, scales, pie) — warm
+      // neutrals, amber and slate only; no default blues/purples/greens.
+      // Text on these fills is derived automatically (cScaleInv).
+      git0: '#9A6B32',
+      git1: '#5F665F',
+      git2: '#70695F',
+      git3: '#8F6230',
+      cScaleLabel0: '#FFFCF5',
+      cScaleLabel1: '#25231F',
+      cScale0: '#9A6B32',
+      cScale1: '#F1E7D6',
+      cScale2: '#D8CDBB',
+      cScale3: '#C9CEC3',
+      cScale4: '#E0C3A4',
+      cScale5: '#5F665F',
+      cScale6: '#B9B0A0',
+      pie1: '#9A6B32',
+      pie2: '#F1E7D6',
+      pie3: '#D8CDBB',
+      pie4: '#C9CEC3',
+      pie5: '#E0C3A4',
+      pie6: '#5F665F',
+      pie7: '#B9B0A0',
+      pie8: '#8F6230',
+      pie9: '#E9E2D2',
+      pie10: '#A9A192',
+      pie11: '#70695F',
+      pie12: '#EDE9DF',
+      pieTitleTextColor: '#25231F',
+      pieSectionTextColor: '#25231F',
+      pieOuterStrokeColor: '#D8CDBB',
+      pieStrokeColor: '#FFFAF1',
+      pieChartBackground: '#FFFAF1',
+    };
+
     mermaid.initialize({
       startOnLoad: false,
       securityLevel: 'strict',
-      theme: dark ? 'dark' : 'neutral',
+      theme: dark ? 'dark' : 'base',
+      ...(dark ? {} : { themeVariables: lightThemeVariables }),
     });
     await mermaid.run({ nodes: containers });
   }

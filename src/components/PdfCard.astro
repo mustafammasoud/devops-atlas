@@ -12,9 +12,9 @@ const fileName = href.split('/').pop() ?? href;
 const name = title ?? fileName;
 ---
 
-<div class="my-6 flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+<div class="my-6 flex flex-col gap-4 rounded-lg border border-border bg-surface shadow-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
   <div class="flex min-w-0 items-start gap-3.5 sm:items-center">
-    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-surface-2/70 text-accent">
+    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-surface-2/70 text-accent-ink">
       <svg
         class="h-5 w-5"
         viewBox="0 0 24 24"
@@ -54,7 +54,7 @@ const name = title ?? fileName;
       href={href}
       target="_blank"
       rel="noopener"
-      class="inline-flex items-center justify-center gap-1.5 rounded-md border border-border bg-bg px-3.5 py-2 text-xs sm:text-sm font-medium text-text transition-colors hover:border-accent/60 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      class="inline-flex items-center justify-center gap-1.5 rounded-md border border-border bg-bg px-3.5 py-2 text-xs sm:text-sm font-medium text-text transition-colors hover:border-accent/60 hover:text-accent-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
     >
       <svg
         class="h-4 w-4 shrink-0 opacity-70"
