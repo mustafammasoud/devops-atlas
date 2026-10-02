@@ -1,6 +1,6 @@
 ---
-    title: Pod Configuration
-description: A complete guide to configuring Kubernetes Pods, covering container settings, environment variables, commands and arguments, resource requests and limits, metadata, volumes, and practical configuration patterns.
+title: Pod Configuration
+description: "A complete guide to configuring Kubernetes Pods, covering container settings, environment variables, commands and arguments, resource requests and limits, metadata, volumes, and practical configuration patterns."
 category: container-orchestration
 order: 7
 level: beginner
